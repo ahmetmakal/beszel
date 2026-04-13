@@ -212,6 +212,9 @@ func (a *Agent) getSystemStats(cacheTimeMs uint16) system.Stats {
 	// network stats (per cache interval)
 	a.updateNetworkStats(cacheTimeMs, &systemStats)
 
+	// TCP connections
+	a.updateTcpConnections(&systemStats)
+
 	// temperatures
 	// TODO: maybe refactor to methods on systemStats
 	a.updateTemperatures(&systemStats)
@@ -258,7 +261,31 @@ func (a *Agent) getSystemStats(cacheTimeMs uint16) system.Stats {
 	a.systemInfo.Battery = systemStats.Battery
 	a.systemInfo.Uptime, _ = host.Uptime()
 	a.systemInfo.BandwidthBytes = systemStats.Bandwidth[0] + systemStats.Bandwidth[1]
+	// web server stats
+	if a.webServerManager != nil {
+		if wsStats := a.webServerManager.getStats(); wsStats != nil {
+			systemStats.WebServer = wsStats
+			a.systemInfo.WebServerType = wsStats.Type
+		}
+	}
+
+	// MySQL stats
+	if a.mysqlManager != nil {
+		if mysqlStats := a.mysqlManager.getStats(); mysqlStats != nil {
+			systemStats.MySQL = mysqlStats
+			a.systemInfo.MySQLUp = true
+		} else {
+			a.systemInfo.MySQLUp = false
+		}
+	}
+
 	a.systemInfo.Threads = a.systemDetails.Threads
+	// total TCP connections for dashboard
+	var totalTcp uint32
+	for _, count := range systemStats.TcpConns {
+		totalTcp += count
+	}
+	a.systemInfo.TcpConns = totalTcp
 
 	return systemStats
 }

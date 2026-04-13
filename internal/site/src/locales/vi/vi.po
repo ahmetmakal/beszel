@@ -401,6 +401,11 @@ msgstr "Nhấp vào hệ thống để xem thêm thông tin."
 msgid "Click to copy"
 msgstr "Nhấp để sao chép"
 
+#. TCP connection state
+#: src/components/routes/system/charts/tcp-connections-chart.tsx
+msgid "Close Wait"
+msgstr ""
+
 #: src/components/login/forgot-pass-form.tsx
 #: src/components/login/forgot-pass-form.tsx
 msgid "Command line instructions"
@@ -731,6 +736,11 @@ msgstr "Tạm thời"
 msgid "Error"
 msgstr "Lỗi"
 
+#. TCP connection state
+#: src/components/routes/system/charts/tcp-connections-chart.tsx
+msgid "Established"
+msgstr ""
+
 #: src/components/routes/settings/heartbeat.tsx
 msgid "Example:"
 msgstr "Ví dụ:"
@@ -973,6 +983,11 @@ msgstr "Vòng đời"
 #: src/components/systemd-table/systemd-table.tsx
 msgid "limit"
 msgstr "giới hạn"
+
+#. TCP connection state
+#: src/components/routes/system/charts/tcp-connections-chart.tsx
+msgid "Listen"
+msgstr ""
 
 #: src/components/routes/system/charts/load-average-chart.tsx
 msgid "Load Average"
@@ -1550,6 +1565,11 @@ msgstr "Không gian hoán đổi được sử dụng bởi hệ thống"
 msgid "Swap Usage"
 msgstr "Sử dụng Hoán đổi"
 
+#: src/components/mode-toggle.tsx
+#: src/components/mode-toggle.tsx
+msgid "Switch theme"
+msgstr ""
+
 #: src/components/add-system.tsx
 #: src/components/alerts-history-columns.tsx
 #: src/components/containers-table/containers-table-columns.tsx
@@ -1593,6 +1613,15 @@ msgstr "Tab"
 #: src/components/systemd-table/systemd-table.tsx
 msgid "Tasks"
 msgstr "Tác vụ"
+
+#: src/components/routes/system/charts/tcp-connections-chart.tsx
+msgid "TCP connection counts by state"
+msgstr ""
+
+#: src/components/routes/system/charts/tcp-connections-chart.tsx
+#: src/lib/alerts.ts
+msgid "TCP Connections"
+msgstr ""
 
 #. Temperature label in systems table
 #: src/components/routes/system/smart-table.tsx
@@ -1653,14 +1682,19 @@ msgstr "Thông lượng của hệ thống tệp gốc"
 msgid "Time format"
 msgstr "Định dạng thời gian"
 
+#. TCP connection state
+#: src/components/routes/system/charts/tcp-connections-chart.tsx
+msgid "Time Wait"
+msgstr ""
+
 #: src/components/routes/settings/notifications.tsx
 msgid "To email(s)"
 msgstr "Đến email(s)"
 
 #: src/components/mode-toggle.tsx
 #: src/components/mode-toggle.tsx
-msgid "Toggle theme"
-msgstr "Chuyển đổi chủ đề"
+#~ msgid "Toggle theme"
+#~ msgstr "Chuyển đổi chủ đề"
 
 #: src/components/add-system.tsx
 #: src/components/routes/settings/tokens-fingerprints.tsx
@@ -1751,6 +1785,10 @@ msgstr "Kích hoạt khi sử dụng bộ nhớ vượt quá ngưỡng"
 #: src/lib/alerts.ts
 msgid "Triggers when status switches between up and down"
 msgstr "Kích hoạt khi trạng thái chuyển đổi giữa lên và xuống"
+
+#: src/lib/alerts.ts
+msgid "Triggers when total TCP connections exceeds a threshold"
+msgstr ""
 
 #: src/lib/alerts.ts
 msgid "Triggers when usage of any disk exceeds a threshold"

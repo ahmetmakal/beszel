@@ -401,6 +401,11 @@ msgstr "Kliknite na sistem za več informacij."
 msgid "Click to copy"
 msgstr "Klikni za kopiranje"
 
+#. TCP connection state
+#: src/components/routes/system/charts/tcp-connections-chart.tsx
+msgid "Close Wait"
+msgstr ""
+
 #: src/components/login/forgot-pass-form.tsx
 #: src/components/login/forgot-pass-form.tsx
 msgid "Command line instructions"
@@ -731,6 +736,11 @@ msgstr "Prehodni"
 msgid "Error"
 msgstr "Napaka"
 
+#. TCP connection state
+#: src/components/routes/system/charts/tcp-connections-chart.tsx
+msgid "Established"
+msgstr ""
+
 #: src/components/routes/settings/heartbeat.tsx
 msgid "Example:"
 msgstr "Primer:"
@@ -973,6 +983,11 @@ msgstr "Življenjski cikel"
 #: src/components/systemd-table/systemd-table.tsx
 msgid "limit"
 msgstr "omejitev"
+
+#. TCP connection state
+#: src/components/routes/system/charts/tcp-connections-chart.tsx
+msgid "Listen"
+msgstr ""
 
 #: src/components/routes/system/charts/load-average-chart.tsx
 msgid "Load Average"
@@ -1550,6 +1565,11 @@ msgstr "Swap prostor, ki ga uporablja sistem"
 msgid "Swap Usage"
 msgstr "Swap uporaba"
 
+#: src/components/mode-toggle.tsx
+#: src/components/mode-toggle.tsx
+msgid "Switch theme"
+msgstr ""
+
 #: src/components/add-system.tsx
 #: src/components/alerts-history-columns.tsx
 #: src/components/containers-table/containers-table-columns.tsx
@@ -1593,6 +1613,15 @@ msgstr "Zavihki"
 #: src/components/systemd-table/systemd-table.tsx
 msgid "Tasks"
 msgstr "Naloge"
+
+#: src/components/routes/system/charts/tcp-connections-chart.tsx
+msgid "TCP connection counts by state"
+msgstr ""
+
+#: src/components/routes/system/charts/tcp-connections-chart.tsx
+#: src/lib/alerts.ts
+msgid "TCP Connections"
+msgstr ""
 
 #. Temperature label in systems table
 #: src/components/routes/system/smart-table.tsx
@@ -1653,14 +1682,19 @@ msgstr "Prepustnost korenskega datotečnega sistema"
 msgid "Time format"
 msgstr "Oblika časa"
 
+#. TCP connection state
+#: src/components/routes/system/charts/tcp-connections-chart.tsx
+msgid "Time Wait"
+msgstr ""
+
 #: src/components/routes/settings/notifications.tsx
 msgid "To email(s)"
 msgstr "E-pošta za"
 
 #: src/components/mode-toggle.tsx
 #: src/components/mode-toggle.tsx
-msgid "Toggle theme"
-msgstr "Obrni temo"
+#~ msgid "Toggle theme"
+#~ msgstr "Obrni temo"
 
 #: src/components/add-system.tsx
 #: src/components/routes/settings/tokens-fingerprints.tsx
@@ -1751,6 +1785,10 @@ msgstr "Sproži se, ko uporaba pomnilnika preseže prag"
 #: src/lib/alerts.ts
 msgid "Triggers when status switches between up and down"
 msgstr "Sproži se, ko se stanje preklaplja med gor in dol"
+
+#: src/lib/alerts.ts
+msgid "Triggers when total TCP connections exceeds a threshold"
+msgstr ""
 
 #: src/lib/alerts.ts
 msgid "Triggers when usage of any disk exceeds a threshold"

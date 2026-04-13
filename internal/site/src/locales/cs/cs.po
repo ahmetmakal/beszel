@@ -401,6 +401,11 @@ msgstr "Klikněte na systém pro zobrazení více informací."
 msgid "Click to copy"
 msgstr "Klikněte pro zkopírování"
 
+#. TCP connection state
+#: src/components/routes/system/charts/tcp-connections-chart.tsx
+msgid "Close Wait"
+msgstr ""
+
 #: src/components/login/forgot-pass-form.tsx
 #: src/components/login/forgot-pass-form.tsx
 msgid "Command line instructions"
@@ -731,6 +736,11 @@ msgstr "Efemérní"
 msgid "Error"
 msgstr "Chyba"
 
+#. TCP connection state
+#: src/components/routes/system/charts/tcp-connections-chart.tsx
+msgid "Established"
+msgstr ""
+
 #: src/components/routes/settings/heartbeat.tsx
 msgid "Example:"
 msgstr "Příklad:"
@@ -972,6 +982,11 @@ msgstr "Životní cyklus"
 #: src/components/systemd-table/systemd-table.tsx
 #: src/components/systemd-table/systemd-table.tsx
 msgid "limit"
+msgstr ""
+
+#. TCP connection state
+#: src/components/routes/system/charts/tcp-connections-chart.tsx
+msgid "Listen"
 msgstr ""
 
 #: src/components/routes/system/charts/load-average-chart.tsx
@@ -1550,6 +1565,11 @@ msgstr "Swap prostor využívaný systémem"
 msgid "Swap Usage"
 msgstr "Swap využití"
 
+#: src/components/mode-toggle.tsx
+#: src/components/mode-toggle.tsx
+msgid "Switch theme"
+msgstr ""
+
 #: src/components/add-system.tsx
 #: src/components/alerts-history-columns.tsx
 #: src/components/containers-table/containers-table-columns.tsx
@@ -1593,6 +1613,15 @@ msgstr "Karty"
 #: src/components/systemd-table/systemd-table.tsx
 msgid "Tasks"
 msgstr "Úlohy"
+
+#: src/components/routes/system/charts/tcp-connections-chart.tsx
+msgid "TCP connection counts by state"
+msgstr ""
+
+#: src/components/routes/system/charts/tcp-connections-chart.tsx
+#: src/lib/alerts.ts
+msgid "TCP Connections"
+msgstr ""
 
 #. Temperature label in systems table
 #: src/components/routes/system/smart-table.tsx
@@ -1653,14 +1682,19 @@ msgstr "Propustnost kořenového souborového systému"
 msgid "Time format"
 msgstr "Formát času"
 
+#. TCP connection state
+#: src/components/routes/system/charts/tcp-connections-chart.tsx
+msgid "Time Wait"
+msgstr ""
+
 #: src/components/routes/settings/notifications.tsx
 msgid "To email(s)"
 msgstr "Na email(y)"
 
 #: src/components/mode-toggle.tsx
 #: src/components/mode-toggle.tsx
-msgid "Toggle theme"
-msgstr "Přepnout motiv"
+#~ msgid "Toggle theme"
+#~ msgstr "Přepnout motiv"
 
 #: src/components/add-system.tsx
 #: src/components/routes/settings/tokens-fingerprints.tsx
@@ -1751,6 +1785,10 @@ msgstr "Spustí se, když využití paměti překročí prahovou hodnotu"
 #: src/lib/alerts.ts
 msgid "Triggers when status switches between up and down"
 msgstr "Spouští se, když se změní dostupnost"
+
+#: src/lib/alerts.ts
+msgid "Triggers when total TCP connections exceeds a threshold"
+msgstr ""
 
 #: src/lib/alerts.ts
 msgid "Triggers when usage of any disk exceeds a threshold"

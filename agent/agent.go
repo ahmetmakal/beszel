@@ -48,6 +48,8 @@ type Agent struct {
 	keys                      []gossh.PublicKey                                     // SSH public keys
 	smartManager              *SmartManager                                         // Manages SMART data
 	systemdManager            *systemdManager                                       // Manages systemd services
+	webServerManager          *webServerManager                                     // Manages web server stats
+	mysqlManager              *mysqlManager                                         // Manages MySQL/MariaDB stats
 }
 
 // NewAgent creates a new agent with the given data directory for persisting data.
@@ -141,6 +143,15 @@ func NewAgent(dataDir ...string) (agent *Agent, err error) {
 	agent.gpuManager, err = NewGPUManager()
 	if err != nil {
 		slog.Debug("GPU", "err", err)
+	}
+
+	// initialize web server manager
+	agent.webServerManager = newWebServerManager()
+
+	// initialize MySQL manager
+	agent.mysqlManager, err = newMySQLManager()
+	if err != nil {
+		slog.Debug("MySQL", "err", err)
 	}
 
 	// if debugging, print stats

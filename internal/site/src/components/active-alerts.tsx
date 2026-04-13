@@ -5,9 +5,12 @@ import { Plural, Trans } from "@lingui/react/macro"
 import { useStore } from "@nanostores/react"
 import { getPagePath } from "@nanostores/router"
 import { useMemo } from "react"
+import { TerminalSquareIcon } from "lucide-react"
 import { $router, Link } from "./router"
 import { Alert, AlertTitle, AlertDescription } from "./ui/alert"
 import { Card, CardHeader, CardTitle, CardContent } from "./ui/card"
+
+const SERVICE_PREFIX = "Service:"
 
 export const ActiveAlerts = () => {
 	const alerts = useStore($alerts)
@@ -20,9 +23,9 @@ export const ActiveAlerts = () => {
 
 		for (const systemId of Object.keys(alerts)) {
 			for (const alert of alerts[systemId].values()) {
-				if (alert.triggered && alert.name in alertInfo) {
+				if (alert.triggered && (alert.name in alertInfo || alert.name.startsWith(SERVICE_PREFIX))) {
 					activeAlerts.push(alert)
-					alertsKey.push(`${alert.system}${alert.value}${alert.min}`)
+					alertsKey.push(`${alert.system}${alert.name}${alert.value}${alert.min}`)
 				}
 			}
 		}
@@ -48,20 +51,29 @@ export const ActiveAlerts = () => {
 					{activeAlerts.length > 0 && (
 						<div className="grid sm:grid-cols-2 lg:grid-cols-3 2xl:grid-cols-4 gap-3">
 							{activeAlerts.map((alert) => {
-								const info = alertInfo[alert.name as keyof typeof alertInfo]
+								const isService = alert.name.startsWith(SERVICE_PREFIX)
+								const info = !isService ? alertInfo[alert.name as keyof typeof alertInfo] : null
+								const serviceName = isService ? alert.name.slice(SERVICE_PREFIX.length) : null
 								return (
 									<Alert
 										key={alert.id}
 										className="hover:-translate-y-px duration-200 bg-transparent border-foreground/10 hover:shadow-md shadow-black/5"
 									>
-										<info.icon className="h-4 w-4" />
+										{isService ? (
+											<TerminalSquareIcon className="h-4 w-4" />
+										) : (
+											info && <info.icon className="h-4 w-4" />
+										)}
 										<AlertTitle>
-											{systems[alert.system]?.name} {info.name()}
+											{systems[alert.system]?.name}{" "}
+											{isService ? serviceName : info?.name()}
 										</AlertTitle>
 										<AlertDescription>
-											{alert.name === "Status" ? (
+											{isService ? (
+												<Trans>Service is not active</Trans>
+											) : alert.name === "Status" ? (
 												<Trans>Connection is down</Trans>
-											) : info.invert ? (
+											) : info?.invert ? (
 												<Trans>
 													Below {alert.value}
 													{info.unit} in last <Plural value={alert.min} one="# minute" other="# minutes" />
@@ -69,7 +81,7 @@ export const ActiveAlerts = () => {
 											) : (
 												<Trans>
 													Exceeds {alert.value}
-													{info.unit} in last <Plural value={alert.min} one="# minute" other="# minutes" />
+													{info?.unit} in last <Plural value={alert.min} one="# minute" other="# minutes" />
 												</Trans>
 											)}
 										</AlertDescription>

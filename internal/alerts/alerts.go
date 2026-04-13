@@ -56,6 +56,21 @@ type SystemAlertStats struct {
 	LoadAvg      [3]float64                    `json:"la"`
 	Battery      [2]uint8                      `json:"bat"`
 	ExtraFs      map[string]SystemAlertFsStats `json:"efs"`
+	TcpConns     map[string]uint32             `json:"tcp"`
+	WebServer    *SystemAlertWebServerData    `json:"ws"`
+	MySQL        *SystemAlertMySQLData        `json:"mysql"`
+}
+
+type SystemAlertWebServerData struct {
+	ReqPerSec float64 `json:"rps"`
+}
+
+type SystemAlertMySQLData struct {
+	QueriesPerSec     float64 `json:"qps"`
+	Connections       uint32  `json:"conn"`
+	MaxConnections    uint32  `json:"maxc"`
+	SlowQueriesPerSec float64 `json:"sq"`
+	ReplicationLag    int64   `json:"rl"`
 }
 
 type SystemAlertGPUData struct {
@@ -309,5 +324,5 @@ func (am *AlertManager) setAlertTriggered(alert CachedAlertData, triggered bool)
 		return err
 	}
 	alertRecord.Set("triggered", triggered)
-	return am.hub.Save(alertRecord)
+	return am.hub.SaveNoValidate(alertRecord)
 }

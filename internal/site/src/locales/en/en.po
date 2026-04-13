@@ -396,6 +396,11 @@ msgstr "Click on a system to view more information."
 msgid "Click to copy"
 msgstr "Click to copy"
 
+#. TCP connection state
+#: src/components/routes/system/charts/tcp-connections-chart.tsx
+msgid "Close Wait"
+msgstr "Close Wait"
+
 #: src/components/login/forgot-pass-form.tsx
 #: src/components/login/forgot-pass-form.tsx
 msgid "Command line instructions"
@@ -726,6 +731,11 @@ msgstr "Ephemeral"
 msgid "Error"
 msgstr "Error"
 
+#. TCP connection state
+#: src/components/routes/system/charts/tcp-connections-chart.tsx
+msgid "Established"
+msgstr "Established"
+
 #: src/components/routes/settings/heartbeat.tsx
 msgid "Example:"
 msgstr "Example:"
@@ -968,6 +978,11 @@ msgstr "Lifecycle"
 #: src/components/systemd-table/systemd-table.tsx
 msgid "limit"
 msgstr "limit"
+
+#. TCP connection state
+#: src/components/routes/system/charts/tcp-connections-chart.tsx
+msgid "Listen"
+msgstr "Listen"
 
 #: src/components/routes/system/charts/load-average-chart.tsx
 msgid "Load Average"
@@ -1545,6 +1560,11 @@ msgstr "Swap space used by the system"
 msgid "Swap Usage"
 msgstr "Swap Usage"
 
+#: src/components/mode-toggle.tsx
+#: src/components/mode-toggle.tsx
+msgid "Switch theme"
+msgstr "Switch theme"
+
 #: src/components/add-system.tsx
 #: src/components/alerts-history-columns.tsx
 #: src/components/containers-table/containers-table-columns.tsx
@@ -1588,6 +1608,15 @@ msgstr "Tabs"
 #: src/components/systemd-table/systemd-table.tsx
 msgid "Tasks"
 msgstr "Tasks"
+
+#: src/components/routes/system/charts/tcp-connections-chart.tsx
+msgid "TCP connection counts by state"
+msgstr "TCP connection counts by state"
+
+#: src/components/routes/system/charts/tcp-connections-chart.tsx
+#: src/lib/alerts.ts
+msgid "TCP Connections"
+msgstr "TCP Connections"
 
 #. Temperature label in systems table
 #: src/components/routes/system/smart-table.tsx
@@ -1648,14 +1677,19 @@ msgstr "Throughput of root filesystem"
 msgid "Time format"
 msgstr "Time format"
 
+#. TCP connection state
+#: src/components/routes/system/charts/tcp-connections-chart.tsx
+msgid "Time Wait"
+msgstr "Time Wait"
+
 #: src/components/routes/settings/notifications.tsx
 msgid "To email(s)"
 msgstr "To email(s)"
 
 #: src/components/mode-toggle.tsx
 #: src/components/mode-toggle.tsx
-msgid "Toggle theme"
-msgstr "Toggle theme"
+#~ msgid "Toggle theme"
+#~ msgstr "Toggle theme"
 
 #: src/components/add-system.tsx
 #: src/components/routes/settings/tokens-fingerprints.tsx
@@ -1746,6 +1780,10 @@ msgstr "Triggers when memory usage exceeds a threshold"
 #: src/lib/alerts.ts
 msgid "Triggers when status switches between up and down"
 msgstr "Triggers when status switches between up and down"
+
+#: src/lib/alerts.ts
+msgid "Triggers when total TCP connections exceeds a threshold"
+msgstr "Triggers when total TCP connections exceeds a threshold"
 
 #: src/lib/alerts.ts
 msgid "Triggers when usage of any disk exceeds a threshold"

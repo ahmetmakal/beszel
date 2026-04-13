@@ -50,6 +50,9 @@ type Stats struct {
 	CpuCoresUsage     Uint8Slice           `json:"cpus,omitempty" cbor:"34,keyasint,omitempty"` // per-core busy usage [CPU0..]
 	DiskIoStats       [6]float64           `json:"dios,omitzero" cbor:"35,keyasint,omitzero"`   // [read time %, write time %, io utilization %, r_await ms, w_await ms, weighted io %]
 	MaxDiskIoStats    [6]float64           `json:"diosm,omitzero" cbor:"-"`                     // max values for DiskIoStats
+	TcpConns          map[string]uint32    `json:"tcp,omitempty" cbor:"36,keyasint,omitempty"`   // TCP connection counts by state
+	WebServer         *WebServerStats      `json:"ws,omitempty" cbor:"37,keyasint,omitempty"`    // Web server stats
+	MySQL             *MySQLStats          `json:"mysql,omitempty" cbor:"38,keyasint,omitempty"` // MySQL/MariaDB stats
 }
 
 // Uint8Slice wraps []uint8 to customize JSON encoding while keeping CBOR efficient.
@@ -155,6 +158,9 @@ type Info struct {
 	ExtraFsPct     map[string]float64 `json:"efs,omitempty" cbor:"21,keyasint,omitempty"`
 	Services       []uint16           `json:"sv,omitempty" cbor:"22,keyasint,omitempty"` // [totalServices, numFailedServices]
 	Battery        [2]uint8           `json:"bat,omitzero" cbor:"23,keyasint,omitzero"`  // [percent, charge state]
+	TcpConns       uint32             `json:"tcp,omitzero" cbor:"24,keyasint,omitzero"`  // total TCP connections
+	WebServerType  string             `json:"wst,omitempty" cbor:"25,keyasint,omitempty"` // web server type (nginx/apache/litespeed)
+	MySQLUp        bool               `json:"msu,omitzero" cbor:"26,keyasint,omitzero"`  // MySQL/MariaDB is reachable
 }
 
 // Data that does not change during process lifetime and is not needed in All Systems table

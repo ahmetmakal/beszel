@@ -77,6 +77,12 @@ export interface SystemInfo {
 	efs?: Record<string, number>
 	/** services [totalServices, numFailedServices] */
 	sv?: [number, number]
+	/** total TCP connections */
+	tcp?: number
+	/** web server type (nginx/apache/litespeed) */
+	wst?: string
+	/** MySQL is up */
+	msu?: boolean
 }
 
 export interface SystemStats {
@@ -150,6 +156,54 @@ export interface SystemStats {
 	bat?: [number, BatteryState]
 	/** network interfaces [upload bytes, download bytes, total upload bytes, total download bytes] */
 	ni?: Record<string, [number, number, number, number]>
+	/** TCP connection counts by state */
+	tcp?: Record<string, number>
+	/** web server stats */
+	ws?: WebServerStats
+	/** MySQL/MariaDB stats */
+	mysql?: MySQLStatsData
+}
+
+export interface WebServerStats {
+	/** server type (nginx, apache, litespeed) */
+	tp: string
+	/** active connections */
+	ac: number
+	/** requests per second */
+	rps: number
+	/** bytes per second */
+	bps?: number
+	/** busy workers */
+	bw?: number
+	/** idle workers */
+	iw?: number
+	/** reading connections */
+	r?: number
+	/** writing connections */
+	w?: number
+	/** waiting connections */
+	wt?: number
+}
+
+export interface MySQLStatsData {
+	/** queries per second */
+	qps: number
+	/** current connections */
+	conn: number
+	/** max connections */
+	maxc: number
+	/** threads running */
+	tr: number
+	/** slow queries per second */
+	sq?: number
+	/** InnoDB buffer pool hit rate % */
+	bphr?: number
+	/** key cache hit rate % */
+	kchr?: number
+	/** replication lag seconds (-1 = no replication) */
+	rl: number
+	/** replication ok (IO + SQL threads running) */
+	ro?: boolean
 }
 
 export interface GPUData {

@@ -101,6 +101,12 @@ export default function InfoBar({
 			{ value: secondsToUptimeString(system.info.u), Icon: ClockArrowUp, label: t`Uptime`, hide: !system.info.u },
 			osInfo[os],
 			{
+				value: kernel,
+				Icon: ChevronRightSquareIcon,
+				hide: !kernel || !osName,
+				label: t`Kernel`,
+			},
+			{
 				value: cpuModel,
 				Icon: CpuIcon,
 				hide: !cpuModel,

@@ -401,6 +401,11 @@ msgstr "Clique em um sistema para ver mais informações."
 msgid "Click to copy"
 msgstr "Clique para copiar"
 
+#. TCP connection state
+#: src/components/routes/system/charts/tcp-connections-chart.tsx
+msgid "Close Wait"
+msgstr ""
+
 #: src/components/login/forgot-pass-form.tsx
 #: src/components/login/forgot-pass-form.tsx
 msgid "Command line instructions"
@@ -731,6 +736,11 @@ msgstr "Efêmero"
 msgid "Error"
 msgstr "Erro"
 
+#. TCP connection state
+#: src/components/routes/system/charts/tcp-connections-chart.tsx
+msgid "Established"
+msgstr ""
+
 #: src/components/routes/settings/heartbeat.tsx
 msgid "Example:"
 msgstr "Exemplo:"
@@ -973,6 +983,11 @@ msgstr "Ciclo de vida"
 #: src/components/systemd-table/systemd-table.tsx
 msgid "limit"
 msgstr "limite"
+
+#. TCP connection state
+#: src/components/routes/system/charts/tcp-connections-chart.tsx
+msgid "Listen"
+msgstr ""
 
 #: src/components/routes/system/charts/load-average-chart.tsx
 msgid "Load Average"
@@ -1550,6 +1565,11 @@ msgstr "Espaço de swap usado pelo sistema"
 msgid "Swap Usage"
 msgstr "Uso de Swap"
 
+#: src/components/mode-toggle.tsx
+#: src/components/mode-toggle.tsx
+msgid "Switch theme"
+msgstr ""
+
 #: src/components/add-system.tsx
 #: src/components/alerts-history-columns.tsx
 #: src/components/containers-table/containers-table-columns.tsx
@@ -1593,6 +1613,15 @@ msgstr "Separadores"
 #: src/components/systemd-table/systemd-table.tsx
 msgid "Tasks"
 msgstr "Tarefas"
+
+#: src/components/routes/system/charts/tcp-connections-chart.tsx
+msgid "TCP connection counts by state"
+msgstr ""
+
+#: src/components/routes/system/charts/tcp-connections-chart.tsx
+#: src/lib/alerts.ts
+msgid "TCP Connections"
+msgstr ""
 
 #. Temperature label in systems table
 #: src/components/routes/system/smart-table.tsx
@@ -1653,14 +1682,19 @@ msgstr "Taxa de transferência do sistema de arquivos raiz"
 msgid "Time format"
 msgstr "Formato de hora"
 
+#. TCP connection state
+#: src/components/routes/system/charts/tcp-connections-chart.tsx
+msgid "Time Wait"
+msgstr ""
+
 #: src/components/routes/settings/notifications.tsx
 msgid "To email(s)"
 msgstr "Para email(s)"
 
 #: src/components/mode-toggle.tsx
 #: src/components/mode-toggle.tsx
-msgid "Toggle theme"
-msgstr "Alternar tema"
+#~ msgid "Toggle theme"
+#~ msgstr "Alternar tema"
 
 #: src/components/add-system.tsx
 #: src/components/routes/settings/tokens-fingerprints.tsx
@@ -1751,6 +1785,10 @@ msgstr "Dispara quando o uso de memória excede um limite"
 #: src/lib/alerts.ts
 msgid "Triggers when status switches between up and down"
 msgstr "Dispara quando o status alterna entre ativo e inativo"
+
+#: src/lib/alerts.ts
+msgid "Triggers when total TCP connections exceeds a threshold"
+msgstr ""
 
 #: src/lib/alerts.ts
 msgid "Triggers when usage of any disk exceeds a threshold"

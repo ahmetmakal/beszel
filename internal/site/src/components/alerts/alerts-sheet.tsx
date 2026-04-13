@@ -14,6 +14,7 @@ import { Switch } from "@/components/ui/switch"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { toast } from "@/components/ui/use-toast"
 import { alertInfo } from "@/lib/alerts"
+import { ServiceAlertsSection } from "./service-alerts"
 import { pb } from "@/lib/api"
 import { $alerts, $systems } from "@/lib/stores"
 import { cn, debounce } from "@/lib/utils"
@@ -181,6 +182,7 @@ export const AlertDialogContent = memo(function AlertDialogContent({ system }: {
 								system={system}
 							/>
 						))}
+						<ServiceAlertsSection system={system} />
 					</div>
 				</TabsContent>
 				<TabsContent value="global">

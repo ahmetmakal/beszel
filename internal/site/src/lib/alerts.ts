@@ -1,5 +1,5 @@
 import { t } from "@lingui/core/macro"
-import { CpuIcon, HardDriveIcon, MemoryStickIcon, ServerIcon } from "lucide-react"
+import { CableIcon, CpuIcon, HardDriveIcon, MemoryStickIcon, ServerIcon } from "lucide-react"
 import type { RecordSubscription } from "pocketbase"
 import { EthernetIcon, GpuIcon } from "@/components/ui/icons"
 import { $alerts } from "@/lib/stores"
@@ -91,6 +91,16 @@ export const alertInfo: Record<string, AlertInfo> = {
 		desc: () => t`Triggers when battery charge drops below a threshold`,
 		start: 20,
 		invert: true,
+	},
+	TcpConns: {
+		name: () => t`TCP Connections`,
+		unit: "",
+		icon: CableIcon,
+		desc: () => t`Triggers when total TCP connections exceeds a threshold`,
+		max: 10000,
+		min: 1,
+		start: 500,
+		step: 100,
 	},
 } as const
 

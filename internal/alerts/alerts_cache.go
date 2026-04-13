@@ -1,6 +1,8 @@
 package alerts
 
 import (
+	"strings"
+
 	"github.com/pocketbase/dbx"
 	"github.com/pocketbase/pocketbase/core"
 	"github.com/pocketbase/pocketbase/tools/store"
@@ -146,6 +148,18 @@ func (c *AlertsCache) GetAlertsByName(systemID, alertName string) []CachedAlertD
 	var alerts []CachedAlertData
 	for _, record := range allAlerts {
 		if record.Name == alertName {
+			alerts = append(alerts, record)
+		}
+	}
+	return alerts
+}
+
+// GetAlertsByNamePrefix returns all alerts for the specified system whose name starts with the given prefix.
+func (c *AlertsCache) GetAlertsByNamePrefix(systemID, prefix string) []CachedAlertData {
+	allAlerts := c.GetSystemAlerts(systemID)
+	var alerts []CachedAlertData
+	for _, record := range allAlerts {
+		if strings.HasPrefix(record.Name, prefix) {
 			alerts = append(alerts, record)
 		}
 	}

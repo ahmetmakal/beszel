@@ -67,6 +67,41 @@ func (am *AlertManager) HandleSystemAlerts(systemRecord *core.Record, data *syst
 				continue
 			}
 			val = float64(data.Stats.Battery[0])
+		case "TcpConns":
+			var total uint32
+			for _, count := range data.Stats.TcpConns {
+				total += count
+			}
+			val = float64(total)
+		case "WebReqPerSec":
+			if data.Stats.WebServer == nil {
+				continue
+			}
+			val = data.Stats.WebServer.ReqPerSec
+			unit = " req/s"
+		case "MySQLQPS":
+			if data.Stats.MySQL == nil {
+				continue
+			}
+			val = data.Stats.MySQL.QueriesPerSec
+			unit = " q/s"
+		case "MySQLConns":
+			if data.Stats.MySQL == nil || data.Stats.MySQL.MaxConnections == 0 {
+				continue
+			}
+			val = float64(data.Stats.MySQL.Connections) / float64(data.Stats.MySQL.MaxConnections) * 100
+		case "MySQLSlowQueries":
+			if data.Stats.MySQL == nil {
+				continue
+			}
+			val = data.Stats.MySQL.SlowQueriesPerSec
+			unit = " q/s"
+		case "MySQLReplicationLag":
+			if data.Stats.MySQL == nil || data.Stats.MySQL.ReplicationLag < 0 {
+				continue
+			}
+			val = float64(data.Stats.MySQL.ReplicationLag)
+			unit = "s"
 		}
 
 		triggered := alertData.Triggered
@@ -236,6 +271,32 @@ func (am *AlertManager) HandleSystemAlerts(systemRecord *core.Record, data *syst
 				alert.val += maxUsage
 			case "Battery":
 				alert.val += float64(stats.Battery[0])
+			case "TcpConns":
+				var total uint32
+				for _, count := range stats.TcpConns {
+					total += count
+				}
+				alert.val += float64(total)
+			case "WebReqPerSec":
+				if stats.WebServer != nil {
+					alert.val += stats.WebServer.ReqPerSec
+				}
+			case "MySQLQPS":
+				if stats.MySQL != nil {
+					alert.val += stats.MySQL.QueriesPerSec
+				}
+			case "MySQLConns":
+				if stats.MySQL != nil && stats.MySQL.MaxConnections > 0 {
+					alert.val += float64(stats.MySQL.Connections) / float64(stats.MySQL.MaxConnections) * 100
+				}
+			case "MySQLSlowQueries":
+				if stats.MySQL != nil {
+					alert.val += stats.MySQL.SlowQueriesPerSec
+				}
+			case "MySQLReplicationLag":
+				if stats.MySQL != nil && stats.MySQL.ReplicationLag >= 0 {
+					alert.val += float64(stats.MySQL.ReplicationLag)
+				}
 			default:
 				continue
 			}
@@ -304,6 +365,25 @@ func (am *AlertManager) sendSystemAlert(alert SystemAlertData) {
 	// change Disk to Disk usage
 	if alert.name == "Disk" {
 		alert.name += " usage"
+	}
+	// change TcpConns to TCP connections
+	if alert.name == "TcpConns" {
+		alert.name = "TCP connections"
+	}
+	if alert.name == "WebReqPerSec" {
+		alert.name = "Web requests/sec"
+	}
+	if alert.name == "MySQLQPS" {
+		alert.name = "MySQL queries/sec"
+	}
+	if alert.name == "MySQLConns" {
+		alert.name = "MySQL connections"
+	}
+	if alert.name == "MySQLSlowQueries" {
+		alert.name = "MySQL slow queries"
+	}
+	if alert.name == "MySQLReplicationLag" {
+		alert.name = "MySQL replication lag"
 	}
 	// format LoadAvg5 and LoadAvg15
 	if after, ok := strings.CutPrefix(alert.name, "LoadAvg"); ok {
