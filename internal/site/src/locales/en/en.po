@@ -13,6 +13,11 @@ msgstr ""
 "Language-Team: \n"
 "Plural-Forms: \n"
 
+#. placeholder {0}: vulnInfo.vulnCount - 3
+#: src/components/systemd-table/systemd-table.tsx
+msgid "...and {0} more"
+msgstr "...and {0} more"
+
 #. placeholder {0}: newVersion.v
 #: src/components/footer-repo-link.tsx
 msgctxt "New version available"
@@ -24,6 +29,16 @@ msgstr "{0} available"
 #: src/components/routes/settings/alerts-history-data-table.tsx
 msgid "{0} of {1} row(s) selected."
 msgstr "{0} of {1} row(s) selected."
+
+#. placeholder {0}: vulnInfo.vulnCount
+#: src/components/systemd-table/systemd-table.tsx
+msgid "{0} vulnerabilities found"
+msgstr "{0} vulnerabilities found"
+
+#. placeholder {0}: vulnInfo.vulnCount
+#: src/components/systemd-table/systemd-table.tsx
+msgid "{0} vulnerability found"
+msgstr "{0} vulnerability found"
 
 #: src/components/routes/system/info-bar.tsx
 msgid "{cores, plural, one {# core} other {# cores}}"
@@ -92,10 +107,12 @@ msgstr "5 min"
 msgid "Actions"
 msgstr "Actions"
 
+#. Web server connections
 #: src/components/alerts-history-columns.tsx
 #: src/components/routes/settings/alerts-history-data-table.tsx
 #: src/components/routes/settings/heartbeat.tsx
 #: src/components/routes/settings/quiet-hours.tsx
+#: src/components/routes/system/charts/webserver-charts.tsx
 msgid "Active"
 msgstr "Active"
 
@@ -103,9 +120,17 @@ msgstr "Active"
 msgid "Active Alerts"
 msgstr "Active Alerts"
 
+#: src/components/routes/system/charts/webserver-charts.tsx
+msgid "Active connections and worker status"
+msgstr "Active connections and worker status"
+
 #: src/components/systemd-table/systemd-table.tsx
 msgid "Active state"
 msgstr "Active state"
+
+#: src/components/alerts/service-alerts.tsx
+msgid "Add"
+msgstr "Add"
 
 #: src/components/add-system.tsx
 #: src/components/add-system.tsx
@@ -145,6 +170,10 @@ msgstr "After setting the environment variables, restart your Beszel hub for cha
 #: src/components/systems-table/systems-table-columns.tsx
 msgid "Agent"
 msgstr "Agent"
+
+#: src/components/alerts/service-alerts.tsx
+msgid "Alert already exists for this service"
+msgstr "Alert already exists for this service"
 
 #: src/components/command-palette.tsx
 #: src/components/routes/settings/alerts-history-data-table.tsx
@@ -290,10 +319,27 @@ msgstr "Bits (Kbps, Mbps, Gbps)"
 msgid "Boot state"
 msgstr "Boot state"
 
+#: src/components/routes/system/charts/mysql-charts.tsx
+msgid "Buffer pool and key cache hit rates"
+msgstr "Buffer pool and key cache hit rates"
+
+#: src/components/routes/system/charts/mysql-charts.tsx
+msgid "Buffer Pool Hit Rate"
+msgstr "Buffer Pool Hit Rate"
+
+#. Web server workers
+#: src/components/routes/system/charts/webserver-charts.tsx
+msgid "Busy"
+msgstr "Busy"
+
 #: src/components/routes/settings/general.tsx
 #: src/components/routes/settings/general.tsx
 msgid "Bytes (KB/s, MB/s, GB/s)"
 msgstr "Bytes (KB/s, MB/s, GB/s)"
+
+#: src/components/routes/system/charts/webserver-charts.tsx
+msgid "Bytes/sec"
+msgstr "Bytes/sec"
 
 #: src/components/routes/system/charts/memory-charts.tsx
 msgid "Cache / Buffers"
@@ -422,6 +468,11 @@ msgstr "Conflicts"
 #: src/components/active-alerts.tsx
 msgid "Connection is down"
 msgstr "Connection is down"
+
+#: src/components/routes/system/charts/mysql-charts.tsx
+#: src/components/routes/system/charts/webserver-charts.tsx
+msgid "Connections"
+msgstr "Connections"
 
 #: src/components/routes/system.tsx
 msgid "Containers"
@@ -663,6 +714,10 @@ msgstr "Download"
 msgid "Duration"
 msgstr "Duration"
 
+#: src/components/alerts/service-alerts.tsx
+msgid "e.g. nginx"
+msgstr "e.g. nginx"
+
 #: src/components/routes/settings/quiet-hours.tsx
 #: src/components/systems-table/systems-table-columns.tsx
 msgid "Edit"
@@ -741,7 +796,7 @@ msgid "Example:"
 msgstr "Example:"
 
 #. placeholder {0}: alert.value
-#. placeholder {1}: info.unit
+#. placeholder {1}: info?.unit
 #. placeholder {2}: alert.min
 #: src/components/active-alerts.tsx
 msgid "Exceeds {0}{1} in last {2, plural, one {# minute} other {# minutes}}"
@@ -806,6 +861,7 @@ msgid "Failed to send test notification"
 msgstr "Failed to send test notification"
 
 #: src/components/alerts/alerts-sheet.tsx
+#: src/components/alerts/service-alerts.tsx
 msgid "Failed to update alert"
 msgstr "Failed to update alert"
 
@@ -822,6 +878,16 @@ msgstr "Failed: {0}"
 #: src/components/systems-table/systems-table.tsx
 msgid "Filter..."
 msgstr "Filter..."
+
+#. TCP connection state
+#: src/components/routes/system/charts/tcp-connections-chart.tsx
+msgid "FIN Wait 1"
+msgstr "FIN Wait 1"
+
+#. TCP connection state
+#: src/components/routes/system/charts/tcp-connections-chart.tsx
+msgid "FIN Wait 2"
+msgstr "FIN Wait 2"
 
 #: src/components/routes/settings/tokens-fingerprints.tsx
 msgid "Fingerprint"
@@ -932,6 +998,8 @@ msgid "I/O Utilization"
 msgstr "I/O Utilization"
 
 #. Context: Battery state
+#. Web server workers
+#: src/components/routes/system/charts/webserver-charts.tsx
 #: src/lib/i18n.ts
 msgid "Idle"
 msgstr "Idle"
@@ -957,10 +1025,23 @@ msgstr "Interval"
 msgid "Invalid email address."
 msgstr "Invalid email address."
 
+#: src/components/routes/system/info-bar.tsx
+msgid "Kernel"
+msgstr "Kernel"
+
+#: src/components/routes/system/charts/mysql-charts.tsx
+msgid "Key Cache Hit Rate"
+msgstr "Key Cache Hit Rate"
+
 #: src/components/lang-toggle.tsx
 #: src/components/routes/settings/general.tsx
 msgid "Language"
 msgstr "Language"
+
+#. TCP connection state
+#: src/components/routes/system/charts/tcp-connections-chart.tsx
+msgid "Last ACK"
+msgstr "Last ACK"
 
 #: src/components/systems-table/systems-table.tsx
 msgid "Layout"
@@ -1086,6 +1167,18 @@ msgstr "Memory usage of docker containers"
 msgid "Model"
 msgstr "Model"
 
+#: src/components/routes/system/charts/mysql-charts.tsx
+msgid "MySQL Cache Performance"
+msgstr "MySQL Cache Performance"
+
+#: src/components/routes/system/charts/mysql-charts.tsx
+msgid "MySQL Queries & Connections"
+msgstr "MySQL Queries & Connections"
+
+#: src/components/routes/system/charts/mysql-charts.tsx
+msgid "MySQL Replication"
+msgstr "MySQL Replication"
+
 #: src/components/add-system.tsx
 #: src/components/alerts-history-columns.tsx
 #: src/components/containers-table/containers-table-columns.tsx
@@ -1115,11 +1208,20 @@ msgstr "Network traffic of public interfaces"
 msgid "Network unit"
 msgstr "Network unit"
 
+#: src/lib/alerts.ts
+msgid "New vulnerability detected"
+msgstr "New vulnerability detected"
+
 #: src/components/systemd-table/systemd-table.tsx
 #: src/components/systemd-table/systemd-table.tsx
 #: src/components/systemd-table/systemd-table.tsx
 msgid "No"
 msgstr "No"
+
+#: src/components/systemd-table/systemd-table-columns.tsx
+#: src/components/systemd-table/systemd-table.tsx
+msgid "No known vulnerabilities"
+msgstr "No known vulnerabilities"
 
 #: src/components/command-palette.tsx
 #: src/components/systemd-table/systemd-table.tsx
@@ -1143,6 +1245,11 @@ msgstr "No S.M.A.R.T. attributes available for this device."
 #: src/components/systems-table/systems-table.tsx
 msgid "No systems found."
 msgstr "No systems found."
+
+#: src/components/systemd-table/systemd-table-columns.tsx
+#: src/components/systemd-table/systemd-table.tsx
+msgid "Not scanned yet"
+msgstr "Not scanned yet"
 
 #: src/components/command-palette.tsx
 #: src/components/routes/settings/layout.tsx
@@ -1266,6 +1373,7 @@ msgid "Please <0>configure an SMTP server</0> to ensure alerts are delivered."
 msgstr "Please <0>configure an SMTP server</0> to ensure alerts are delivered."
 
 #: src/components/alerts/alerts-sheet.tsx
+#: src/components/alerts/service-alerts.tsx
 msgid "Please check logs for more details."
 msgstr "Please check logs for more details."
 
@@ -1326,6 +1434,14 @@ msgstr "Process started"
 msgid "Public Key"
 msgstr "Public Key"
 
+#: src/components/routes/system/charts/mysql-charts.tsx
+msgid "Queries/sec"
+msgstr "Queries/sec"
+
+#: src/components/routes/system/charts/mysql-charts.tsx
+msgid "Query rate and connection usage"
+msgstr "Query rate and connection usage"
+
 #: src/components/routes/system/disk-io-sheet.tsx
 msgctxt "Disk I/O average queue depth"
 msgid "Queue Depth"
@@ -1343,6 +1459,11 @@ msgstr "Quiet Hours"
 msgid "Read"
 msgstr "Read"
 
+#. Web server connections
+#: src/components/routes/system/charts/webserver-charts.tsx
+msgid "Reading"
+msgstr "Reading"
+
 #: src/components/routes/system/charts/network-charts.tsx
 msgid "Received"
 msgstr "Received"
@@ -1357,6 +1478,14 @@ msgstr "Refresh"
 msgid "Relationships"
 msgstr "Relationships"
 
+#: src/components/routes/system/charts/mysql-charts.tsx
+msgid "Replication Lag"
+msgstr "Replication Lag"
+
+#: src/components/routes/system/charts/mysql-charts.tsx
+msgid "Replication lag in seconds"
+msgstr "Replication lag in seconds"
+
 #: src/components/login/login.tsx
 msgid "Request a one-time password"
 msgstr "Request a one-time password"
@@ -1364,6 +1493,14 @@ msgstr "Request a one-time password"
 #: src/components/login/otp-forms.tsx
 msgid "Request OTP"
 msgstr "Request OTP"
+
+#: src/components/routes/system/charts/webserver-charts.tsx
+msgid "Requests per second and bandwidth"
+msgstr "Requests per second and bandwidth"
+
+#: src/components/routes/system/charts/webserver-charts.tsx
+msgid "Requests/sec"
+msgstr "Requests/sec"
 
 #: src/components/systemd-table/systemd-table.tsx
 msgid "Required by"
@@ -1457,6 +1594,10 @@ msgstr "Search for systems or settings..."
 msgid "Seconds between pings (default: 60)"
 msgstr "Seconds between pings (default: 60)"
 
+#: src/components/systemd-table/systemd-table-columns.tsx
+msgid "Security"
+msgstr "Security"
+
 #: src/components/alerts/alerts-sheet.tsx
 msgid "See <0>notification settings</0> to configure how you receive alerts."
 msgstr "See <0>notification settings</0> to configure how you receive alerts."
@@ -1489,6 +1630,14 @@ msgstr "Serial Number"
 msgid "Service Details"
 msgstr "Service Details"
 
+#: src/components/active-alerts.tsx
+msgid "Service is not active"
+msgstr "Service is not active"
+
+#: src/components/alerts/service-alerts.tsx
+msgid "Service Status"
+msgstr "Service Status"
+
 #: src/components/routes/system.tsx
 #: src/components/systems-table/systems-table-columns.tsx
 msgid "Services"
@@ -1519,6 +1668,10 @@ msgstr "Settings saved"
 #: src/components/login/auth-form.tsx
 msgid "Sign in"
 msgstr "Sign in"
+
+#: src/components/routes/system/charts/mysql-charts.tsx
+msgid "Slow Queries/sec"
+msgstr "Slow Queries/sec"
 
 #: src/components/command-palette.tsx
 msgid "SMTP settings"
@@ -1564,6 +1717,16 @@ msgstr "Swap Usage"
 #: src/components/mode-toggle.tsx
 msgid "Switch theme"
 msgstr "Switch theme"
+
+#. TCP connection state
+#: src/components/routes/system/charts/tcp-connections-chart.tsx
+msgid "SYN Recv"
+msgstr "SYN Recv"
+
+#. TCP connection state
+#: src/components/routes/system/charts/tcp-connections-chart.tsx
+msgid "SYN Sent"
+msgstr "SYN Sent"
 
 #: src/components/add-system.tsx
 #: src/components/alerts-history-columns.tsx
@@ -1665,6 +1828,10 @@ msgstr "This action cannot be undone. This will permanently delete all current r
 msgid "This will permanently delete all selected records from the database."
 msgstr "This will permanently delete all selected records from the database."
 
+#: src/components/routes/system/charts/mysql-charts.tsx
+msgid "Threads Running"
+msgstr "Threads Running"
+
 #: src/components/routes/system/charts/disk-charts.tsx
 msgid "Throughput of {extraFsName}"
 msgstr "Throughput of {extraFsName}"
@@ -1733,6 +1900,14 @@ msgstr "Total time spent on read/write (can exceed 100%)"
 msgid "Total: {0}"
 msgstr "Total: {0}"
 
+#: src/components/routes/system/charts/webserver-charts.tsx
+msgid "Traffic"
+msgstr "Traffic"
+
+#: src/components/alerts/service-alerts.tsx
+msgid "Triggered"
+msgstr "Triggered"
+
 #: src/components/systemd-table/systemd-table.tsx
 msgid "Triggered by"
 msgstr "Triggered by"
@@ -1752,6 +1927,10 @@ msgstr "Triggers when 15 minute load average exceeds a threshold"
 #: src/lib/alerts.ts
 msgid "Triggers when 5 minute load average exceeds a threshold"
 msgstr "Triggers when 5 minute load average exceeds a threshold"
+
+#: src/components/alerts/service-alerts.tsx
+msgid "Triggers when a monitored service is no longer active"
+msgstr "Triggers when a monitored service is no longer active"
 
 #: src/lib/alerts.ts
 msgid "Triggers when any sensor exceeds a threshold"
@@ -1776,6 +1955,10 @@ msgstr "Triggers when GPU usage exceeds a threshold"
 #: src/lib/alerts.ts
 msgid "Triggers when memory usage exceeds a threshold"
 msgstr "Triggers when memory usage exceeds a threshold"
+
+#: src/lib/alerts.ts
+msgid "Triggers when new vulnerabilities are detected in service packages or the kernel"
+msgstr "Triggers when new vulnerabilities are detected in service packages or the kernel"
 
 #: src/lib/alerts.ts
 msgid "Triggers when status switches between up and down"
@@ -1883,6 +2066,11 @@ msgstr "Utilization"
 msgid "Value"
 msgstr "Value"
 
+#: src/components/systemd-table/systemd-table-columns.tsx
+#: src/components/systemd-table/systemd-table.tsx
+msgid "Version"
+msgstr "Version"
+
 #: src/components/systems-table/systems-table.tsx
 msgid "View"
 msgstr "View"
@@ -1900,6 +2088,15 @@ msgstr "View your 200 most recent alerts."
 #: src/components/systems-table/systems-table.tsx
 msgid "Visible Fields"
 msgstr "Visible Fields"
+
+#: src/lib/alerts.ts
+msgid "Vulnerability"
+msgstr "Vulnerability"
+
+#. Web server connections
+#: src/components/routes/system/charts/webserver-charts.tsx
+msgid "Waiting"
+msgstr "Waiting"
 
 #: src/components/routes/system/chart-card.tsx
 msgid "Waiting for enough records to display"
@@ -1946,6 +2143,11 @@ msgstr "Windows command"
 #: src/components/routes/system/disk-io-sheet.tsx
 msgid "Write"
 msgstr "Write"
+
+#. Web server connections
+#: src/components/routes/system/charts/webserver-charts.tsx
+msgid "Writing"
+msgstr "Writing"
 
 #: src/components/routes/settings/layout.tsx
 msgid "YAML Config"

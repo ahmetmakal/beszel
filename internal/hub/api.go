@@ -2,6 +2,7 @@ package hub
 
 import (
 	"context"
+	"encoding/json"
 	"net/http"
 	"regexp"
 	"strings"
@@ -11,6 +12,7 @@ import (
 	"github.com/google/uuid"
 	"github.com/henrygd/beszel"
 	"github.com/henrygd/beszel/internal/alerts"
+	"github.com/henrygd/beszel/internal/entities/packages"
 	"github.com/henrygd/beszel/internal/ghupdate"
 	"github.com/henrygd/beszel/internal/hub/config"
 	"github.com/henrygd/beszel/internal/hub/systems"
@@ -127,6 +129,8 @@ func (h *Hub) registerApiRoutes(se *core.ServeEvent) error {
 	apiAuth.POST("/smart/refresh", h.refreshSmartData).BindFunc(excludeReadOnlyRole)
 	// get systemd service details
 	apiAuth.GET("/systemd/info", h.getSystemdInfo)
+	// get package info for all systemd services of a system
+	apiAuth.GET("/systemd/packages", h.getSystemdPackages)
 	// /containers routes
 	if enabled, _ := utils.GetEnv("CONTAINER_DETAILS"); enabled != "false" {
 		// get container logs
@@ -350,8 +354,8 @@ func (h *Hub) getSystemdInfo(e *core.RequestEvent) error {
 	if systemID == "" || serviceName == "" {
 		return e.BadRequestError("Invalid system or service parameter", nil)
 	}
-	system, err := h.sm.GetSystem(systemID)
-	if err != nil || !system.HasUser(e.App, e.Auth) {
+	sys, err := h.sm.GetSystem(systemID)
+	if err != nil || !sys.HasUser(e.App, e.Auth) {
 		return e.NotFoundError("", nil)
 	}
 	// verify service exists before fetching details
@@ -362,12 +366,86 @@ func (h *Hub) getSystemdInfo(e *core.RequestEvent) error {
 	if err != nil {
 		return e.NotFoundError("", err)
 	}
-	details, err := system.FetchSystemdInfoFromAgent(serviceName)
+	details, err := sys.FetchSystemdInfoFromAgent(serviceName)
 	if err != nil {
 		return e.InternalServerError("", err)
 	}
+
+	// Fetch package info for this service
+	pkgInfo := h.getServicePackageInfo(e.App, systemID, serviceName)
+
 	e.Response.Header().Set("Cache-Control", "public, max-age=60")
-	return e.JSON(http.StatusOK, map[string]any{"details": details})
+	return e.JSON(http.StatusOK, map[string]any{
+		"details": details,
+		"pkg":     pkgInfo,
+	})
+}
+
+// getServicePackageInfo looks up package info for a single service.
+func (h *Hub) getServicePackageInfo(app core.App, systemID, serviceName string) *packages.PackageInfo {
+	var row struct {
+		PackagesRaw string `db:"packages"`
+	}
+	err := app.DB().
+		Select("packages").
+		From("system_details").
+		Where(dbx.HashExp{"id": systemID}).
+		One(&row)
+	if err != nil || row.PackagesRaw == "" {
+		return nil
+	}
+
+	var pkgs []*packages.PackageInfo
+	if err := json.Unmarshal([]byte(row.PackagesRaw), &pkgs); err != nil {
+		return nil
+	}
+	for _, p := range pkgs {
+		if p.Service == serviceName {
+			return p
+		}
+	}
+	return nil
+}
+
+// getSystemdPackages handles GET /api/beszel/systemd/packages requests.
+// Returns a map of service name → {pkgName, version} for all detected services on a system.
+func (h *Hub) getSystemdPackages(e *core.RequestEvent) error {
+	systemID := e.Request.URL.Query().Get("system")
+	if systemID == "" {
+		return e.BadRequestError("Invalid system parameter", nil)
+	}
+	sys, err := h.sm.GetSystem(systemID)
+	if err != nil || !sys.HasUser(e.App, e.Auth) {
+		return e.NotFoundError("", nil)
+	}
+
+	var row struct {
+		PackagesRaw string `db:"packages"`
+	}
+	if err := e.App.DB().
+		Select("packages").
+		From("system_details").
+		Where(dbx.HashExp{"id": systemID}).
+		One(&row); err != nil {
+		return e.JSON(http.StatusOK, map[string]any{"services": map[string]any{}})
+	}
+
+	var pkgs []*packages.PackageInfo
+	if row.PackagesRaw != "" {
+		_ = json.Unmarshal([]byte(row.PackagesRaw), &pkgs)
+	}
+
+	type svcPkgInfo struct {
+		PkgName string `json:"pkgName"`
+		Version string `json:"version"`
+	}
+	services := make(map[string]svcPkgInfo, len(pkgs))
+	for _, p := range pkgs {
+		services[p.Service] = svcPkgInfo{PkgName: p.Package, Version: p.Version}
+	}
+
+	e.Response.Header().Set("Cache-Control", "public, max-age=120")
+	return e.JSON(http.StatusOK, map[string]any{"services": services})
 }
 
 // refreshSmartData handles POST /api/beszel/smart/refresh requests

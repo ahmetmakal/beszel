@@ -7,6 +7,7 @@ import (
 	"time"
 
 	"github.com/henrygd/beszel/internal/entities/container"
+	"github.com/henrygd/beszel/internal/entities/packages"
 	"github.com/henrygd/beszel/internal/entities/systemd"
 )
 
@@ -161,6 +162,8 @@ type Info struct {
 	TcpConns       uint32             `json:"tcp,omitzero" cbor:"24,keyasint,omitzero"`  // total TCP connections
 	WebServerType  string             `json:"wst,omitempty" cbor:"25,keyasint,omitempty"` // web server type (nginx/apache/litespeed)
 	MySQLUp        bool               `json:"msu,omitzero" cbor:"26,keyasint,omitzero"`  // MySQL/MariaDB is reachable
+	OsID           string             `json:"oid,omitempty" cbor:"27,keyasint,omitempty"` // OS ID from /etc/os-release ("debian", "ubuntu", "rhel")
+	OsVersionID    string             `json:"ovid,omitempty" cbor:"28,keyasint,omitempty"` // OS VERSION_ID ("12", "22.04")
 }
 
 // Data that does not change during process lifetime and is not needed in All Systems table
@@ -183,6 +186,7 @@ type CombinedData struct {
 	Stats           Stats              `json:"stats" cbor:"0,keyasint"`
 	Info            Info               `json:"info" cbor:"1,keyasint"`
 	Containers      []*container.Stats `json:"container" cbor:"2,keyasint"`
-	SystemdServices []*systemd.Service `json:"systemd,omitempty" cbor:"3,keyasint,omitempty"`
-	Details         *Details           `cbor:"4,keyasint,omitempty"`
+	SystemdServices []*systemd.Service     `json:"systemd,omitempty" cbor:"3,keyasint,omitempty"`
+	Details         *Details               `cbor:"4,keyasint,omitempty"`
+	PackageVersions []*packages.PackageInfo `json:"pv,omitempty" cbor:"6,keyasint,omitempty"`
 }

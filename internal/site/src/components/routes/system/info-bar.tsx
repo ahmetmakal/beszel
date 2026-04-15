@@ -99,7 +99,7 @@ export default function InfoBar({
 				hide: hostname === system.host || hostname === system.name,
 			},
 			{ value: secondsToUptimeString(system.info.u), Icon: ClockArrowUp, label: t`Uptime`, hide: !system.info.u },
-			osInfo[os],
+			{ ...osInfo[os] },
 			{
 				value: kernel,
 				Icon: ChevronRightSquareIcon,
@@ -191,7 +191,7 @@ export default function InfoBar({
 								</div>
 							)
 							return (
-								<div key={value} className="contents">
+								<div key={String(value)} className="contents">
 									<Separator orientation="vertical" className="h-4 bg-primary/30" />
 									{label ? (
 										<Tooltip delayDuration={100}>

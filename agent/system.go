@@ -72,6 +72,8 @@ func (a *Agent) refreshSystemDetails() {
 		if a.systemDetails.Kernel == "" {
 			a.systemDetails.Kernel, _ = host.KernelVersion()
 		}
+		// Parse OS ID/version from os-release
+		a.systemInfo.OsID, a.systemInfo.OsVersionID = parseOsReleaseIDs()
 	}
 
 	// cpu model
@@ -116,6 +118,9 @@ func (a *Agent) attachSystemDetails(data *system.CombinedData, cacheTimeMs uint1
 	// copy data to avoid adding details to the original cached struct
 	response := *data
 	response.Details = &a.systemDetails
+	if a.packageManager != nil {
+		response.PackageVersions = a.packageManager.getVersions()
+	}
 	a.detailsDirty = false
 	return &response
 }
@@ -288,6 +293,26 @@ func (a *Agent) getSystemStats(cacheTimeMs uint16) system.Stats {
 	a.systemInfo.TcpConns = totalTcp
 
 	return systemStats
+}
+
+// parseOsReleaseIDs extracts ID and VERSION_ID from /etc/os-release.
+func parseOsReleaseIDs() (osID, osVersionID string) {
+	file, err := os.Open("/etc/os-release")
+	if err != nil {
+		return "", ""
+	}
+	defer file.Close()
+
+	scanner := bufio.NewScanner(file)
+	for scanner.Scan() {
+		line := scanner.Text()
+		if after, ok := strings.CutPrefix(line, "ID="); ok {
+			osID = strings.Trim(after, `"`)
+		} else if after, ok := strings.CutPrefix(line, "VERSION_ID="); ok {
+			osVersionID = strings.Trim(after, `"`)
+		}
+	}
+	return osID, osVersionID
 }
 
 // getOsPrettyName attempts to get the pretty OS name from /etc/os-release on Linux systems

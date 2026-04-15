@@ -18,6 +18,11 @@ msgstr ""
 "X-Crowdin-File: /main/internal/site/src/locales/en/en.po\n"
 "X-Crowdin-File-ID: 32\n"
 
+#. placeholder {0}: vulnInfo.vulnCount - 3
+#: src/components/systemd-table/systemd-table.tsx
+msgid "...and {0} more"
+msgstr ""
+
 #. placeholder {0}: newVersion.v
 #: src/components/footer-repo-link.tsx
 msgctxt "New version available"
@@ -29,6 +34,16 @@ msgstr "{0} na voljo"
 #: src/components/routes/settings/alerts-history-data-table.tsx
 msgid "{0} of {1} row(s) selected."
 msgstr "{0} od {1} vrstic izbranih."
+
+#. placeholder {0}: vulnInfo.vulnCount
+#: src/components/systemd-table/systemd-table.tsx
+msgid "{0} vulnerabilities found"
+msgstr ""
+
+#. placeholder {0}: vulnInfo.vulnCount
+#: src/components/systemd-table/systemd-table.tsx
+msgid "{0} vulnerability found"
+msgstr ""
 
 #: src/components/routes/system/info-bar.tsx
 msgid "{cores, plural, one {# core} other {# cores}}"
@@ -97,10 +112,12 @@ msgstr ""
 msgid "Actions"
 msgstr "Dejanja"
 
+#. Web server connections
 #: src/components/alerts-history-columns.tsx
 #: src/components/routes/settings/alerts-history-data-table.tsx
 #: src/components/routes/settings/heartbeat.tsx
 #: src/components/routes/settings/quiet-hours.tsx
+#: src/components/routes/system/charts/webserver-charts.tsx
 msgid "Active"
 msgstr "Aktivno"
 
@@ -108,9 +125,17 @@ msgstr "Aktivno"
 msgid "Active Alerts"
 msgstr "Aktivna opozorila"
 
+#: src/components/routes/system/charts/webserver-charts.tsx
+msgid "Active connections and worker status"
+msgstr ""
+
 #: src/components/systemd-table/systemd-table.tsx
 msgid "Active state"
 msgstr "Aktivno stanje"
+
+#: src/components/alerts/service-alerts.tsx
+msgid "Add"
+msgstr ""
 
 #: src/components/add-system.tsx
 #: src/components/add-system.tsx
@@ -149,6 +174,10 @@ msgstr "Po nastavitvi okoljskih spremenljivk ponovno zaženite vozlišče Beszel
 
 #: src/components/systems-table/systems-table-columns.tsx
 msgid "Agent"
+msgstr ""
+
+#: src/components/alerts/service-alerts.tsx
+msgid "Alert already exists for this service"
 msgstr ""
 
 #: src/components/command-palette.tsx
@@ -295,10 +324,27 @@ msgstr "Biti (Kbps, Mbps, Gbps)"
 msgid "Boot state"
 msgstr "Stanje zagona"
 
+#: src/components/routes/system/charts/mysql-charts.tsx
+msgid "Buffer pool and key cache hit rates"
+msgstr ""
+
+#: src/components/routes/system/charts/mysql-charts.tsx
+msgid "Buffer Pool Hit Rate"
+msgstr ""
+
+#. Web server workers
+#: src/components/routes/system/charts/webserver-charts.tsx
+msgid "Busy"
+msgstr ""
+
 #: src/components/routes/settings/general.tsx
 #: src/components/routes/settings/general.tsx
 msgid "Bytes (KB/s, MB/s, GB/s)"
 msgstr "Bajti (KB/s, MB/s, GB/s)"
+
+#: src/components/routes/system/charts/webserver-charts.tsx
+msgid "Bytes/sec"
+msgstr ""
 
 #: src/components/routes/system/charts/memory-charts.tsx
 msgid "Cache / Buffers"
@@ -427,6 +473,11 @@ msgstr "Konflikti"
 #: src/components/active-alerts.tsx
 msgid "Connection is down"
 msgstr "Povezava je prekinjena"
+
+#: src/components/routes/system/charts/mysql-charts.tsx
+#: src/components/routes/system/charts/webserver-charts.tsx
+msgid "Connections"
+msgstr ""
 
 #: src/components/routes/system.tsx
 msgid "Containers"
@@ -668,6 +719,10 @@ msgstr "Prenesi"
 msgid "Duration"
 msgstr "Trajanje"
 
+#: src/components/alerts/service-alerts.tsx
+msgid "e.g. nginx"
+msgstr ""
+
 #: src/components/routes/settings/quiet-hours.tsx
 #: src/components/systems-table/systems-table-columns.tsx
 msgid "Edit"
@@ -746,7 +801,7 @@ msgid "Example:"
 msgstr "Primer:"
 
 #. placeholder {0}: alert.value
-#. placeholder {1}: info.unit
+#. placeholder {1}: info?.unit
 #. placeholder {2}: alert.min
 #: src/components/active-alerts.tsx
 msgid "Exceeds {0}{1} in last {2, plural, one {# minute} other {# minutes}}"
@@ -811,6 +866,7 @@ msgid "Failed to send test notification"
 msgstr "Pošiljanje testnega obvestila ni uspelo"
 
 #: src/components/alerts/alerts-sheet.tsx
+#: src/components/alerts/service-alerts.tsx
 msgid "Failed to update alert"
 msgstr "Opozorila ni bilo mogoče posodobiti"
 
@@ -827,6 +883,16 @@ msgstr "Neuspešno: {0}"
 #: src/components/systems-table/systems-table.tsx
 msgid "Filter..."
 msgstr "Filtriraj..."
+
+#. TCP connection state
+#: src/components/routes/system/charts/tcp-connections-chart.tsx
+msgid "FIN Wait 1"
+msgstr ""
+
+#. TCP connection state
+#: src/components/routes/system/charts/tcp-connections-chart.tsx
+msgid "FIN Wait 2"
+msgstr ""
 
 #: src/components/routes/settings/tokens-fingerprints.tsx
 msgid "Fingerprint"
@@ -937,6 +1003,8 @@ msgid "I/O Utilization"
 msgstr "I/O izkoriščenost"
 
 #. Context: Battery state
+#. Web server workers
+#: src/components/routes/system/charts/webserver-charts.tsx
 #: src/lib/i18n.ts
 msgid "Idle"
 msgstr "Neaktivna"
@@ -962,10 +1030,23 @@ msgstr ""
 msgid "Invalid email address."
 msgstr "Napačen e-poštni naslov."
 
+#: src/components/routes/system/info-bar.tsx
+msgid "Kernel"
+msgstr ""
+
+#: src/components/routes/system/charts/mysql-charts.tsx
+msgid "Key Cache Hit Rate"
+msgstr ""
+
 #: src/components/lang-toggle.tsx
 #: src/components/routes/settings/general.tsx
 msgid "Language"
 msgstr "Jezik"
+
+#. TCP connection state
+#: src/components/routes/system/charts/tcp-connections-chart.tsx
+msgid "Last ACK"
+msgstr ""
 
 #: src/components/systems-table/systems-table.tsx
 msgid "Layout"
@@ -1091,6 +1172,18 @@ msgstr "Poraba pomnilnika docker kontejnerjev"
 msgid "Model"
 msgstr ""
 
+#: src/components/routes/system/charts/mysql-charts.tsx
+msgid "MySQL Cache Performance"
+msgstr ""
+
+#: src/components/routes/system/charts/mysql-charts.tsx
+msgid "MySQL Queries & Connections"
+msgstr ""
+
+#: src/components/routes/system/charts/mysql-charts.tsx
+msgid "MySQL Replication"
+msgstr ""
+
 #: src/components/add-system.tsx
 #: src/components/alerts-history-columns.tsx
 #: src/components/containers-table/containers-table-columns.tsx
@@ -1120,11 +1213,20 @@ msgstr "Omrežni promet javnih vmesnikov"
 msgid "Network unit"
 msgstr "Enota omrežja"
 
+#: src/lib/alerts.ts
+msgid "New vulnerability detected"
+msgstr ""
+
 #: src/components/systemd-table/systemd-table.tsx
 #: src/components/systemd-table/systemd-table.tsx
 #: src/components/systemd-table/systemd-table.tsx
 msgid "No"
 msgstr "Ne"
+
+#: src/components/systemd-table/systemd-table-columns.tsx
+#: src/components/systemd-table/systemd-table.tsx
+msgid "No known vulnerabilities"
+msgstr ""
 
 #: src/components/command-palette.tsx
 #: src/components/systemd-table/systemd-table.tsx
@@ -1148,6 +1250,11 @@ msgstr "Za to napravo ni na voljo atributov S.M.A.R.T."
 #: src/components/systems-table/systems-table.tsx
 msgid "No systems found."
 msgstr "Ne najdem sistema."
+
+#: src/components/systemd-table/systemd-table-columns.tsx
+#: src/components/systemd-table/systemd-table.tsx
+msgid "Not scanned yet"
+msgstr ""
 
 #: src/components/command-palette.tsx
 #: src/components/routes/settings/layout.tsx
@@ -1271,6 +1378,7 @@ msgid "Please <0>configure an SMTP server</0> to ensure alerts are delivered."
 msgstr "<0>Nastavite strežnik SMTP</0>, da zagotovite dostavo opozoril."
 
 #: src/components/alerts/alerts-sheet.tsx
+#: src/components/alerts/service-alerts.tsx
 msgid "Please check logs for more details."
 msgstr "Za več podrobnosti preverite dnevnike."
 
@@ -1331,6 +1439,14 @@ msgstr "Proces začet"
 msgid "Public Key"
 msgstr "Javni ključ"
 
+#: src/components/routes/system/charts/mysql-charts.tsx
+msgid "Queries/sec"
+msgstr ""
+
+#: src/components/routes/system/charts/mysql-charts.tsx
+msgid "Query rate and connection usage"
+msgstr ""
+
 #: src/components/routes/system/disk-io-sheet.tsx
 msgctxt "Disk I/O average queue depth"
 msgid "Queue Depth"
@@ -1348,6 +1464,11 @@ msgstr "Tihi čas"
 msgid "Read"
 msgstr "Preberano"
 
+#. Web server connections
+#: src/components/routes/system/charts/webserver-charts.tsx
+msgid "Reading"
+msgstr ""
+
 #: src/components/routes/system/charts/network-charts.tsx
 msgid "Received"
 msgstr "Prejeto"
@@ -1362,6 +1483,14 @@ msgstr "Osveži"
 msgid "Relationships"
 msgstr "Razmerja"
 
+#: src/components/routes/system/charts/mysql-charts.tsx
+msgid "Replication Lag"
+msgstr ""
+
+#: src/components/routes/system/charts/mysql-charts.tsx
+msgid "Replication lag in seconds"
+msgstr ""
+
 #: src/components/login/login.tsx
 msgid "Request a one-time password"
 msgstr "Zahtevaj enkratno geslo"
@@ -1369,6 +1498,14 @@ msgstr "Zahtevaj enkratno geslo"
 #: src/components/login/otp-forms.tsx
 msgid "Request OTP"
 msgstr "Zahtevaj OTP"
+
+#: src/components/routes/system/charts/webserver-charts.tsx
+msgid "Requests per second and bandwidth"
+msgstr ""
+
+#: src/components/routes/system/charts/webserver-charts.tsx
+msgid "Requests/sec"
+msgstr ""
 
 #: src/components/systemd-table/systemd-table.tsx
 msgid "Required by"
@@ -1462,6 +1599,10 @@ msgstr "Iskanje sistemov ali nastavitev..."
 msgid "Seconds between pings (default: 60)"
 msgstr "Sekunde med pingi (privzeto: 60)"
 
+#: src/components/systemd-table/systemd-table-columns.tsx
+msgid "Security"
+msgstr ""
+
 #: src/components/alerts/alerts-sheet.tsx
 msgid "See <0>notification settings</0> to configure how you receive alerts."
 msgstr "Glejte <0>nastavitve obvestil</0>, da nastavite način prejemanja opozoril."
@@ -1494,6 +1635,14 @@ msgstr "Serijska številka"
 msgid "Service Details"
 msgstr "Podrobnosti storitve"
 
+#: src/components/active-alerts.tsx
+msgid "Service is not active"
+msgstr ""
+
+#: src/components/alerts/service-alerts.tsx
+msgid "Service Status"
+msgstr ""
+
 #: src/components/routes/system.tsx
 #: src/components/systems-table/systems-table-columns.tsx
 msgid "Services"
@@ -1524,6 +1673,10 @@ msgstr "Nastavitve so shranjene"
 #: src/components/login/auth-form.tsx
 msgid "Sign in"
 msgstr "Prijavite se"
+
+#: src/components/routes/system/charts/mysql-charts.tsx
+msgid "Slow Queries/sec"
+msgstr ""
 
 #: src/components/command-palette.tsx
 msgid "SMTP settings"
@@ -1568,6 +1721,16 @@ msgstr "Swap uporaba"
 #: src/components/mode-toggle.tsx
 #: src/components/mode-toggle.tsx
 msgid "Switch theme"
+msgstr ""
+
+#. TCP connection state
+#: src/components/routes/system/charts/tcp-connections-chart.tsx
+msgid "SYN Recv"
+msgstr ""
+
+#. TCP connection state
+#: src/components/routes/system/charts/tcp-connections-chart.tsx
+msgid "SYN Sent"
 msgstr ""
 
 #: src/components/add-system.tsx
@@ -1670,6 +1833,10 @@ msgstr "Tega dejanja ni mogoče razveljaviti. To bo trajno izbrisalo vse trenutn
 msgid "This will permanently delete all selected records from the database."
 msgstr "To bo trajno izbrisalo vse izbrane zapise iz zbirke podatkov."
 
+#: src/components/routes/system/charts/mysql-charts.tsx
+msgid "Threads Running"
+msgstr ""
+
 #: src/components/routes/system/charts/disk-charts.tsx
 msgid "Throughput of {extraFsName}"
 msgstr "Prepustnost {extraFsName}"
@@ -1738,6 +1905,14 @@ msgstr ""
 msgid "Total: {0}"
 msgstr "Skupaj: {0}"
 
+#: src/components/routes/system/charts/webserver-charts.tsx
+msgid "Traffic"
+msgstr ""
+
+#: src/components/alerts/service-alerts.tsx
+msgid "Triggered"
+msgstr ""
+
 #: src/components/systemd-table/systemd-table.tsx
 msgid "Triggered by"
 msgstr "Sproženo z"
@@ -1757,6 +1932,10 @@ msgstr "Sproži se, ko 15-minutna povprečna obremenitev preseže prag"
 #: src/lib/alerts.ts
 msgid "Triggers when 5 minute load average exceeds a threshold"
 msgstr "Sproži se, ko 5-minutna povprečna obremenitev preseže prag"
+
+#: src/components/alerts/service-alerts.tsx
+msgid "Triggers when a monitored service is no longer active"
+msgstr ""
 
 #: src/lib/alerts.ts
 msgid "Triggers when any sensor exceeds a threshold"
@@ -1781,6 +1960,10 @@ msgstr "Sproži se, ko poraba GPU preseže prag"
 #: src/lib/alerts.ts
 msgid "Triggers when memory usage exceeds a threshold"
 msgstr "Sproži se, ko uporaba pomnilnika preseže prag"
+
+#: src/lib/alerts.ts
+msgid "Triggers when new vulnerabilities are detected in service packages or the kernel"
+msgstr ""
 
 #: src/lib/alerts.ts
 msgid "Triggers when status switches between up and down"
@@ -1888,6 +2071,11 @@ msgstr "Izkoriščenost"
 msgid "Value"
 msgstr "Vrednost"
 
+#: src/components/systemd-table/systemd-table-columns.tsx
+#: src/components/systemd-table/systemd-table.tsx
+msgid "Version"
+msgstr ""
+
 #: src/components/systems-table/systems-table.tsx
 msgid "View"
 msgstr "Pogled"
@@ -1905,6 +2093,15 @@ msgstr "Oglejte si svojih 200 najnovejših opozoril."
 #: src/components/systems-table/systems-table.tsx
 msgid "Visible Fields"
 msgstr "Vidna polja"
+
+#: src/lib/alerts.ts
+msgid "Vulnerability"
+msgstr ""
+
+#. Web server connections
+#: src/components/routes/system/charts/webserver-charts.tsx
+msgid "Waiting"
+msgstr ""
 
 #: src/components/routes/system/chart-card.tsx
 msgid "Waiting for enough records to display"
@@ -1951,6 +2148,11 @@ msgstr "Ukaz Windows"
 #: src/components/routes/system/disk-io-sheet.tsx
 msgid "Write"
 msgstr "Pisanje"
+
+#. Web server connections
+#: src/components/routes/system/charts/webserver-charts.tsx
+msgid "Writing"
+msgstr ""
 
 #: src/components/routes/settings/layout.tsx
 msgid "YAML Config"

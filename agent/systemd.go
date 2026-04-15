@@ -92,6 +92,17 @@ func (sm *systemdManager) startWorker(conn *dbus.Conn) {
 	}()
 }
 
+// getServiceNames returns the names of all monitored systemd services (without .service suffix).
+func (sm *systemdManager) getServiceNames() []string {
+	sm.Lock()
+	defer sm.Unlock()
+	names := make([]string, 0, len(sm.serviceStatsMap))
+	for _, service := range sm.serviceStatsMap {
+		names = append(names, service.Name)
+	}
+	return names
+}
+
 // getServiceStatsCount returns the number of systemd services.
 func (sm *systemdManager) getServiceStatsCount() int {
 	return len(sm.serviceStatsMap)

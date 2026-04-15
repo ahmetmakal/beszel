@@ -462,6 +462,20 @@ export interface SmartDeviceRecord extends RecordModel {
 	updated: string
 }
 
+export interface SystemdPackageEntry {
+	pkgName: string
+	version: string
+}
+
+/** Map of serviceName → package info */
+export type SystemdPackageMap = Record<string, SystemdPackageEntry>
+
+export interface ServicePkgInfo {
+	s: string // service name
+	p: string // package name
+	v: string // version
+}
+
 export interface SystemdRecord extends RecordModel {
 	system: string
 	name: string

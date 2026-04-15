@@ -50,6 +50,7 @@ type Agent struct {
 	systemdManager            *systemdManager                                       // Manages systemd services
 	webServerManager          *webServerManager                                     // Manages web server stats
 	mysqlManager              *mysqlManager                                         // Manages MySQL/MariaDB stats
+	packageManager            *packageManager                                       // Detects package versions for systemd services
 }
 
 // NewAgent creates a new agent with the given data directory for persisting data.
@@ -143,6 +144,17 @@ func NewAgent(dataDir ...string) (agent *Agent, err error) {
 	agent.gpuManager, err = NewGPUManager()
 	if err != nil {
 		slog.Debug("GPU", "err", err)
+	}
+
+	// initialize package version manager for systemd services
+	if agent.systemdManager != nil {
+		agent.packageManager = newPackageManager()
+		if agent.packageManager != nil {
+			agent.packageManager.startWorker(agent.systemdManager.getServiceNames, func() {
+				// mark details dirty so updated package versions are sent to hub on next cycle
+				agent.updateSystemDetails(func(_ *system.Details) {})
+			})
+		}
 	}
 
 	// initialize web server manager

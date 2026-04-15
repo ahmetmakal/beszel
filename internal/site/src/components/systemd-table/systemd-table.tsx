@@ -16,7 +16,7 @@ import { useVirtualizer, type VirtualItem } from "@tanstack/react-virtual"
 import { LoaderCircleIcon } from "lucide-react"
 import { listenKeys } from "nanostores"
 import { memo, type ReactNode, useEffect, useMemo, useRef, useState } from "react"
-import { getStatusColor, systemdTableCols } from "@/components/systemd-table/systemd-table-columns"
+import { getStatusColor, createSystemdTableCols } from "@/components/systemd-table/systemd-table-columns"
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert"
 import { Card, CardHeader, CardTitle } from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
@@ -26,12 +26,13 @@ import { pb } from "@/lib/api"
 import { ServiceStatus, ServiceStatusLabels, type ServiceSubState, ServiceSubStateLabels } from "@/lib/enums"
 import { $allSystemsById } from "@/lib/stores"
 import { cn, decimalString, formatBytes, useBrowserStorage } from "@/lib/utils"
-import type { SystemdRecord, SystemdServiceDetails } from "@/types"
+import type { SystemdRecord, SystemdServiceDetails, ServicePkgInfo, SystemdPackageMap } from "@/types"
 import { Separator } from "../ui/separator"
 
 export default function SystemdTable({ systemId }: { systemId?: string }) {
 	const loadTime = Date.now()
 	const [data, setData] = useState<SystemdRecord[]>([])
+	const [pkgMap, setPkgMap] = useState<SystemdPackageMap | null>(null)
 	const [sorting, setSorting] = useBrowserStorage<SortingState>(
 		`sort-sd-${systemId ? 1 : 0}`,
 		[{ id: systemId ? "name" : "system", desc: false }],
@@ -43,7 +44,16 @@ export default function SystemdTable({ systemId }: { systemId?: string }) {
 
 	// clear old data when systemId changes
 	useEffect(() => {
-		return setData([])
+		setData([])
+		setPkgMap(null)
+	}, [systemId])
+
+	// fetch package info for services of this system
+	useEffect(() => {
+		if (!systemId) return
+		pb.send<{ services: SystemdPackageMap }>("/api/beszel/systemd/packages", { query: { system: systemId } })
+			.then(({ services }) => setPkgMap(services ?? {}))
+			.catch(() => setPkgMap({}))
 	}, [systemId])
 
 	useEffect(() => {
@@ -101,10 +111,12 @@ export default function SystemdTable({ systemId }: { systemId?: string }) {
 		})
 	}, [systemId])
 
+	// recreate columns only when pkgMap changes to avoid unnecessary re-renders
+	const columns = useMemo(() => createSystemdTableCols(systemId ? pkgMap : null), [systemId, pkgMap])
+
 	const table = useReactTable({
 		data,
-		// columns: systemdTableCols.filter((col) => (systemId ? col.id !== "system" : true)),
-		columns: systemdTableCols,
+		columns,
 		getCoreRowModel: getCoreRowModel(),
 		getSortedRowModel: getSortedRowModel(),
 		getFilteredRowModel: getFilteredRowModel(),
@@ -267,6 +279,7 @@ function SystemdSheet({
 }) {
 	const service = activeService.current
 	const [details, setDetails] = useState<SystemdServiceDetails | null>(null)
+	const [pkgInfo, setPkgInfo] = useState<ServicePkgInfo | null>(null)
 	const [isLoading, setIsLoading] = useState(false)
 	const [error, setError] = useState<string | null>(null)
 
@@ -279,18 +292,23 @@ function SystemdSheet({
 
 		let cancelled = false
 		setDetails(null)
+		setPkgInfo(null)
 		setIsLoading(true)
 
-		pb.send<{ details: SystemdServiceDetails }>("/api/beszel/systemd/info", {
-			query: {
-				system: systemId,
-				service: service.name,
-			},
-		})
-			.then(({ details }) => {
+		pb.send<{ details: SystemdServiceDetails; pkg?: ServicePkgInfo }>(
+			"/api/beszel/systemd/info",
+			{
+				query: {
+					system: systemId,
+					service: service.name,
+				},
+			}
+		)
+			.then(({ details, pkg }) => {
 				if (cancelled) return
 				if (details) {
 					setDetails(details)
+					setPkgInfo(pkg ?? null)
 				} else {
 					setDetails(null)
 					setError(t`No results found.`)
@@ -417,6 +435,20 @@ function SystemdSheet({
 	const inactiveEnterTimestamp = formatTimestamp(details?.InactiveEnterTimestamp)
 	const execMainStartTimestamp = undefined // Property not available in current systemd interface
 
+	// Build the version value (with package name in parens if different) for the service info table
+	const versionValue: ReactNode | undefined = (() => {
+		if (!pkgInfo) return undefined
+		const { p: pkgName, v: version, s: svcName } = pkgInfo
+		return (
+			<div className="text-sm">
+				<span className="font-mono">{version}</span>
+				{pkgName && pkgName !== svcName && (
+					<span className="text-xs text-muted-foreground ms-1.5">({pkgName})</span>
+				)}
+			</div>
+		)
+	})()
+
 	const renderRow = (key: string, label: ReactNode, value?: ReactNode, alwaysShow = false) => {
 		if (!alwaysShow && (value === undefined || value === null || value === "")) {
 			return null
@@ -460,6 +492,7 @@ function SystemdSheet({
 							<table className="w-full text-sm">
 								<tbody>
 									{renderRow("name", t`Name`, service.name, true)}
+									{renderRow("version", t`Version`, versionValue)}
 									{renderRow("description", t`Description`, details?.Description, true)}
 									{renderRow("loadState", t`Load state`, details?.LoadState, true)}
 									{renderRow(

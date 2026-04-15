@@ -234,7 +234,7 @@ func (sys *System) createRecords(data *system.CombinedData) (*core.Record, error
 
 		// add system details record
 		if data.Details != nil {
-			if err := createSystemDetailsRecord(txApp, data.Details, sys.Id); err != nil {
+			if err := createSystemDetailsRecord(txApp, data.Details, data.PackageVersions, sys.Id); err != nil {
 				return err
 			}
 		}
@@ -251,7 +251,7 @@ func (sys *System) createRecords(data *system.CombinedData) (*core.Record, error
 	return systemRecord, err
 }
 
-func createSystemDetailsRecord(app core.App, data *system.Details, systemId string) error {
+func createSystemDetailsRecord(app core.App, data *system.Details, pkgVersions any, systemId string) error {
 	collectionName := "system_details"
 	params := dbx.Params{
 		"id":       systemId,
@@ -267,6 +267,11 @@ func createSystemDetailsRecord(app core.App, data *system.Details, systemId stri
 		"memory":   data.MemoryTotal,
 		"podman":   data.Podman,
 		"updated":  time.Now().UTC(),
+	}
+	if pkgVersions != nil {
+		if jsonBytes, err := json.Marshal(pkgVersions); err == nil {
+			params["packages"] = string(jsonBytes)
+		}
 	}
 	result, err := app.DB().Update(collectionName, params, dbx.HashExp{"id": systemId}).Execute()
 	rowsAffected, _ := result.RowsAffected()

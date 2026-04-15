@@ -23,6 +23,11 @@ func (sm *systemdManager) getServiceStats(conn any, refresh bool) []*systemd.Ser
 	return nil
 }
 
+// getServiceNames returns nil for non-linux systems.
+func (sm *systemdManager) getServiceNames() []string {
+	return nil
+}
+
 // getServiceStatsCount returns 0 for non-linux systems.
 func (sm *systemdManager) getServiceStatsCount() int {
 	return 0
