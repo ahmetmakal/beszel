@@ -13,11 +13,12 @@ import {
 	type VisibilityState,
 } from "@tanstack/react-table"
 import { useVirtualizer, type VirtualItem } from "@tanstack/react-virtual"
-import { LoaderCircleIcon } from "lucide-react"
+import { ExternalLinkIcon, LoaderCircleIcon, RefreshCwIcon, ShieldAlertIcon, ShieldCheckIcon, ShieldQuestionIcon } from "lucide-react"
 import { listenKeys } from "nanostores"
 import { memo, type ReactNode, useEffect, useMemo, useRef, useState } from "react"
 import { getStatusColor, createSystemdTableCols } from "@/components/systemd-table/systemd-table-columns"
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert"
+import { Button } from "@/components/ui/button"
 import { Card, CardHeader, CardTitle } from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
 import { Sheet, SheetContent, SheetHeader, SheetTitle } from "@/components/ui/sheet"
@@ -26,13 +27,14 @@ import { pb } from "@/lib/api"
 import { ServiceStatus, ServiceStatusLabels, type ServiceSubState, ServiceSubStateLabels } from "@/lib/enums"
 import { $allSystemsById } from "@/lib/stores"
 import { cn, decimalString, formatBytes, useBrowserStorage } from "@/lib/utils"
-import type { SystemdRecord, SystemdServiceDetails, ServicePkgInfo, SystemdPackageMap } from "@/types"
+import type { SystemdRecord, SystemdServiceDetails, ServicePkgInfo, SystemdPackageMap, VulnScanData, ServiceVulnInfo, SystemdPackagesResponse } from "@/types"
 import { Separator } from "../ui/separator"
 
 export default function SystemdTable({ systemId }: { systemId?: string }) {
 	const loadTime = Date.now()
 	const [data, setData] = useState<SystemdRecord[]>([])
 	const [pkgMap, setPkgMap] = useState<SystemdPackageMap | null>(null)
+	const [vulnData, setVulnData] = useState<VulnScanData | null>(null)
 	const [sorting, setSorting] = useBrowserStorage<SortingState>(
 		`sort-sd-${systemId ? 1 : 0}`,
 		[{ id: systemId ? "name" : "system", desc: false }],
@@ -41,19 +43,27 @@ export default function SystemdTable({ systemId }: { systemId?: string }) {
 	const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([])
 	const [columnVisibility, setColumnVisibility] = useState<VisibilityState>({})
 	const [globalFilter, setGlobalFilter] = useState("")
+	const [vulnScanning, setVulnScanning] = useState(false)
 
 	// clear old data when systemId changes
 	useEffect(() => {
 		setData([])
 		setPkgMap(null)
+		setVulnData(null)
 	}, [systemId])
 
-	// fetch package info for services of this system
+	// fetch package info and vulnerability data for services of this system
 	useEffect(() => {
 		if (!systemId) return
-		pb.send<{ services: SystemdPackageMap }>("/api/beszel/systemd/packages", { query: { system: systemId } })
-			.then(({ services }) => setPkgMap(services ?? {}))
-			.catch(() => setPkgMap({}))
+		pb.send<SystemdPackagesResponse>("/api/beszel/systemd/packages", { query: { system: systemId } })
+			.then((resp) => {
+				setPkgMap(resp.services ?? {})
+				setVulnData(resp.vulns ?? null)
+			})
+			.catch(() => {
+				setPkgMap({})
+				setVulnData(null)
+			})
 	}, [systemId])
 
 	useEffect(() => {
@@ -111,8 +121,8 @@ export default function SystemdTable({ systemId }: { systemId?: string }) {
 		})
 	}, [systemId])
 
-	// recreate columns only when pkgMap changes to avoid unnecessary re-renders
-	const columns = useMemo(() => createSystemdTableCols(systemId ? pkgMap : null), [systemId, pkgMap])
+	// recreate columns only when pkgMap or vulnData changes
+	const columns = useMemo(() => createSystemdTableCols(systemId ? pkgMap : null, systemId ? vulnData : null), [systemId, pkgMap, vulnData])
 
 	const table = useReactTable({
 		data,
@@ -161,6 +171,23 @@ export default function SystemdTable({ systemId }: { systemId?: string }) {
 		return totals
 	}, [data])
 
+	function triggerVulnScan() {
+		if (!systemId || vulnScanning) return
+		setVulnScanning(true)
+		pb.send("/api/beszel/vulnerabilities/scan", { method: "POST", query: { system: systemId } })
+			.then(() => {
+				setTimeout(() => {
+					pb.send<SystemdPackagesResponse>("/api/beszel/systemd/packages", { query: { system: systemId } })
+						.then((resp) => {
+							setPkgMap(resp.services ?? {})
+							setVulnData(resp.vulns ?? null)
+						})
+						.finally(() => setVulnScanning(false))
+				}, 5000)
+			})
+			.catch(() => setVulnScanning(false))
+	}
+
 	if (!data.length && !globalFilter) {
 		return null
 	}
@@ -181,12 +208,27 @@ export default function SystemdTable({ systemId }: { systemId?: string }) {
 							<Trans>Updated every 10 minutes.</Trans>
 						</div>
 					</div>
-					<Input
-						placeholder={t`Filter...`}
-						value={globalFilter}
-						onChange={(e) => setGlobalFilter(e.target.value)}
-						className="ms-auto px-4 w-full max-w-full md:w-64"
-					/>
+					<div className="ms-auto flex items-center gap-2">
+						{systemId && (
+							<Button
+								variant="outline"
+								size="sm"
+								className="h-9 gap-1.5 shrink-0"
+								disabled={vulnScanning}
+								onClick={triggerVulnScan}
+								title={t`Scan for vulnerabilities`}
+							>
+								<RefreshCwIcon className={cn("size-3.5", vulnScanning && "animate-spin")} />
+								<Trans>Vuln Scan</Trans>
+							</Button>
+						)}
+						<Input
+							placeholder={t`Filter...`}
+							value={globalFilter}
+							onChange={(e) => setGlobalFilter(e.target.value)}
+							className="px-4 w-full max-w-full md:w-64"
+						/>
+					</div>
 				</div>
 			</CardHeader>
 			<div className="rounded-md">
@@ -280,6 +322,8 @@ function SystemdSheet({
 	const service = activeService.current
 	const [details, setDetails] = useState<SystemdServiceDetails | null>(null)
 	const [pkgInfo, setPkgInfo] = useState<ServicePkgInfo | null>(null)
+	const [vulnInfo, setVulnInfo] = useState<ServiceVulnInfo | null>(null)
+	const [vulnScannedAt, setVulnScannedAt] = useState<string | null>(null)
 	const [isLoading, setIsLoading] = useState(false)
 	const [error, setError] = useState<string | null>(null)
 
@@ -293,9 +337,11 @@ function SystemdSheet({
 		let cancelled = false
 		setDetails(null)
 		setPkgInfo(null)
+		setVulnInfo(null)
+		setVulnScannedAt(null)
 		setIsLoading(true)
 
-		pb.send<{ details: SystemdServiceDetails; pkg?: ServicePkgInfo }>(
+		pb.send<{ details: SystemdServiceDetails; pkg?: ServicePkgInfo; vuln?: ServiceVulnInfo; vulnScannedAt?: string }>(
 			"/api/beszel/systemd/info",
 			{
 				query: {
@@ -304,11 +350,13 @@ function SystemdSheet({
 				},
 			}
 		)
-			.then(({ details, pkg }) => {
+			.then(({ details, pkg, vuln, vulnScannedAt }) => {
 				if (cancelled) return
 				if (details) {
 					setDetails(details)
 					setPkgInfo(pkg ?? null)
+					setVulnInfo(vuln ?? null)
+					setVulnScannedAt(vulnScannedAt ?? null)
 				} else {
 					setDetails(null)
 					setError(t`No results found.`)
@@ -622,6 +670,80 @@ function SystemdSheet({
 						</div>
 					</div>
 
+					{/* Vulnerability Scan Section */}
+					<div>
+						<h3 className="text-sm font-medium mb-3 flex items-center gap-2">
+							{vulnInfo?.status === "vulnerable" ? (
+								<ShieldAlertIcon className="size-4 text-red-500" />
+							) : vulnInfo?.status === "safe" ? (
+								<ShieldCheckIcon className="size-4 text-green-500" />
+							) : (
+								<ShieldQuestionIcon className="size-4 text-muted-foreground" />
+							)}
+							<Trans>Vulnerability Scan</Trans>
+						</h3>
+						<div className="border rounded-md">
+							<table className="w-full text-sm">
+								<tbody>
+									{renderRow(
+										"vulnStatus",
+										t`Status`,
+										vulnInfo ? (
+											vulnInfo.status === "vulnerable" ? (
+												<span className="text-red-500 font-medium">{t`Vulnerabilities found`} ({vulnInfo.vulns?.length ?? 0})</span>
+											) : (
+												<span className="text-green-500">{t`Safe`}</span>
+											)
+										) : (
+											<span className="text-muted-foreground">{t`Not scanned`}</span>
+										),
+										true
+									)}
+									{renderRow(
+										"vulnScannedAt",
+										t`Scanned at`,
+										vulnScannedAt ? new Date(vulnScannedAt).toLocaleString() : undefined,
+										true
+									)}
+								</tbody>
+							</table>
+						</div>
+						{vulnInfo?.status === "vulnerable" && vulnInfo.vulns && vulnInfo.vulns.length > 0 && (
+							<div className="mt-3 border rounded-md overflow-hidden">
+								<table className="w-full text-sm">
+									<thead>
+										<tr className="border-b bg-muted dark:bg-muted/40">
+											<th className="px-3 py-2 text-left font-medium">{t`Severity`}</th>
+											<th className="px-3 py-2 text-left font-medium">{t`ID`}</th>
+											<th className="px-3 py-2 text-left font-medium">{t`Summary`}</th>
+										</tr>
+									</thead>
+									<tbody>
+										{vulnInfo.vulns.map((v) => (
+											<tr key={v.id} className="border-b last:border-b-0">
+												<td className="px-3 py-2 whitespace-nowrap">
+													<SeverityBadge score={v.score} severity={v.severity} />
+												</td>
+												<td className="px-3 py-2 font-mono text-xs whitespace-nowrap">
+													<a
+														href={`https://osv.dev/vulnerability/${v.id}`}
+														target="_blank"
+														rel="noopener noreferrer"
+														className="text-blue-500 hover:underline inline-flex items-center gap-1"
+													>
+														{v.id}
+														<ExternalLinkIcon className="size-3" />
+													</a>
+												</td>
+												<td className="px-3 py-2 text-xs">{v.summary || "—"}</td>
+											</tr>
+										))}
+									</tbody>
+								</table>
+							</div>
+						)}
+					</div>
+
 					<div className="hidden has-[tr]:block">
 						<h3 className="text-sm font-medium mb-3">
 							<Trans>Capabilities</Trans>
@@ -691,3 +813,23 @@ const SystemdTableRow = memo(function SystemdTableRow({
 		</TableRow>
 	)
 })
+
+function SeverityBadge({ score, severity }: { score?: number; severity?: string }) {
+	if (!score && !severity) {
+		return <span className="text-xs text-muted-foreground">—</span>
+	}
+
+	const colors: Record<string, string> = {
+		CRITICAL: "bg-red-600 text-white",
+		HIGH: "bg-orange-500 text-white",
+		MEDIUM: "bg-yellow-500 text-black",
+		LOW: "bg-blue-400 text-white",
+	}
+	const colorClass = colors[severity ?? ""] ?? "bg-zinc-400 text-white"
+
+	return (
+		<span className={cn("inline-flex items-center gap-1 rounded px-1.5 py-0.5 text-[11px] font-semibold leading-none", colorClass)}>
+			{score ? score.toFixed(1) : "?"} <span className="font-normal text-[10px] opacity-85">{severity ?? ""}</span>
+		</span>
+	)
+}

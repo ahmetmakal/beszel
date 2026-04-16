@@ -386,6 +386,10 @@ export interface AlertInfo {
 	/** Single value description (when there's only one value, like status) */
 	singleDesc?: () => string
 	invert?: boolean
+	/** Hide the "for X minutes" slider (e.g. for periodic scan alerts) */
+	noMinSlider?: boolean
+	/** Dynamic hint text shown below the value slider */
+	valueHint?: (value: number) => string
 }
 
 export type AlertMap = Record<string, Map<string, AlertRecord>>
@@ -443,6 +447,7 @@ export interface SystemDetailsRecord extends RecordModel {
 	os_name: string
 	memory: number
 	podman: boolean
+	vulns?: VulnScanData
 }
 
 export interface SmartDeviceRecord extends RecordModel {
@@ -469,6 +474,30 @@ export interface SystemdPackageEntry {
 
 /** Map of serviceName → package info */
 export type SystemdPackageMap = Record<string, SystemdPackageEntry>
+
+export interface VulnInfo {
+	id: string
+	summary?: string
+	score?: number
+	severity?: "CRITICAL" | "HIGH" | "MEDIUM" | "LOW"
+}
+
+export interface ServiceVulnInfo {
+	status: "safe" | "vulnerable"
+	vulns?: VulnInfo[]
+}
+
+export interface VulnScanData {
+	scannedAt: string
+	services: Record<string, ServiceVulnInfo>
+	kernel?: ServiceVulnInfo
+	kernelVersion?: string
+}
+
+export interface SystemdPackagesResponse {
+	services: SystemdPackageMap
+	vulns?: VulnScanData
+}
 
 export interface ServicePkgInfo {
 	s: string // service name

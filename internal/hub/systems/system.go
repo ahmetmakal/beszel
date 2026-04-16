@@ -253,6 +253,16 @@ func (sys *System) createRecords(data *system.CombinedData) (*core.Record, error
 
 func createSystemDetailsRecord(app core.App, data *system.Details, pkgVersions any, systemId string) error {
 	collectionName := "system_details"
+	var existing struct {
+		Kernel   string `db:"kernel"`
+		Packages string `db:"packages"`
+	}
+	_ = app.DB().
+		Select("kernel", "packages").
+		From(collectionName).
+		Where(dbx.HashExp{"id": systemId}).
+		One(&existing)
+
 	params := dbx.Params{
 		"id":       systemId,
 		"system":   systemId,
@@ -270,8 +280,17 @@ func createSystemDetailsRecord(app core.App, data *system.Details, pkgVersions a
 	}
 	if pkgVersions != nil {
 		if jsonBytes, err := json.Marshal(pkgVersions); err == nil {
-			params["packages"] = string(jsonBytes)
+			newPackages := string(jsonBytes)
+			params["packages"] = newPackages
+			// If package list/version snapshot changed, invalidate old vulnerability scan.
+			if existing.Packages != "" && existing.Packages != newPackages {
+				params["vulns"] = nil
+			}
 		}
+	}
+	// If kernel changed, invalidate old vulnerability scan (kernel result is stale).
+	if existing.Kernel != "" && data.Kernel != "" && existing.Kernel != data.Kernel {
+		params["vulns"] = nil
 	}
 	result, err := app.DB().Update(collectionName, params, dbx.HashExp{"id": systemId}).Execute()
 	rowsAffected, _ := result.RowsAffected()

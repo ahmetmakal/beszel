@@ -73,6 +73,12 @@ export const ActiveAlerts = () => {
 												<Trans>Service is not active</Trans>
 											) : alert.name === "Status" ? (
 												<Trans>Connection is down</Trans>
+											) : alert.name === "Vulnerability" ? (
+												alert.value > 0 ? (
+													<Trans>CVSS ≥ {alert.value} vulnerabilities detected</Trans>
+												) : (
+													<Trans>Known vulnerabilities detected</Trans>
+												)
 											) : info?.invert ? (
 												<Trans>
 													Below {alert.value}

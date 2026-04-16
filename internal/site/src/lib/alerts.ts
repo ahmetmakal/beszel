@@ -1,5 +1,5 @@
 import { t } from "@lingui/core/macro"
-import { CableIcon, CpuIcon, HardDriveIcon, MemoryStickIcon, ServerIcon } from "lucide-react"
+import { CableIcon, CpuIcon, HardDriveIcon, MemoryStickIcon, ServerIcon, ShieldAlertIcon } from "lucide-react"
 import type { RecordSubscription } from "pocketbase"
 import { EthernetIcon, GpuIcon } from "@/components/ui/icons"
 import { $alerts } from "@/lib/stores"
@@ -101,6 +101,24 @@ export const alertInfo: Record<string, AlertInfo> = {
 		min: 1,
 		start: 500,
 		step: 100,
+	},
+	Vulnerability: {
+		name: () => t`Vulnerability`,
+		unit: "",
+		icon: ShieldAlertIcon,
+		desc: () => t`Triggers when vulnerabilities with CVSS score above the threshold are detected`,
+		max: 10,
+		min: 0,
+		start: 0,
+		step: 0.1,
+		noMinSlider: true,
+		valueHint: (v) => {
+			if (v >= 9) return t`Only CRITICAL vulnerabilities`
+			if (v >= 7) return t`HIGH and CRITICAL vulnerabilities`
+			if (v >= 4) return t`MEDIUM, HIGH and CRITICAL vulnerabilities`
+			if (v > 0) return t`LOW and above vulnerabilities`
+			return t`All vulnerabilities`
+		},
 	},
 } as const
 

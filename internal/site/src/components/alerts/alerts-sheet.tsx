@@ -313,7 +313,7 @@ export function AlertContent({
 				<div className="grid sm:grid-cols-2 mt-1.5 gap-5 px-4 pb-5 tabular-nums text-muted-foreground">
 					<Suspense fallback={<div className="h-10" />}>
 						{!singleDescription && (
-							<div>
+							<div className={cn(alertData.noMinSlider && "col-span-full")}>
 								<p id={`v${name}`} className="text-sm block h-6">
 									{alertData.invert ? (
 										<Trans>
@@ -361,47 +361,52 @@ export function AlertContent({
 										className="w-16 h-8 text-center px-1"
 									/>
 								</div>
+								{alertData.valueHint && (
+									<p className="text-xs mt-1.5 text-muted-foreground/80">{alertData.valueHint(value)}</p>
+								)}
 							</div>
 						)}
-						<div className={cn(singleDescription && "col-span-full lowercase")}>
-							<p id={`t${name}`} className="text-sm block h-6 first-letter:uppercase">
-								{singleDescription && (
-									<>
-										{singleDescription}
-										{` `}
-									</>
-								)}
-								<Trans>
-									For <strong className="text-foreground">{min}</strong>{" "}
-									<Plural value={min} one="minute" other="minutes" />
-								</Trans>
-							</p>
-							<div className="flex gap-3 items-center">
-								<Slider
-									aria-labelledby={`t${name}`}
-									value={[min]}
-									onValueCommit={(val) => sendUpsert(val[0], value)}
-									onValueChange={(val) => setMin(val[0])}
-									min={1}
-									max={60}
-								/>
-								<Input
-									type="number"
-									value={min}
-									onChange={(e) => {
-										let val = parseInt(e.target.value, 10)
-										if (!Number.isNaN(val)) {
-											val = Math.max(1, Math.min(val, 60))
-											setMin(val)
-											sendUpsert(val, value)
-										}
-									}}
-									min={1}
-									max={60}
-									className="w-16 h-8 text-center px-1"
-								/>
+						{!alertData.noMinSlider && (
+							<div className={cn(singleDescription && "col-span-full lowercase")}>
+								<p id={`t${name}`} className="text-sm block h-6 first-letter:uppercase">
+									{singleDescription && (
+										<>
+											{singleDescription}
+											{` `}
+										</>
+									)}
+									<Trans>
+										For <strong className="text-foreground">{min}</strong>{" "}
+										<Plural value={min} one="minute" other="minutes" />
+									</Trans>
+								</p>
+								<div className="flex gap-3 items-center">
+									<Slider
+										aria-labelledby={`t${name}`}
+										value={[min]}
+										onValueCommit={(val) => sendUpsert(val[0], value)}
+										onValueChange={(val) => setMin(val[0])}
+										min={1}
+										max={60}
+									/>
+									<Input
+										type="number"
+										value={min}
+										onChange={(e) => {
+											let val = parseInt(e.target.value, 10)
+											if (!Number.isNaN(val)) {
+												val = Math.max(1, Math.min(val, 60))
+												setMin(val)
+												sendUpsert(val, value)
+											}
+										}}
+										min={1}
+										max={60}
+										className="w-16 h-8 text-center px-1"
+									/>
+								</div>
 							</div>
-						</div>
+						)}
 					</Suspense>
 				</div>
 			)}

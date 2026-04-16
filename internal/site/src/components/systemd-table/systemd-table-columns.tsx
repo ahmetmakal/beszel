@@ -1,7 +1,7 @@
 import type { Column, ColumnDef } from "@tanstack/react-table"
 import { Button } from "@/components/ui/button"
 import { cn, decimalString, formatBytes, hourWithSeconds } from "@/lib/utils"
-import type { SystemdRecord, SystemdPackageMap } from "@/types"
+import type { SystemdRecord, SystemdPackageMap, ServiceVulnInfo, VulnScanData } from "@/types"
 import { ServiceStatus, ServiceStatusLabels, ServiceSubState, ServiceSubStateLabels } from "@/lib/enums"
 import {
 	ActivityIcon,
@@ -9,6 +9,9 @@ import {
 	ClockIcon,
 	CpuIcon,
 	MemoryStickIcon,
+	ShieldCheckIcon,
+	ShieldAlertIcon,
+	ShieldQuestionIcon,
 	TerminalSquareIcon,
 } from "lucide-react"
 import { Badge } from "../ui/badge"
@@ -28,7 +31,7 @@ function getSubStateColor(subState: ServiceSubState) {
 }
 
 /** Creates systemd table column definitions. Pass pkgMap to populate the version column. */
-export function createSystemdTableCols(pkgMap: SystemdPackageMap | null): ColumnDef<SystemdRecord>[] {
+export function createSystemdTableCols(pkgMap: SystemdPackageMap | null, vulnData?: VulnScanData | null): ColumnDef<SystemdRecord>[] {
 	return [
 		{
 			id: "name",
@@ -54,12 +57,17 @@ export function createSystemdTableCols(pkgMap: SystemdPackageMap | null): Column
 					return <span className="ms-1.5 text-muted-foreground text-xs">—</span>
 				}
 
+				const svcVuln = vulnData?.services?.[svcName]
+
 				return (
-					<div className="ms-1.5">
-						<span className="text-xs font-mono">{info.version}</span>
-						{info.pkgName && info.pkgName !== svcName && (
-							<span className="text-xs text-muted-foreground ms-1">({info.pkgName})</span>
-						)}
+					<div className="ms-1.5 flex items-center gap-1.5">
+						<span>
+							<span className="text-xs font-mono">{info.version}</span>
+							{info.pkgName && info.pkgName !== svcName && (
+								<span className="text-xs text-muted-foreground ms-1">({info.pkgName})</span>
+							)}
+						</span>
+						<VulnBadge svcVuln={svcVuln} hasVulnData={!!vulnData} />
 					</div>
 				)
 			},
@@ -181,6 +189,34 @@ export function createSystemdTableCols(pkgMap: SystemdPackageMap | null): Column
 
 // Keep backward-compatible export for any existing usages
 export const systemdTableCols = createSystemdTableCols(null)
+
+function VulnBadge({ svcVuln, hasVulnData }: { svcVuln?: ServiceVulnInfo; hasVulnData: boolean }) {
+	if (!hasVulnData || !svcVuln) {
+		return (
+			<span className="shrink-0" title={t`Not scanned`}>
+				<ShieldQuestionIcon className="size-3.5 text-muted-foreground" />
+			</span>
+		)
+	}
+	if (svcVuln.status === "vulnerable" && svcVuln.vulns?.length) {
+		const maxVuln = svcVuln.vulns.reduce((best, v) => ((v.score ?? 0) > (best.score ?? 0) ? v : best), svcVuln.vulns[0])
+		const score = maxVuln.score
+		const sev = maxVuln.severity
+		const colorClass = sev === "CRITICAL" ? "text-red-600" : sev === "HIGH" ? "text-orange-500" : sev === "MEDIUM" ? "text-yellow-600" : sev === "LOW" ? "text-blue-500" : "text-red-500"
+
+		return (
+			<span className={cn("inline-flex items-center gap-0.5 shrink-0 font-semibold", colorClass)} title={`${svcVuln.vulns.length} vuln – ${score ? score.toFixed(1) : "?"} ${sev ?? ""}`}>
+				<ShieldAlertIcon className="size-3.5" />
+				<span className="text-[10px]">{score ? score.toFixed(1) : svcVuln.vulns.length}</span>
+			</span>
+		)
+	}
+	return (
+		<span className="shrink-0" title={t`Safe`}>
+			<ShieldCheckIcon className="size-3.5 text-green-500" />
+		</span>
+	)
+}
 
 function HeaderButton({ column, name, Icon }: { column: Column<SystemdRecord>; name: string; Icon: React.ElementType }) {
 	const isSorted = column.getIsSorted()

@@ -17,6 +17,7 @@ import (
 	"github.com/henrygd/beszel/internal/hub/config"
 	"github.com/henrygd/beszel/internal/hub/systems"
 	"github.com/henrygd/beszel/internal/hub/utils"
+	"github.com/henrygd/beszel/internal/osv"
 	"github.com/pocketbase/dbx"
 	"github.com/pocketbase/pocketbase/apis"
 	"github.com/pocketbase/pocketbase/core"
@@ -131,6 +132,8 @@ func (h *Hub) registerApiRoutes(se *core.ServeEvent) error {
 	apiAuth.GET("/systemd/info", h.getSystemdInfo)
 	// get package info for all systemd services of a system
 	apiAuth.GET("/systemd/packages", h.getSystemdPackages)
+	// trigger vulnerability rescan for a system
+	apiAuth.POST("/vulnerabilities/scan", h.triggerVulnScan).BindFunc(excludeReadOnlyRole)
 	// /containers routes
 	if enabled, _ := utils.GetEnv("CONTAINER_DETAILS"); enabled != "false" {
 		// get container logs
@@ -374,11 +377,21 @@ func (h *Hub) getSystemdInfo(e *core.RequestEvent) error {
 	// Fetch package info for this service
 	pkgInfo := h.getServicePackageInfo(e.App, systemID, serviceName)
 
-	e.Response.Header().Set("Cache-Control", "public, max-age=60")
-	return e.JSON(http.StatusOK, map[string]any{
+	result := map[string]any{
 		"details": details,
 		"pkg":     pkgInfo,
-	})
+	}
+
+	// Fetch vulnerability info for this service
+	if vulnData, err := osv.GetVulnData(e.App, systemID); err == nil && vulnData != nil {
+		result["vulnScannedAt"] = vulnData.ScannedAt
+		if svcVuln, ok := vulnData.Services[serviceName]; ok {
+			result["vuln"] = svcVuln
+		}
+	}
+
+	e.Response.Header().Set("Cache-Control", "public, max-age=60")
+	return e.JSON(http.StatusOK, result)
 }
 
 // getServicePackageInfo looks up package info for a single service.
@@ -408,7 +421,7 @@ func (h *Hub) getServicePackageInfo(app core.App, systemID, serviceName string) 
 }
 
 // getSystemdPackages handles GET /api/beszel/systemd/packages requests.
-// Returns a map of service name → {pkgName, version} for all detected services on a system.
+// Returns a map of service name → {pkgName, version} and vulnerability scan data.
 func (h *Hub) getSystemdPackages(e *core.RequestEvent) error {
 	systemID := e.Request.URL.Query().Get("system")
 	if systemID == "" {
@@ -421,9 +434,10 @@ func (h *Hub) getSystemdPackages(e *core.RequestEvent) error {
 
 	var row struct {
 		PackagesRaw string `db:"packages"`
+		VulnsRaw    string `db:"vulns"`
 	}
 	if err := e.App.DB().
-		Select("packages").
+		Select("packages", "vulns").
 		From("system_details").
 		Where(dbx.HashExp{"id": systemID}).
 		One(&row); err != nil {
@@ -444,8 +458,39 @@ func (h *Hub) getSystemdPackages(e *core.RequestEvent) error {
 		services[p.Service] = svcPkgInfo{PkgName: p.Package, Version: p.Version}
 	}
 
+	result := map[string]any{"services": services}
+
+	if row.VulnsRaw != "" {
+		var vulnData osv.VulnScanData
+		if err := json.Unmarshal([]byte(row.VulnsRaw), &vulnData); err == nil {
+			result["vulns"] = vulnData
+		}
+	}
+
 	e.Response.Header().Set("Cache-Control", "public, max-age=120")
-	return e.JSON(http.StatusOK, map[string]any{"services": services})
+	return e.JSON(http.StatusOK, result)
+}
+
+// triggerVulnScan handles POST /api/beszel/vulnerabilities/scan requests.
+// Runs an OSV vulnerability scan for a single system (or all systems if no system param).
+func (h *Hub) triggerVulnScan(e *core.RequestEvent) error {
+	systemID := e.Request.URL.Query().Get("system")
+	go func() {
+		ctx, cancel := context.WithTimeout(context.Background(), 10*time.Minute)
+		defer cancel()
+		var err error
+		if systemID != "" {
+			err = h.vulnScanner.ScanSystem(ctx, systemID)
+		} else {
+			err = h.vulnScanner.ScanAllSystems(ctx)
+		}
+		if err != nil {
+			h.Logger().Error("Manual vulnerability scan failed", "err", err)
+			return
+		}
+		h.HandleVulnerabilityAlerts()
+	}()
+	return e.JSON(http.StatusOK, map[string]string{"status": "started"})
 }
 
 // refreshSmartData handles POST /api/beszel/smart/refresh requests
