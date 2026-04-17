@@ -26,21 +26,37 @@ type packageManager struct {
 func newPackageManager() *packageManager {
 	pm := &packageManager{}
 
-	// Detect package manager
-	if _, err := exec.LookPath("dpkg-query"); err == nil {
-		pm.pkgType = "dpkg"
-	} else if _, err := exec.LookPath("rpm"); err == nil {
+	// Parse /etc/os-release first to determine OS family
+	pm.osID, pm.osVerID = parseOsReleaseIDs()
+
+	// Detect package manager — prefer rpm on RPM-based distros
+	// (some systems like cPanel install dpkg-query alongside rpm)
+	hasRpm := exec.Command("rpm", "--version").Run() == nil
+	hasDpkg := exec.Command("dpkg-query", "--version").Run() == nil
+
+	switch {
+	case isRpmDistro(pm.osID) && hasRpm:
 		pm.pkgType = "rpm"
-	} else {
+	case hasDpkg:
+		pm.pkgType = "dpkg"
+	case hasRpm:
+		pm.pkgType = "rpm"
+	default:
 		slog.Debug("No supported package manager found (dpkg/rpm)")
 		return nil
 	}
 
-	// Parse /etc/os-release for OS ID and VERSION_ID
-	pm.osID, pm.osVerID = parseOsReleaseIDs()
-
 	slog.Debug("Package manager", "type", pm.pkgType, "os", pm.osID, "version", pm.osVerID)
 	return pm
+}
+
+// isRpmDistro returns true for distros that use rpm as their native package manager.
+func isRpmDistro(osID string) bool {
+	switch osID {
+	case "almalinux", "rocky", "rhel", "centos", "fedora", "ol", "amzn", "cloudlinux":
+		return true
+	}
+	return false
 }
 
 // startWorker starts a background goroutine that refreshes package versions daily.
