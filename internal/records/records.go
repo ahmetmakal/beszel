@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"log"
 	"math"
+	"sort"
 	"strings"
 	"time"
 
@@ -181,6 +182,15 @@ func (rm *RecordManager) AverageSystemStats(db dbx.Builder, records RecordIds) *
 	var cpuCoresSums []uint64
 	// accumulate cpu breakdown [user, system, iowait, steal, idle]
 	var cpuBreakdownSums []float64
+	// accumulate top process stats by name
+	type procAccum struct {
+		cpuSum float64
+		memSum float32
+		rssMax uint64
+		count  uint16
+		seen   float64 // how many records this process appeared in
+	}
+	procSums := make(map[string]*procAccum)
 
 	count := float64(len(records))
 	tempCount := float64(0)
@@ -341,6 +351,70 @@ func (rm *RecordManager) AverageSystemStats(db dbx.Builder, records RecordIds) *
 				sum.GPUData[id] = gpu
 			}
 		}
+
+		// Accumulate TCP connection counts
+		if stats.TcpConns != nil {
+			if sum.TcpConns == nil {
+				sum.TcpConns = make(map[string]uint32, len(stats.TcpConns))
+			}
+			for key, value := range stats.TcpConns {
+				sum.TcpConns[key] += value
+			}
+		}
+
+		// Accumulate web server stats
+		if stats.WebServer != nil {
+			if sum.WebServer == nil {
+				sum.WebServer = &system.WebServerStats{Type: stats.WebServer.Type}
+			}
+			sum.WebServer.ActiveConns += stats.WebServer.ActiveConns
+			sum.WebServer.ReqPerSec += stats.WebServer.ReqPerSec
+			sum.WebServer.BytesPerSec += stats.WebServer.BytesPerSec
+			sum.WebServer.BusyWorkers += stats.WebServer.BusyWorkers
+			sum.WebServer.IdleWorkers += stats.WebServer.IdleWorkers
+			sum.WebServer.Reading += stats.WebServer.Reading
+			sum.WebServer.Writing += stats.WebServer.Writing
+			sum.WebServer.Waiting += stats.WebServer.Waiting
+		}
+
+		// Accumulate MySQL stats
+		if stats.MySQL != nil {
+			if sum.MySQL == nil {
+				sum.MySQL = &system.MySQLStats{}
+			}
+			sum.MySQL.QueriesPerSec += stats.MySQL.QueriesPerSec
+			sum.MySQL.Connections += stats.MySQL.Connections
+			sum.MySQL.MaxConnections += stats.MySQL.MaxConnections
+			sum.MySQL.ThreadsRunning += stats.MySQL.ThreadsRunning
+			sum.MySQL.SlowQueriesPerSec += stats.MySQL.SlowQueriesPerSec
+			sum.MySQL.BufferPoolHitRate += stats.MySQL.BufferPoolHitRate
+			sum.MySQL.KeyCacheHitRate += stats.MySQL.KeyCacheHitRate
+			sum.MySQL.ReplicationLag += stats.MySQL.ReplicationLag
+			sum.MySQL.ReplicationOk = stats.MySQL.ReplicationOk
+		}
+
+		// Accumulate top process stats
+		for _, proc := range stats.TopProc {
+			if pa, ok := procSums[proc.Name]; ok {
+				pa.cpuSum += proc.CpuPct
+				pa.memSum += proc.MemPct
+				if proc.Rss > pa.rssMax {
+					pa.rssMax = proc.Rss
+				}
+				if proc.Count > pa.count {
+					pa.count = proc.Count
+				}
+				pa.seen++
+			} else {
+				procSums[proc.Name] = &procAccum{
+					cpuSum: proc.CpuPct,
+					memSum: proc.MemPct,
+					rssMax: proc.Rss,
+					count:  proc.Count,
+					seen:   1,
+				}
+			}
+		}
 	}
 
 	// Compute averages in place
@@ -446,6 +520,61 @@ func (rm *RecordManager) AverageSystemStats(db dbx.Builder, records RecordIds) *
 			}
 			sum.CpuBreakdown = avg
 		}
+
+		// Average TCP connection counts
+		if sum.TcpConns != nil {
+			for key := range sum.TcpConns {
+				sum.TcpConns[key] = uint32(math.Round(float64(sum.TcpConns[key]) / count))
+			}
+		}
+
+		// Average web server stats
+		if sum.WebServer != nil {
+			sum.WebServer.ActiveConns = uint32(math.Round(float64(sum.WebServer.ActiveConns) / count))
+			sum.WebServer.ReqPerSec = twoDecimals(sum.WebServer.ReqPerSec / count)
+			sum.WebServer.BytesPerSec = twoDecimals(sum.WebServer.BytesPerSec / count)
+			sum.WebServer.BusyWorkers = uint32(math.Round(float64(sum.WebServer.BusyWorkers) / count))
+			sum.WebServer.IdleWorkers = uint32(math.Round(float64(sum.WebServer.IdleWorkers) / count))
+			sum.WebServer.Reading = uint32(math.Round(float64(sum.WebServer.Reading) / count))
+			sum.WebServer.Writing = uint32(math.Round(float64(sum.WebServer.Writing) / count))
+			sum.WebServer.Waiting = uint32(math.Round(float64(sum.WebServer.Waiting) / count))
+		}
+
+		// Average MySQL stats
+		if sum.MySQL != nil {
+			sum.MySQL.QueriesPerSec = twoDecimals(sum.MySQL.QueriesPerSec / count)
+			sum.MySQL.Connections = uint32(math.Round(float64(sum.MySQL.Connections) / count))
+			sum.MySQL.MaxConnections = uint32(math.Round(float64(sum.MySQL.MaxConnections) / count))
+			sum.MySQL.ThreadsRunning = uint32(math.Round(float64(sum.MySQL.ThreadsRunning) / count))
+			sum.MySQL.SlowQueriesPerSec = twoDecimals(sum.MySQL.SlowQueriesPerSec / count)
+			sum.MySQL.BufferPoolHitRate = twoDecimals(sum.MySQL.BufferPoolHitRate / count)
+			sum.MySQL.KeyCacheHitRate = twoDecimals(sum.MySQL.KeyCacheHitRate / count)
+			sum.MySQL.ReplicationLag = int64(math.Round(float64(sum.MySQL.ReplicationLag) / count))
+		}
+	}
+
+	// Average top processes and pick top 10
+	if len(procSums) > 0 {
+		procs := make([]system.TopProcess, 0, len(procSums))
+		for name, pa := range procSums {
+			procs = append(procs, system.TopProcess{
+				Name:   name,
+				CpuPct: twoDecimals(pa.cpuSum / pa.seen),
+				MemPct: float32(twoDecimals(float64(pa.memSum) / pa.seen)),
+				Rss:    pa.rssMax,
+				Count:  pa.count,
+			})
+		}
+		sort.Slice(procs, func(i, j int) bool {
+			if procs[i].CpuPct != procs[j].CpuPct {
+				return procs[i].CpuPct > procs[j].CpuPct
+			}
+			return procs[i].Rss > procs[j].Rss
+		})
+		if len(procs) > 10 {
+			procs = procs[:10]
+		}
+		sum.TopProc = procs
 	}
 
 	return sum
@@ -630,6 +759,7 @@ func deleteOldQuietHours(app core.App) error {
 
 	return nil
 }
+
 
 /* Round float to two decimals */
 func twoDecimals(value float64) float64 {

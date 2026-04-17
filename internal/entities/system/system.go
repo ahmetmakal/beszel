@@ -54,6 +54,16 @@ type Stats struct {
 	TcpConns          map[string]uint32    `json:"tcp,omitempty" cbor:"36,keyasint,omitempty"`   // TCP connection counts by state
 	WebServer         *WebServerStats      `json:"ws,omitempty" cbor:"37,keyasint,omitempty"`    // Web server stats
 	MySQL             *MySQLStats          `json:"mysql,omitempty" cbor:"38,keyasint,omitempty"` // MySQL/MariaDB stats
+	TopProc           []TopProcess         `json:"tp,omitempty" cbor:"39,keyasint,omitempty"`    // Top processes by CPU/memory
+}
+
+// TopProcess holds compact per-process metrics for embedding in system stats.
+type TopProcess struct {
+	Name   string  `json:"n" cbor:"0,keyasint"`                         // process name
+	CpuPct float64 `json:"c" cbor:"1,keyasint"`                         // cpu percent
+	MemPct float32 `json:"m" cbor:"2,keyasint"`                         // memory percent
+	Rss    uint64  `json:"r,omitempty" cbor:"3,keyasint,omitempty"`      // resident memory bytes
+	Count  uint16  `json:"k,omitempty" cbor:"4,keyasint,omitempty"`      // number of instances aggregated
 }
 
 // Uint8Slice wraps []uint8 to customize JSON encoding while keeping CBOR efficient.

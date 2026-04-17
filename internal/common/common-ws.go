@@ -74,3 +74,4 @@ type ContainerInfoRequest struct {
 type SystemdInfoRequest struct {
 	ServiceName string `cbor:"0,keyasint"`
 }
+

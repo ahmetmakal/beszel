@@ -162,6 +162,21 @@ export interface SystemStats {
 	ws?: WebServerStats
 	/** MySQL/MariaDB stats */
 	mysql?: MySQLStatsData
+	/** top processes */
+	tp?: TopProcess[]
+}
+
+export interface TopProcess {
+	/** name */
+	n: string
+	/** cpu percent */
+	c: number
+	/** memory percent */
+	m: number
+	/** resident memory bytes */
+	r?: number
+	/** instance count */
+	k?: number
 }
 
 export interface WebServerStats {
@@ -493,6 +508,7 @@ export interface VulnScanData {
 	kernel?: ServiceVulnInfo
 	kernelVersion?: string
 }
+
 
 export interface SystemdPackagesResponse {
 	services: SystemdPackageMap

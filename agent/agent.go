@@ -232,6 +232,11 @@ func (a *Agent) gatherStats(options common.DataRequestOptions) *system.CombinedD
 	}
 	slog.Debug("Extra FS", "data", data.Stats.ExtraFs)
 
+	// collect top processes (only on default 60s interval, same as systemd)
+	if cacheTimeMs == defaultDataCacheTimeMs {
+		data.Stats.TopProc = a.getTopProcesses(10)
+	}
+
 	a.cache.Set(data, cacheTimeMs)
 
 	return a.attachSystemDetails(data, cacheTimeMs, options.IncludeDetails)

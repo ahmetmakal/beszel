@@ -561,6 +561,7 @@ func (sys *System) FetchSmartDataFromAgent() (map[string]smart.SmartData, error)
 	return result, err
 }
 
+
 func makeStableHashId(strings ...string) string {
 	hash := fnv.New32a()
 	for _, str := range strings {
