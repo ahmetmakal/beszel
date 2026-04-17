@@ -2,9 +2,6 @@ version: 2
 
 project_name: beszel
 
-git:
-  allow_dirty: true
-
 before:
   hooks:
     - go mod tidy
