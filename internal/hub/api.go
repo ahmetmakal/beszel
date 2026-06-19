@@ -5,6 +5,7 @@ import (
 	"encoding/json"
 	"net/http"
 	"regexp"
+	"slices"
 	"strings"
 	"time"
 
@@ -136,6 +137,8 @@ func (h *Hub) registerApiRoutes(se *core.ServeEvent) error {
 	apiAuth.POST("/vulnerabilities/scan", h.triggerVulnScan).BindFunc(excludeReadOnlyRole)
 	// get vulnerability scan status
 	apiAuth.GET("/vulnerabilities/scan/status", h.getVulnScanStatus)
+	// vulnerability scan dashboard (queue, history, per-system status)
+	apiAuth.GET("/vulnerabilities/overview", h.getVulnOverview)
 	// /containers routes
 	if enabled, _ := utils.GetEnv("CONTAINER_DETAILS"); enabled != "false" {
 		// get container logs
@@ -478,6 +481,10 @@ func (h *Hub) getSystemdPackages(e *core.RequestEvent) error {
 func (h *Hub) triggerVulnScan(e *core.RequestEvent) error {
 	systemID := e.Request.URL.Query().Get("system")
 	if systemID != "" {
+		sys, err := h.sm.GetSystem(systemID)
+		if err != nil || !sys.HasUser(e.App, e.Auth) {
+			return e.NotFoundError("", nil)
+		}
 		h.vulnScanner.EnqueueSystemScan(systemID, h.onVulnScanComplete)
 	} else {
 		h.vulnScanner.EnqueueAllSystemsScan(h.onVulnScanComplete)
@@ -488,15 +495,76 @@ func (h *Hub) triggerVulnScan(e *core.RequestEvent) error {
 // getVulnScanStatus handles GET /api/beszel/vulnerabilities/scan/status requests.
 func (h *Hub) getVulnScanStatus(e *core.RequestEvent) error {
 	systemID := e.Request.URL.Query().Get("system")
+	if systemID != "" {
+		sys, err := h.sm.GetSystem(systemID)
+		if err != nil || !sys.HasUser(e.App, e.Auth) {
+			return e.NotFoundError("", nil)
+		}
+	}
 	status := h.vulnScanner.GetScanStatus(systemID)
 
-	if !status.Running && systemID != "" && status.ScannedAt == "" {
+	// Only include stored scannedAt when no scan is active.
+	if !status.Running && !status.Queued && systemID != "" && status.ScannedAt == "" {
 		if data, err := osv.GetVulnData(e.App, systemID); err == nil && data != nil {
 			status.ScannedAt = data.ScannedAt
 		}
 	}
 
 	return e.JSON(http.StatusOK, status)
+}
+
+func (h *Hub) userCanAccessSystem(app core.App, auth *core.Record, systemID string) bool {
+	if auth == nil {
+		return false
+	}
+	if v, _ := utils.GetEnv("SHARE_ALL_SYSTEMS"); v == "true" {
+		return true
+	}
+	rec, err := app.FindRecordById("systems", systemID)
+	if err != nil {
+		return false
+	}
+	return slices.Contains(rec.GetStringSlice("users"), auth.Id)
+}
+
+func (h *Hub) allowedSystemIDs(app core.App, auth *core.Record) map[string]bool {
+	allowed := make(map[string]bool)
+	if auth == nil {
+		return allowed
+	}
+	records, err := app.FindRecordsByFilter("systems", "", "", 1000, 0)
+	if err != nil {
+		return allowed
+	}
+	for _, rec := range records {
+		if h.userCanAccessSystem(app, auth, rec.Id) {
+			allowed[rec.Id] = true
+		}
+	}
+	return allowed
+}
+
+// getVulnOverview handles GET /api/beszel/vulnerabilities/overview requests.
+func (h *Hub) getVulnOverview(e *core.RequestEvent) error {
+	systemID := e.Request.URL.Query().Get("system")
+	isAdmin := e.Auth.GetString("role") == "admin"
+
+	if systemID == "" && !isAdmin {
+		return e.ForbiddenError("Admin access required for full vulnerability overview", nil)
+	}
+	if systemID != "" && !h.userCanAccessSystem(e.App, e.Auth, systemID) {
+		return e.NotFoundError("", nil)
+	}
+
+	allowed := h.allowedSystemIDs(e.App, e.Auth)
+	overview, err := h.vulnScanner.BuildOverview(e.App, allowed, systemID, h.vulnOverviewMeta())
+	if err != nil {
+		return e.InternalServerError("", err)
+	}
+	if systemID != "" && !isAdmin {
+		osv.FilterOverviewForSystem(overview, systemID)
+	}
+	return e.JSON(http.StatusOK, overview)
 }
 
 // refreshSmartData handles POST /api/beszel/smart/refresh requests

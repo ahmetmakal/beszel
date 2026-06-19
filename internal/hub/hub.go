@@ -10,6 +10,7 @@ import (
 	"os"
 	"path"
 	"strings"
+	"sync"
 	"time"
 
 	"github.com/henrygd/beszel/internal/alerts"
@@ -35,8 +36,11 @@ type Hub struct {
 	sm          *systems.SystemManager
 	hb          *heartbeat.Heartbeat
 	hbStop      chan struct{}
-	vulnScanner *osv.Scanner
-	pubKey      string
+	vulnScanner     *osv.Scanner
+	vulnMetaMu      sync.RWMutex
+	hubStartedAt    time.Time
+	lastCronScanAt  time.Time
+	pubKey          string
 	signer      ssh.Signer
 	appURL      string
 }
@@ -106,6 +110,9 @@ func (h *Hub) StartHub() error {
 			go h.hb.Start(h.hbStop)
 		}
 		// start first vulnerability scan after 1 minute
+		h.vulnMetaMu.Lock()
+		h.hubStartedAt = time.Now().UTC()
+		h.vulnMetaMu.Unlock()
 		go h.scheduleInitialVulnScan()
 		return e.Next()
 	})
@@ -151,10 +158,10 @@ func (h *Hub) registerCronJobs(_ *core.ServeEvent) error {
 	return nil
 }
 
-// scheduleInitialVulnScan waits 1 minute after hub start, then triggers the first scan.
+// scheduleInitialVulnScan waits 1 minute after hub start, then scans systems missing vuln data.
 func (h *Hub) scheduleInitialVulnScan() {
 	time.Sleep(1 * time.Minute)
-	h.runVulnScan()
+	h.vulnScanner.EnqueueUnscannedSystems(h.onVulnScanComplete)
 }
 
 // ScheduleVulnScanForSystem queues a vulnerability scan when package data changes.
@@ -163,6 +170,11 @@ func (h *Hub) ScheduleVulnScanForSystem(systemID string) {
 }
 
 func (h *Hub) onVulnScanComplete(systemID string) {
+	if systemID == "" {
+		h.vulnMetaMu.Lock()
+		h.lastCronScanAt = time.Now().UTC()
+		h.vulnMetaMu.Unlock()
+	}
 	if systemID != "" {
 		if record, err := h.FindRecordById("systems", systemID); err == nil {
 			h.HandleVulnerabilityAlertsForSystem(record)
@@ -170,6 +182,16 @@ func (h *Hub) onVulnScanComplete(systemID string) {
 		}
 	}
 	h.HandleVulnerabilityAlerts()
+}
+
+func (h *Hub) vulnOverviewMeta() osv.OverviewMeta {
+	h.vulnMetaMu.RLock()
+	defer h.vulnMetaMu.RUnlock()
+	return osv.OverviewMeta{
+		CronSchedule: "0 */6 * * * (every 6 hours)",
+		LastCronAt:   h.lastCronScanAt,
+		HubStartedAt: h.hubStartedAt,
+	}
 }
 
 // runVulnScan queues a full OSV vulnerability scan and triggers alerts when done.

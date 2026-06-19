@@ -515,6 +515,60 @@ export interface SystemdPackagesResponse {
 	vulns?: VulnScanData
 }
 
+export interface VulnQueueItem {
+	systemId: string
+	systemName: string
+	allSystems?: boolean
+	queued: boolean
+	running: boolean
+	enqueuedAt?: string
+	startedAt?: string
+	error?: string
+}
+
+export interface VulnScanEvent {
+	at: string
+	systemId?: string
+	systemName?: string
+	action: string
+	detail?: string
+}
+
+export interface SystemVulnOverview {
+	systemId: string
+	systemName: string
+	status: "no_packages" | "never_scanned" | "queued" | "running" | "scanned" | "failed"
+	packageCount: number
+	scannedAt?: string
+	vulnerableServices: number
+	kernelVulnerable: boolean
+	lastError?: string
+	queued: boolean
+	running: boolean
+}
+
+export interface VulnOverviewStats {
+	total: number
+	withPackages: number
+	scanned: number
+	neverScanned: number
+	queuedOrRunning: number
+	withVulns: number
+}
+
+export interface VulnScanOverview {
+	cronSchedule: string
+	nextCronAt: string
+	lastCronAt?: string
+	hubStartedAt?: string
+	queue: VulnQueueItem[]
+	queueLength: number
+	recentEvents: VulnScanEvent[]
+	systems: SystemVulnOverview[]
+	stats: VulnOverviewStats
+	cacheEntries: number
+}
+
 export interface ServicePkgInfo {
 	s: string // service name
 	p: string // package name

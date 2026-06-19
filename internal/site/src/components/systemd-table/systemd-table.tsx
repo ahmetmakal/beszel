@@ -13,12 +13,11 @@ import {
 	type VisibilityState,
 } from "@tanstack/react-table"
 import { useVirtualizer, type VirtualItem } from "@tanstack/react-virtual"
-import { ExternalLinkIcon, LoaderCircleIcon, RefreshCwIcon, ShieldAlertIcon, ShieldCheckIcon, ShieldQuestionIcon } from "lucide-react"
+import { ExternalLinkIcon, LoaderCircleIcon, ShieldAlertIcon, ShieldCheckIcon, ShieldQuestionIcon } from "lucide-react"
 import { listenKeys } from "nanostores"
 import { memo, type ReactNode, useEffect, useMemo, useRef, useState } from "react"
 import { getStatusColor, createSystemdTableCols } from "@/components/systemd-table/systemd-table-columns"
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert"
-import { Button } from "@/components/ui/button"
 import { Card, CardHeader, CardTitle } from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
 import { Sheet, SheetContent, SheetHeader, SheetTitle } from "@/components/ui/sheet"
@@ -28,6 +27,7 @@ import { ServiceStatus, ServiceStatusLabels, type ServiceSubState, ServiceSubSta
 import { $allSystemsById } from "@/lib/stores"
 import { cn, decimalString, formatBytes, useBrowserStorage } from "@/lib/utils"
 import type { SystemdRecord, SystemdServiceDetails, ServicePkgInfo, SystemdPackageMap, VulnScanData, ServiceVulnInfo, SystemdPackagesResponse } from "@/types"
+import { VulnScanPanel } from "@/components/vuln-scan/vuln-scan-panel"
 import { Separator } from "../ui/separator"
 
 export default function SystemdTable({ systemId }: { systemId?: string }) {
@@ -43,7 +43,6 @@ export default function SystemdTable({ systemId }: { systemId?: string }) {
 	const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([])
 	const [columnVisibility, setColumnVisibility] = useState<VisibilityState>({})
 	const [globalFilter, setGlobalFilter] = useState("")
-	const [vulnScanning, setVulnScanning] = useState(false)
 
 	// clear old data when systemId changes
 	useEffect(() => {
@@ -179,42 +178,6 @@ export default function SystemdTable({ systemId }: { systemId?: string }) {
 		})
 	}
 
-	function triggerVulnScan() {
-		if (!systemId || vulnScanning) return
-		setVulnScanning(true)
-		const startedAt = Date.now()
-		pb.send("/api/beszel/vulnerabilities/scan", { method: "POST", query: { system: systemId } })
-			.then(() => pollVulnScanStatus(startedAt))
-			.catch(() => setVulnScanning(false))
-	}
-
-	function pollVulnScanStatus(startedAt: number) {
-		if (!systemId) {
-			setVulnScanning(false)
-			return
-		}
-		pb.send<{ running: boolean; scannedAt?: string; error?: string }>("/api/beszel/vulnerabilities/scan/status", {
-			query: { system: systemId },
-		})
-			.then((status) => {
-				if (status.error) {
-					setVulnScanning(false)
-					return
-				}
-				const scanFinished =
-					!status.running &&
-					(status.scannedAt ? new Date(status.scannedAt).getTime() >= startedAt - 5000 : Date.now() - startedAt > 3000)
-				if (scanFinished) {
-					return refreshVulnData().finally(() => setVulnScanning(false))
-				}
-				if (Date.now() - startedAt > 120_000) {
-					return refreshVulnData().finally(() => setVulnScanning(false))
-				}
-				setTimeout(() => pollVulnScanStatus(startedAt), 2000)
-			})
-			.catch(() => setVulnScanning(false))
-	}
-
 	if (!data.length && !globalFilter) {
 		return null
 	}
@@ -222,7 +185,10 @@ export default function SystemdTable({ systemId }: { systemId?: string }) {
 	return (
 		<Card className="@container w-full px-3 py-5 sm:py-6 sm:px-6">
 			<CardHeader className="p-0 mb-3 sm:mb-4">
-				<div className="grid md:flex gap-x-5 gap-y-3 w-full items-end">
+				{systemId && (
+					<VulnScanPanel systemId={systemId} compact showSystemsTable={false} onOverviewUpdate={refreshVulnData} />
+				)}
+				<div className="grid md:flex gap-x-5 gap-y-3 w-full items-end mt-3">
 					<div className="px-2 sm:px-1">
 						<CardTitle className="mb-2">
 							<Trans>Systemd Services</Trans>
@@ -236,19 +202,6 @@ export default function SystemdTable({ systemId }: { systemId?: string }) {
 						</div>
 					</div>
 					<div className="ms-auto flex items-center gap-2">
-						{systemId && (
-							<Button
-								variant="outline"
-								size="sm"
-								className="h-9 gap-1.5 shrink-0"
-								disabled={vulnScanning}
-								onClick={triggerVulnScan}
-								title={t`Scan for vulnerabilities`}
-							>
-								<RefreshCwIcon className={cn("size-3.5", vulnScanning && "animate-spin")} />
-								<Trans>Vuln Scan</Trans>
-							</Button>
-						)}
 						<Input
 							placeholder={t`Filter...`}
 							value={globalFilter}

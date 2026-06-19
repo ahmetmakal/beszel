@@ -7,6 +7,7 @@ import (
 
 // ScanStatus tracks vulnerability scan progress for a system (or all systems when ID is "").
 type ScanStatus struct {
+	Queued    bool      `json:"queued"`
 	Running   bool      `json:"running"`
 	StartedAt time.Time `json:"startedAt,omitempty"`
 	ScannedAt string    `json:"scannedAt,omitempty"`
@@ -31,6 +32,9 @@ func (s *Scanner) enqueueScan(systemID string, onComplete func(systemID string))
 		return
 	}
 	s.pending[systemID] = true
+	s.queueOrder = append(s.queueOrder, queueEntry{systemID: systemID, enqueuedAt: time.Now().UTC()})
+	s.setStatus(systemID, ScanStatus{Queued: true, StartedAt: time.Now().UTC()})
+	s.RecordScanEvent("queued", systemID, ResolveSystemName(s.app, systemID), "")
 
 	select {
 	case s.queue <- scanJob{systemID: systemID, onComplete: onComplete}:
@@ -48,12 +52,24 @@ func (s *Scanner) worker() {
 	for job := range s.queue {
 		s.pendingMu.Lock()
 		delete(s.pending, job.systemID)
+		s.removeQueueEntryLocked(job.systemID)
 		s.pendingMu.Unlock()
 		s.runJob(job)
 	}
 }
 
+func (s *Scanner) removeQueueEntryLocked(systemID string) {
+	for i, e := range s.queueOrder {
+		if e.systemID == systemID {
+			s.queueOrder = append(s.queueOrder[:i], s.queueOrder[i+1:]...)
+			return
+		}
+	}
+}
+
 func (s *Scanner) runJob(job scanJob) {
+	name := ResolveSystemName(s.app, job.systemID)
+	s.RecordScanEvent("started", job.systemID, name, "")
 	s.setStatus(job.systemID, ScanStatus{Running: true, StartedAt: time.Now().UTC()})
 
 	ctx, cancel := s.jobTimeout(job.systemID)
@@ -70,15 +86,43 @@ func (s *Scanner) runJob(job scanJob) {
 	if err != nil {
 		status.Error = err.Error()
 		s.app.Logger().Error("Vulnerability scan failed", "system", job.systemID, "err", err)
-	} else if job.systemID != "" {
-		if data, getErr := GetVulnData(s.app, job.systemID); getErr == nil && data != nil {
-			status.ScannedAt = data.ScannedAt
+		s.RecordScanEvent("failed", job.systemID, name, err.Error())
+	} else {
+		s.RecordScanEvent("completed", job.systemID, name, "")
+		if job.systemID != "" {
+			if data, getErr := GetVulnData(s.app, job.systemID); getErr == nil && data != nil {
+				status.ScannedAt = data.ScannedAt
+			}
 		}
 	}
 	s.setStatus(job.systemID, status)
 
 	if job.onComplete != nil {
 		job.onComplete(job.systemID)
+	}
+}
+
+// EnqueueUnscannedSystems queues scans for systems that have package data but no vuln results yet.
+func (s *Scanner) EnqueueUnscannedSystems(onComplete func(systemID string)) {
+	var rows []struct {
+		ID string `db:"id"`
+	}
+	err := s.app.DB().NewQuery(`
+		SELECT id FROM system_details
+		WHERE (packages != '' AND packages IS NOT NULL)
+		  AND (vulns IS NULL OR vulns = '' OR vulns = 'null')
+	`).All(&rows)
+	if err != nil {
+		s.app.Logger().Error("Failed to list unscanned systems", "err", err)
+		return
+	}
+	if len(rows) == 0 {
+		s.app.Logger().Info("No unscanned systems with packages found")
+		return
+	}
+	s.app.Logger().Info("Queueing vulnerability scans for unscanned systems", "count", len(rows))
+	for _, row := range rows {
+		s.enqueueScan(row.ID, onComplete)
 	}
 }
 
@@ -101,11 +145,19 @@ func (s *Scanner) setStatus(systemID string, status ScanStatus) {
 // GetScanStatus returns the current scan status for a system (or all systems when ID is "").
 func (s *Scanner) GetScanStatus(systemID string) ScanStatus {
 	s.statusMu.RLock()
-	defer s.statusMu.RUnlock()
-	if s.statuses == nil {
-		return ScanStatus{}
+	var status ScanStatus
+	if s.statuses != nil {
+		status = s.statuses[systemID]
 	}
-	return s.statuses[systemID]
+	s.statusMu.RUnlock()
+
+	s.pendingMu.Lock()
+	if s.pending[systemID] && !status.Running {
+		status.Queued = true
+	}
+	s.pendingMu.Unlock()
+
+	return status
 }
 
 // EnqueueSystemScan queues a scan for a single system.

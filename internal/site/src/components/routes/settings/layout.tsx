@@ -9,6 +9,7 @@ import {
 	FingerprintIcon,
 	HeartPulseIcon,
 	SettingsIcon,
+	ShieldIcon,
 } from "lucide-react"
 import { lazy, useEffect } from "react"
 import { $router } from "@/components/router.tsx"
@@ -26,6 +27,7 @@ const configYamlSettingsImport = () => import("./config-yaml.tsx")
 const fingerprintsSettingsImport = () => import("./tokens-fingerprints.tsx")
 const alertsHistoryDataTableSettingsImport = () => import("./alerts-history-data-table.tsx")
 const heartbeatSettingsImport = () => import("./heartbeat.tsx")
+const vulnerabilitiesSettingsImport = () => import("./vulnerabilities.tsx")
 
 const GeneralSettings = lazy(generalSettingsImport)
 const NotificationsSettings = lazy(notificationsSettingsImport)
@@ -33,6 +35,7 @@ const ConfigYamlSettings = lazy(configYamlSettingsImport)
 const FingerprintsSettings = lazy(fingerprintsSettingsImport)
 const AlertsHistoryDataTableSettings = lazy(alertsHistoryDataTableSettingsImport)
 const HeartbeatSettings = lazy(heartbeatSettingsImport)
+const VulnerabilitiesSettings = lazy(vulnerabilitiesSettingsImport)
 
 export async function saveSettings(newSettings: Partial<UserSettings>) {
 	try {
@@ -89,6 +92,13 @@ export default function SettingsLayout() {
 			href: getPagePath($router, "settings", { name: "alert-history" }),
 			icon: AlertOctagonIcon,
 			preload: alertsHistoryDataTableSettingsImport,
+		},
+		{
+			title: t`Vulnerability Scans`,
+			href: getPagePath($router, "settings", { name: "vulnerabilities" }),
+			icon: ShieldIcon,
+			admin: true,
+			preload: vulnerabilitiesSettingsImport,
 		},
 		{
 			title: t`Heartbeat`,
@@ -159,5 +169,7 @@ function SettingsContent({ name }: { name: string }) {
 			return <AlertsHistoryDataTableSettings />
 		case "heartbeat":
 			return <HeartbeatSettings />
+		case "vulnerabilities":
+			return <VulnerabilitiesSettings />
 	}
 }

@@ -110,8 +110,11 @@ type Scanner struct {
 	workerOnce sync.Once
 	pendingMu  sync.Mutex
 	pending    map[string]bool
+	queueOrder []queueEntry
 	statusMu   sync.RWMutex
 	statuses   map[string]ScanStatus
+	eventsMu   sync.RWMutex
+	events     []ScanEvent
 }
 
 // NewScanner creates a new OSV vulnerability scanner.
@@ -191,6 +194,7 @@ func (s *Scanner) scanAndSaveSystem(ctx context.Context, row systemRow) error {
 		}
 	}
 	if len(pkgs) == 0 && row.Kernel == "" {
+		s.app.Logger().Info("OSV scan skipped: no packages or kernel", "system", row.ID)
 		return nil
 	}
 
@@ -231,7 +235,11 @@ func (s *Scanner) scanAndSaveSystem(ctx context.Context, row systemRow) error {
 	_, err = s.app.DB().NewQuery("UPDATE system_details SET vulns = {:vulns} WHERE id = {:id}").
 		Bind(dbx.Params{"vulns": string(vulnsJSON), "id": row.ID}).
 		Execute()
-	return err
+	if err != nil {
+		return err
+	}
+	s.app.Logger().Info("OSV scan saved", "system", row.ID, "services", len(results), "hasKernel", scanData.Kernel != nil)
+	return nil
 }
 
 // pkgKey deduplicates packages across services.
