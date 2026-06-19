@@ -2,7 +2,6 @@
 package hub
 
 import (
-	"context"
 	"crypto/ed25519"
 	"encoding/pem"
 	"errors"
@@ -147,8 +146,8 @@ func (h *Hub) registerCronJobs(_ *core.ServeEvent) error {
 	h.Cron().MustAdd("delete old records", "8 * * * *", h.rm.DeleteOldRecords)
 	// create longer records every 10 minutes
 	h.Cron().MustAdd("create longer records", "*/10 * * * *", h.rm.CreateLongerRecords)
-	// run OSV vulnerability scan every 12 hours (at minute 30 past hours 0 and 12)
-	h.Cron().MustAdd("vulnerability scan", "30 */12 * * *", h.runVulnScan)
+	// run OSV vulnerability scan every 6 hours
+	h.Cron().MustAdd("vulnerability scan", "0 */6 * * *", h.runVulnScan)
 	return nil
 }
 
@@ -158,15 +157,24 @@ func (h *Hub) scheduleInitialVulnScan() {
 	h.runVulnScan()
 }
 
-// runVulnScan executes a full OSV vulnerability scan and triggers alerts.
-func (h *Hub) runVulnScan() {
-	ctx, cancel := context.WithTimeout(context.Background(), 30*time.Minute)
-	defer cancel()
-	if err := h.vulnScanner.ScanAllSystems(ctx); err != nil {
-		h.Logger().Error("Vulnerability scan failed", "err", err)
-		return
+// ScheduleVulnScanForSystem queues a vulnerability scan when package data changes.
+func (h *Hub) ScheduleVulnScanForSystem(systemID string) {
+	h.vulnScanner.EnqueueSystemScan(systemID, h.onVulnScanComplete)
+}
+
+func (h *Hub) onVulnScanComplete(systemID string) {
+	if systemID != "" {
+		if record, err := h.FindRecordById("systems", systemID); err == nil {
+			h.HandleVulnerabilityAlertsForSystem(record)
+			return
+		}
 	}
 	h.HandleVulnerabilityAlerts()
+}
+
+// runVulnScan queues a full OSV vulnerability scan and triggers alerts when done.
+func (h *Hub) runVulnScan() {
+	h.vulnScanner.EnqueueAllSystemsScan(h.onVulnScanComplete)
 }
 
 // GetSSHKey generates key pair if it doesn't exist and returns signer

@@ -105,14 +105,22 @@ type osvSeverity struct {
 type Scanner struct {
 	app    core.App
 	client *http.Client
-	mu     sync.Mutex
+
+	queue      chan scanJob
+	workerOnce sync.Once
+	pendingMu  sync.Mutex
+	pending    map[string]bool
+	statusMu   sync.RWMutex
+	statuses   map[string]ScanStatus
 }
 
 // NewScanner creates a new OSV vulnerability scanner.
 func NewScanner(app core.App) *Scanner {
 	return &Scanner{
-		app:    app,
-		client: &http.Client{Timeout: 30 * time.Second},
+		app:     app,
+		client:  &http.Client{Timeout: 30 * time.Second},
+		queue:   make(chan scanJob, 32),
+		pending: make(map[string]bool),
 	}
 }
 
@@ -123,11 +131,8 @@ type systemRow struct {
 	Kernel      string `db:"kernel"`
 }
 
-// ScanSystem scans a single system for vulnerabilities.
-func (s *Scanner) ScanSystem(ctx context.Context, systemID string) error {
-	s.mu.Lock()
-	defer s.mu.Unlock()
-
+// scanSystemUnlocked scans a single system for vulnerabilities.
+func (s *Scanner) scanSystemUnlocked(ctx context.Context, systemID string) error {
 	s.app.Logger().Info("OSV vulnerability scan started (single system)", "system", systemID)
 
 	var row systemRow
@@ -142,12 +147,8 @@ func (s *Scanner) ScanSystem(ctx context.Context, systemID string) error {
 	return s.scanAndSaveSystem(ctx, row)
 }
 
-// ScanAllSystems scans packages on all systems for known vulnerabilities.
-// Results are stored in system_details.vulns.
-func (s *Scanner) ScanAllSystems(ctx context.Context) error {
-	s.mu.Lock()
-	defer s.mu.Unlock()
-
+// scanAllSystemsUnlocked scans packages on all systems for known vulnerabilities.
+func (s *Scanner) scanAllSystemsUnlocked(ctx context.Context) error {
 	s.app.Logger().Info("OSV vulnerability scan started")
 
 	var rows []systemRow
@@ -165,17 +166,21 @@ func (s *Scanner) ScanAllSystems(ctx context.Context) error {
 		return nil
 	}
 
+	var firstErr error
 	for _, row := range rows {
 		if ctx.Err() != nil {
 			return ctx.Err()
 		}
 		if err := s.scanAndSaveSystem(ctx, row); err != nil {
 			s.app.Logger().Error("OSV scan failed for system", "system", row.ID, "err", err)
+			if firstErr == nil {
+				firstErr = err
+			}
 		}
 	}
 
 	s.app.Logger().Info("OSV vulnerability scan completed", "systems", len(rows))
-	return nil
+	return firstErr
 }
 
 func (s *Scanner) scanAndSaveSystem(ctx context.Context, row systemRow) error {
@@ -196,9 +201,11 @@ func (s *Scanner) scanAndSaveSystem(ctx context.Context, row systemRow) error {
 	if len(pkgs) > 0 {
 		pkgResults, err := s.scanSystemPackages(ctx, pkgs, ecosystem)
 		if err != nil {
-			return err
+			s.app.Logger().Warn("OSV package scan partial failure", "system", row.ID, "err", err)
 		}
-		results = pkgResults
+		if pkgResults != nil {
+			results = pkgResults
+		}
 	}
 
 	scanData := VulnScanData{
@@ -241,19 +248,92 @@ func (s *Scanner) scanSystemPackages(ctx context.Context, pkgs []*packages.Packa
 		svcByPkg[k] = append(svcByPkg[k], p.Service)
 	}
 
-	// Build batch query items (ordered).
 	keys := make([]pkgKey, 0, len(svcByPkg))
-	queries := make([]batchQuery, 0, len(svcByPkg))
+	cacheKeys := make([]cacheKey, 0, len(svcByPkg))
 	for k := range svcByPkg {
+		keys = append(keys, k)
+		cacheKeys = append(cacheKeys, cacheKeyFromPkg(k, ecosystem))
+	}
+
+	cached := s.loadCacheEntries(cacheKeys)
+	vulnsByPkg := make(map[pkgKey][]VulnInfo, len(svcByPkg))
+
+	// Resolve from cache first; only query OSV for missing or stale entries.
+	var toQuery []pkgKey
+	for _, k := range keys {
+		ck := cacheKeyFromPkg(k, ecosystem)
+		if entry, ok := cached[ck]; ok && isCacheFresh(entry) {
+			if entry.Status == "vulnerable" && len(entry.Vulns) > 0 {
+				vulnsByPkg[k] = entry.Vulns
+			} else {
+				vulnsByPkg[k] = nil
+			}
+			continue
+		}
+		toQuery = append(toQuery, k)
+	}
+
+	if len(toQuery) > 0 {
+		s.app.Logger().Info("OSV querying packages", "count", len(toQuery), "cached", len(keys)-len(toQuery), "ecosystem", ecosystem)
+		queried, err := s.queryPackagesFromOSV(ctx, toQuery, ecosystem)
+		if err != nil {
+			// Fall back to stale cache entries when the API is unavailable.
+			for _, k := range toQuery {
+				ck := cacheKeyFromPkg(k, ecosystem)
+				if entry, ok := cached[ck]; ok {
+					if entry.Status == "vulnerable" && len(entry.Vulns) > 0 {
+						vulnsByPkg[k] = entry.Vulns
+					}
+					continue
+				}
+			}
+			if len(vulnsByPkg) == 0 {
+				return nil, err
+			}
+			s.app.Logger().Warn("OSV query failed, using partial cache results", "err", err)
+		} else {
+			for k, vulns := range queried {
+				vulnsByPkg[k] = vulns
+				status := "safe"
+				if len(vulns) > 0 {
+					status = "vulnerable"
+				}
+				s.saveCacheEntry(cacheKeyFromPkg(k, ecosystem), cachedEntry{
+					Vulns:     vulns,
+					Status:    status,
+					ScannedAt: time.Now().UTC(),
+				})
+			}
+		}
+	} else {
+		s.app.Logger().Info("OSV scan served entirely from cache", "packages", len(keys), "ecosystem", ecosystem)
+	}
+
+	results := make(map[string]*ServiceVulnInfo, len(pkgs))
+	for k, services := range svcByPkg {
+		info := &ServiceVulnInfo{Status: "safe"}
+		if vulns, ok := vulnsByPkg[k]; ok && len(vulns) > 0 {
+			info.Status = "vulnerable"
+			info.Vulns = vulns
+		}
+		for _, svc := range services {
+			results[svc] = info
+		}
+	}
+	return results, nil
+}
+
+// queryPackagesFromOSV queries OSV.dev for the given packages (cache miss path).
+func (s *Scanner) queryPackagesFromOSV(ctx context.Context, keys []pkgKey, ecosystem string) (map[pkgKey][]VulnInfo, error) {
+	queries := make([]batchQuery, 0, len(keys))
+	for _, k := range keys {
 		bp := batchPackage{Name: k.name}
 		if ecosystem != "" {
 			bp.Ecosystem = ecosystem
 		}
 		queries = append(queries, batchQuery{Package: bp, Version: k.version})
-		keys = append(keys, k)
 	}
 
-	// Phase 1: querybatch — find which packages have vulns.
 	affectedPkgs := make(map[pkgKey]bool)
 	for i := 0; i < len(queries); i += batchSize {
 		if ctx.Err() != nil {
@@ -286,16 +366,6 @@ func (s *Scanner) scanSystemPackages(ctx context.Context, pkgs []*packages.Packa
 			idx := i + j
 			if idx < len(keys) && len(r.Vulns) > 0 {
 				affectedPkgs[keys[idx]] = true
-				vulnIDs := make([]string, len(r.Vulns))
-				for vi, vv := range r.Vulns {
-					vulnIDs[vi] = vv.ID
-				}
-				s.app.Logger().Debug("OSV batch hit",
-					"pkg", keys[idx].name,
-					"version", keys[idx].version,
-					"ecosystem", ecosystem,
-					"vulns", strings.Join(vulnIDs, ", "),
-				)
 			}
 		}
 
@@ -304,40 +374,24 @@ func (s *Scanner) scanSystemPackages(ctx context.Context, pkgs []*packages.Packa
 		}
 	}
 
-	// Phase 2: /v1/query for each affected package to get summaries.
-	vulnsByPkg := make(map[pkgKey][]VulnInfo)
-	for k := range affectedPkgs {
+	vulnsByPkg := make(map[pkgKey][]VulnInfo, len(keys))
+	for _, k := range keys {
 		if ctx.Err() != nil {
 			return nil, ctx.Err()
+		}
+		if !affectedPkgs[k] {
+			vulnsByPkg[k] = nil
+			continue
 		}
 		vulns, err := s.queryPackageVulns(ctx, k, ecosystem)
 		if err != nil {
 			s.app.Logger().Debug("OSV query failed", "pkg", k.name, "err", err)
-			vulnsByPkg[k] = []VulnInfo{{ID: "scan-error", Summary: "failed to fetch details"}}
 			continue
 		}
-		s.app.Logger().Debug("OSV query result",
-			"pkg", k.name,
-			"version", k.version,
-			"vulnCount", len(vulns),
-		)
 		vulnsByPkg[k] = vulns
 		time.Sleep(queryDelay)
 	}
-
-	// Build per-service results.
-	results := make(map[string]*ServiceVulnInfo, len(pkgs))
-	for k, services := range svcByPkg {
-		info := &ServiceVulnInfo{Status: "safe"}
-		if vulns, ok := vulnsByPkg[k]; ok && len(vulns) > 0 {
-			info.Status = "vulnerable"
-			info.Vulns = vulns
-		}
-		for _, svc := range services {
-			results[svc] = info
-		}
-	}
-	return results, nil
+	return vulnsByPkg, nil
 }
 
 func (s *Scanner) queryPackageVulns(ctx context.Context, k pkgKey, ecosystem string) ([]VulnInfo, error) {
@@ -565,6 +619,24 @@ func detectEcosystem(osName string) string {
 		return "Rocky Linux"
 	}
 
+	// RHEL / CentOS / Oracle Linux — use AlmaLinux ecosystem as closest match
+	for _, distro := range []string{"rhel", "centos", "oracle", "ol", "amzn", "amazon", "cloudlinux"} {
+		if strings.Contains(lower, distro) {
+			if m := majorRe.FindString(osName); m != "" {
+				return "AlmaLinux:" + m
+			}
+			return "AlmaLinux"
+		}
+	}
+
+	// Fedora — map to AlmaLinux major version
+	if strings.Contains(lower, "fedora") {
+		if m := majorRe.FindString(osName); m != "" {
+			return "AlmaLinux:" + m
+		}
+		return "AlmaLinux"
+	}
+
 	return ""
 }
 
@@ -582,7 +654,7 @@ func kernelPackageName(ecosystem string) string {
 	return ""
 }
 
-// scanKernel queries OSV for kernel vulnerabilities.
+// scanKernel queries OSV for kernel vulnerabilities (with cache).
 func (s *Scanner) scanKernel(ctx context.Context, kernelVersion, ecosystem string) (*ServiceVulnInfo, error) {
 	pkgName := kernelPackageName(ecosystem)
 	if pkgName == "" {
@@ -590,14 +662,31 @@ func (s *Scanner) scanKernel(ctx context.Context, kernelVersion, ecosystem strin
 	}
 
 	k := pkgKey{name: pkgName, version: kernelVersion}
+	ck := cacheKeyFromPkg(k, ecosystem)
+
+	if cached := s.loadCacheEntries([]cacheKey{ck}); len(cached) > 0 {
+		if entry, ok := cached[ck]; ok && isCacheFresh(entry) {
+			info := &ServiceVulnInfo{Status: entry.Status}
+			if len(entry.Vulns) > 0 {
+				info.Vulns = entry.Vulns
+			}
+			return info, nil
+		}
+	}
+
 	vulns, err := s.queryPackageVulns(ctx, k, ecosystem)
 	if err != nil {
 		return nil, err
 	}
 
-	info := &ServiceVulnInfo{Status: "safe"}
+	status := "safe"
 	if len(vulns) > 0 {
-		info.Status = "vulnerable"
+		status = "vulnerable"
+	}
+	s.saveCacheEntry(ck, cachedEntry{Vulns: vulns, Status: status, ScannedAt: time.Now().UTC()})
+
+	info := &ServiceVulnInfo{Status: status}
+	if len(vulns) > 0 {
 		info.Vulns = vulns
 	}
 	return info, nil

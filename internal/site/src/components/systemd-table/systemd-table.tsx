@@ -171,19 +171,46 @@ export default function SystemdTable({ systemId }: { systemId?: string }) {
 		return totals
 	}, [data])
 
+	function refreshVulnData() {
+		if (!systemId) return Promise.resolve()
+		return pb.send<SystemdPackagesResponse>("/api/beszel/systemd/packages", { query: { system: systemId } }).then((resp) => {
+			setPkgMap(resp.services ?? {})
+			setVulnData(resp.vulns ?? null)
+		})
+	}
+
 	function triggerVulnScan() {
 		if (!systemId || vulnScanning) return
 		setVulnScanning(true)
+		const startedAt = Date.now()
 		pb.send("/api/beszel/vulnerabilities/scan", { method: "POST", query: { system: systemId } })
-			.then(() => {
-				setTimeout(() => {
-					pb.send<SystemdPackagesResponse>("/api/beszel/systemd/packages", { query: { system: systemId } })
-						.then((resp) => {
-							setPkgMap(resp.services ?? {})
-							setVulnData(resp.vulns ?? null)
-						})
-						.finally(() => setVulnScanning(false))
-				}, 5000)
+			.then(() => pollVulnScanStatus(startedAt))
+			.catch(() => setVulnScanning(false))
+	}
+
+	function pollVulnScanStatus(startedAt: number) {
+		if (!systemId) {
+			setVulnScanning(false)
+			return
+		}
+		pb.send<{ running: boolean; scannedAt?: string; error?: string }>("/api/beszel/vulnerabilities/scan/status", {
+			query: { system: systemId },
+		})
+			.then((status) => {
+				if (status.error) {
+					setVulnScanning(false)
+					return
+				}
+				const scanFinished =
+					!status.running &&
+					(status.scannedAt ? new Date(status.scannedAt).getTime() >= startedAt - 5000 : Date.now() - startedAt > 3000)
+				if (scanFinished) {
+					return refreshVulnData().finally(() => setVulnScanning(false))
+				}
+				if (Date.now() - startedAt > 120_000) {
+					return refreshVulnData().finally(() => setVulnScanning(false))
+				}
+				setTimeout(() => pollVulnScanStatus(startedAt), 2000)
 			})
 			.catch(() => setVulnScanning(false))
 	}

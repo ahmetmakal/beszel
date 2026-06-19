@@ -56,6 +56,7 @@ type hubLike interface {
 	HandleStatusAlerts(status string, systemRecord *core.Record) error
 	HandleServiceAlerts(systemRecord *core.Record) error
 	CancelPendingStatusAlerts(systemID string)
+	ScheduleVulnScanForSystem(systemID string)
 }
 
 // NewSystemManager creates a new SystemManager instance with the provided hub.

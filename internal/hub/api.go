@@ -134,6 +134,8 @@ func (h *Hub) registerApiRoutes(se *core.ServeEvent) error {
 	apiAuth.GET("/systemd/packages", h.getSystemdPackages)
 	// trigger vulnerability rescan for a system
 	apiAuth.POST("/vulnerabilities/scan", h.triggerVulnScan).BindFunc(excludeReadOnlyRole)
+	// get vulnerability scan status
+	apiAuth.GET("/vulnerabilities/scan/status", h.getVulnScanStatus)
 	// /containers routes
 	if enabled, _ := utils.GetEnv("CONTAINER_DETAILS"); enabled != "false" {
 		// get container logs
@@ -472,25 +474,29 @@ func (h *Hub) getSystemdPackages(e *core.RequestEvent) error {
 }
 
 // triggerVulnScan handles POST /api/beszel/vulnerabilities/scan requests.
-// Runs an OSV vulnerability scan for a single system (or all systems if no system param).
+// Queues an OSV vulnerability scan for a single system (or all systems if no system param).
 func (h *Hub) triggerVulnScan(e *core.RequestEvent) error {
 	systemID := e.Request.URL.Query().Get("system")
-	go func() {
-		ctx, cancel := context.WithTimeout(context.Background(), 10*time.Minute)
-		defer cancel()
-		var err error
-		if systemID != "" {
-			err = h.vulnScanner.ScanSystem(ctx, systemID)
-		} else {
-			err = h.vulnScanner.ScanAllSystems(ctx)
-		}
-		if err != nil {
-			h.Logger().Error("Manual vulnerability scan failed", "err", err)
-			return
-		}
-		h.HandleVulnerabilityAlerts()
-	}()
+	if systemID != "" {
+		h.vulnScanner.EnqueueSystemScan(systemID, h.onVulnScanComplete)
+	} else {
+		h.vulnScanner.EnqueueAllSystemsScan(h.onVulnScanComplete)
+	}
 	return e.JSON(http.StatusOK, map[string]string{"status": "started"})
+}
+
+// getVulnScanStatus handles GET /api/beszel/vulnerabilities/scan/status requests.
+func (h *Hub) getVulnScanStatus(e *core.RequestEvent) error {
+	systemID := e.Request.URL.Query().Get("system")
+	status := h.vulnScanner.GetScanStatus(systemID)
+
+	if !status.Running && systemID != "" && status.ScannedAt == "" {
+		if data, err := osv.GetVulnData(e.App, systemID); err == nil && data != nil {
+			status.ScannedAt = data.ScannedAt
+		}
+	}
+
+	return e.JSON(http.StatusOK, status)
 }
 
 // refreshSmartData handles POST /api/beszel/smart/refresh requests

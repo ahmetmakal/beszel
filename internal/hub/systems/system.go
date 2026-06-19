@@ -191,6 +191,7 @@ func (sys *System) createRecords(data *system.CombinedData) (*core.Record, error
 		return nil, err
 	}
 	hub := sys.manager.hub
+	var vulnScanNeeded bool
 	err = hub.RunInTransaction(func(txApp core.App) error {
 		// add system_stats record
 		systemStatsCollection, err := txApp.FindCachedCollectionByNameOrId("system_stats")
@@ -234,9 +235,11 @@ func (sys *System) createRecords(data *system.CombinedData) (*core.Record, error
 
 		// add system details record
 		if data.Details != nil {
-			if err := createSystemDetailsRecord(txApp, data.Details, data.PackageVersions, sys.Id); err != nil {
+			changed, err := createSystemDetailsRecord(txApp, data.Details, data.PackageVersions, sys.Id)
+			if err != nil {
 				return err
 			}
+			vulnScanNeeded = changed
 		}
 
 		// update system record (do this last because it triggers alerts and we need above records to be inserted first)
@@ -248,10 +251,14 @@ func (sys *System) createRecords(data *system.CombinedData) (*core.Record, error
 		return nil
 	})
 
+	if err == nil && vulnScanNeeded {
+		hub.ScheduleVulnScanForSystem(sys.Id)
+	}
+
 	return systemRecord, err
 }
 
-func createSystemDetailsRecord(app core.App, data *system.Details, pkgVersions any, systemId string) error {
+func createSystemDetailsRecord(app core.App, data *system.Details, pkgVersions any, systemId string) (bool, error) {
 	collectionName := "system_details"
 	var existing struct {
 		Kernel   string `db:"kernel"`
@@ -263,6 +270,7 @@ func createSystemDetailsRecord(app core.App, data *system.Details, pkgVersions a
 		Where(dbx.HashExp{"id": systemId}).
 		One(&existing)
 
+	changed := false
 	params := dbx.Params{
 		"id":       systemId,
 		"system":   systemId,
@@ -281,23 +289,30 @@ func createSystemDetailsRecord(app core.App, data *system.Details, pkgVersions a
 	if pkgVersions != nil {
 		if jsonBytes, err := json.Marshal(pkgVersions); err == nil {
 			newPackages := string(jsonBytes)
-			params["packages"] = newPackages
-			// If package list/version snapshot changed, invalidate old vulnerability scan.
-			if existing.Packages != "" && existing.Packages != newPackages {
+			if existing.Packages != newPackages {
+				changed = true
+				params["packages"] = newPackages
 				params["vulns"] = nil
 			}
 		}
 	}
-	// If kernel changed, invalidate old vulnerability scan (kernel result is stale).
 	if existing.Kernel != "" && data.Kernel != "" && existing.Kernel != data.Kernel {
+		changed = true
 		params["vulns"] = nil
+	}
+	// First-time package data on a new system should trigger a scan.
+	if !changed && existing.Packages == "" && params["packages"] != nil {
+		changed = true
 	}
 	result, err := app.DB().Update(collectionName, params, dbx.HashExp{"id": systemId}).Execute()
 	rowsAffected, _ := result.RowsAffected()
 	if err != nil || rowsAffected == 0 {
 		_, err = app.DB().Insert(collectionName, params).Execute()
+		if err == nil && params["packages"] != nil {
+			changed = true
+		}
 	}
-	return err
+	return changed, err
 }
 
 func createSystemdStatsRecords(app core.App, data []*systemd.Service, systemId string) error {
