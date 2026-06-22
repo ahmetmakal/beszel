@@ -199,6 +199,7 @@ func (s *Scanner) BuildOverview(app core.App, allowedIDs map[string]bool, system
 		Queue:        queue,
 		QueueLength:  len(queue),
 		RecentEvents: s.GetRecentEvents(),
+		Systems:      []SystemVulnOverview{},
 	}
 	if !meta.LastCronAt.IsZero() {
 		overview.LastCronAt = meta.LastCronAt.UTC().Format(time.RFC3339)

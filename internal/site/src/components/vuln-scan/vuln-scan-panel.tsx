@@ -77,6 +77,25 @@ function formatTime(iso?: string) {
 	}
 }
 
+const emptyStats = {
+	total: 0,
+	withPackages: 0,
+	scanned: 0,
+	neverScanned: 0,
+	queuedOrRunning: 0,
+	withVulns: 0,
+}
+
+function normalizeOverview(data: VulnScanOverview): VulnScanOverview {
+	return {
+		...data,
+		systems: data.systems ?? [],
+		queue: data.queue ?? [],
+		recentEvents: data.recentEvents ?? [],
+		stats: data.stats ?? emptyStats,
+	}
+}
+
 function eventLabel(action: string) {
 	switch (action) {
 		case "queued":
@@ -112,7 +131,7 @@ export function VulnScanPanel({
 			const res = await pb.send<VulnScanOverview>("/api/beszel/vulnerabilities/overview", {
 				query: systemId ? { system: systemId } : undefined,
 			})
-			setOverview(res)
+			setOverview(normalizeOverview(res))
 			onOverviewUpdate?.()
 		} catch {
 			setOverview(null)
@@ -155,6 +174,14 @@ export function VulnScanPanel({
 
 	const system = systemId ? overview.systems[0] : undefined
 	const queueActive = overview.queue.some((q) => q.running || q.queued)
+
+	if (systemId && !system) {
+		return (
+			<div className="text-sm text-muted-foreground py-2">
+				<Trans>No vulnerability scan data for this server yet.</Trans>
+			</div>
+		)
+	}
 
 	return (
 		<div className={cn("space-y-4", compact && "space-y-3")}>

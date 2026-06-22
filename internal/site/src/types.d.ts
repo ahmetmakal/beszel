@@ -7,6 +7,10 @@ declare global {
 		BASE_PATH: string
 		HUB_VERSION: string
 		HUB_URL: string
+		AGENT_INSTALL_SCRIPT_URL?: string
+		AGENT_BREW_SCRIPT_URL?: string
+		AGENT_WINDOWS_SCRIPT_URL?: string
+		AGENT_DOCKER_IMAGE?: string
 	}
 }
 

@@ -3,29 +3,34 @@ import { memo } from "react"
 import { copyToClipboard, getHubURL } from "@/lib/utils"
 import { DropdownMenuContent, DropdownMenuItem } from "./ui/dropdown-menu"
 
-// const isbeta = beszel.hub_version.includes("beta")
-// const imagetag = isbeta ? ":edge" : ""
+const FALLBACK_AGENT_SCRIPT =
+	"https://raw.githubusercontent.com/ahmetmakal/beszel/main/supplemental/scripts/install-agent.sh"
+const FALLBACK_AGENT_BREW_SCRIPT =
+	"https://raw.githubusercontent.com/ahmetmakal/beszel/main/supplemental/scripts/install-agent-brew.sh"
+const FALLBACK_AGENT_WINDOWS_SCRIPT =
+	"https://raw.githubusercontent.com/ahmetmakal/beszel/main/supplemental/scripts/install-agent.ps1"
+const FALLBACK_AGENT_DOCKER_IMAGE = "ghcr.io/ahmetmakal/beszel/beszel-agent"
 
-/**
- * Get the URL of the script to install the agent.
- * @param path - The path to the script (e.g. "/brew").
- * @returns The URL for the script.
- */
-const getScriptUrl = (path: string = "") => {
-	return `https://get.beszel.dev${path}`
-	// no beta for now
-	// const url = new URL("https://get.beszel.dev")
-	// url.pathname = path
-	// if (isBeta) {
-	// 	url.searchParams.set("beta", "1")
-	// }
-	// return url.toString()
+function getAgentScriptUrl(brew = false) {
+	if (brew) {
+		return globalThis.BESZEL?.AGENT_BREW_SCRIPT_URL || FALLBACK_AGENT_BREW_SCRIPT
+	}
+	return globalThis.BESZEL?.AGENT_INSTALL_SCRIPT_URL || FALLBACK_AGENT_SCRIPT
+}
+
+function getAgentWindowsScriptUrl() {
+	return globalThis.BESZEL?.AGENT_WINDOWS_SCRIPT_URL || FALLBACK_AGENT_WINDOWS_SCRIPT
+}
+
+function getAgentDockerImage() {
+	return globalThis.BESZEL?.AGENT_DOCKER_IMAGE || FALLBACK_AGENT_DOCKER_IMAGE
 }
 
 export function copyDockerCompose(port = "45876", publicKey: string, token: string) {
+	const image = getAgentDockerImage()
 	copyToClipboard(`services:
   beszel-agent:
-    image: henrygd/beszel-agent
+    image: ${image}
     container_name: beszel-agent
     restart: unless-stopped
     network_mode: host
@@ -42,15 +47,14 @@ export function copyDockerCompose(port = "45876", publicKey: string, token: stri
 }
 
 export function copyDockerRun(port = "45876", publicKey: string, token: string) {
+	const image = getAgentDockerImage()
 	copyToClipboard(
-		`docker run -d --name beszel-agent --network host --restart unless-stopped -v /var/run/docker.sock:/var/run/docker.sock:ro -v beszel_agent_data:/var/lib/beszel-agent -e KEY="${publicKey}" -e LISTEN=${port} -e TOKEN="${token}" -e HUB_URL="${getHubURL()}" henrygd/beszel-agent`
+		`docker run -d --name beszel-agent --network host --restart unless-stopped -v /var/run/docker.sock:/var/run/docker.sock:ro -v beszel_agent_data:/var/lib/beszel-agent -e KEY="${publicKey}" -e LISTEN=${port} -e TOKEN="${token}" -e HUB_URL="${getHubURL()}" ${image}`
 	)
 }
 
 export function copyLinuxCommand(port = "45876", publicKey: string, token: string, brew = false) {
-	let cmd = `curl -sL ${getScriptUrl(
-		brew ? "/brew" : ""
-	)} -o /tmp/install-agent.sh && chmod +x /tmp/install-agent.sh && /tmp/install-agent.sh -p ${port} -k "${publicKey}" -t "${token}" -url "${getHubURL()}"`
+	let cmd = `curl -sL ${getAgentScriptUrl(brew)} -o /tmp/install-agent.sh && chmod +x /tmp/install-agent.sh && /tmp/install-agent.sh -p ${port} -k "${publicKey}" -t "${token}" -url "${getHubURL()}"`
 	// brew script does not support --china-mirrors
 	if (!brew && (i18n.locale + navigator.language).includes("zh-CN")) {
 		cmd += ` --china-mirrors`
@@ -60,7 +64,7 @@ export function copyLinuxCommand(port = "45876", publicKey: string, token: strin
 
 export function copyWindowsCommand(port = "45876", publicKey: string, token: string) {
 	copyToClipboard(
-		`& iwr -useb ${getScriptUrl()} -OutFile "$env:TEMP\\install-agent.ps1"; & Powershell -ExecutionPolicy Bypass -File "$env:TEMP\\install-agent.ps1" -Key "${publicKey}" -Port ${port} -Token "${token}" -Url "${getHubURL()}"`
+		`& iwr -useb ${getAgentWindowsScriptUrl()} -OutFile "$env:TEMP\\install-agent.ps1"; & Powershell -ExecutionPolicy Bypass -File "$env:TEMP\\install-agent.ps1" -Key "${publicKey}" -Port ${port} -Token "${token}" -Url "${getHubURL()}"`
 	)
 }
 

@@ -56,6 +56,7 @@ func (rm *responseModifier) modifyHTML(html string) string {
 	html = strings.ReplaceAll(html, "./", basePath)
 	html = strings.Replace(html, "{{V}}", beszel.Version, 1)
 	html = strings.Replace(html, "{{HUB_URL}}", rm.hub.appURL, 1)
+	html = injectInstallConfig(html)
 	return html
 }
 

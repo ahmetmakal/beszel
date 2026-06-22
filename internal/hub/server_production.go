@@ -29,6 +29,7 @@ func (h *Hub) startServer(se *core.ServeEvent) error {
 	html := strings.ReplaceAll(string(indexFile), "./", basePath)
 	html = strings.Replace(html, "{{V}}", beszel.Version, 1)
 	html = strings.Replace(html, "{{HUB_URL}}", h.appURL, 1)
+	html = injectInstallConfig(html)
 	// set up static asset serving
 	staticPaths := [2]string{"/static/", "/assets/"}
 	serveStatic := apis.Static(site.DistDirFS, false)
