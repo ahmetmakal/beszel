@@ -18,10 +18,9 @@ msgstr ""
 "X-Crowdin-File: /main/internal/site/src/locales/en/en.po\n"
 "X-Crowdin-File-ID: 32\n"
 
-#. placeholder {0}: vulnInfo.vulnCount - 3
 #: src/components/systemd-table/systemd-table.tsx
-msgid "...and {0} more"
-msgstr ""
+#~ msgid "...and {0} more"
+#~ msgstr ""
 
 #. placeholder {0}: newVersion.v
 #: src/components/footer-repo-link.tsx
@@ -35,14 +34,17 @@ msgstr "{0} متاح"
 msgid "{0} of {1} row(s) selected."
 msgstr "تم تحديد {0} من {1} صف"
 
-#. placeholder {0}: vulnInfo.vulnCount
 #: src/components/systemd-table/systemd-table.tsx
-msgid "{0} vulnerabilities found"
-msgstr ""
+#~ msgid "{0} vulnerabilities found"
+#~ msgstr ""
 
-#. placeholder {0}: vulnInfo.vulnCount
 #: src/components/systemd-table/systemd-table.tsx
-msgid "{0} vulnerability found"
+#~ msgid "{0} vulnerability found"
+#~ msgstr ""
+
+#. placeholder {0}: system.vulnerableServices
+#: src/components/vuln-scan/vuln-scan-panel.tsx
+msgid "{0} vulnerable services"
 msgstr ""
 
 #: src/components/routes/system/info-bar.tsx
@@ -199,6 +201,10 @@ msgstr "التنبيهات"
 msgid "All Containers"
 msgstr "جميع الحاويات"
 
+#: src/components/vuln-scan/vuln-scan-panel.tsx
+msgid "All systems"
+msgstr ""
+
 #: src/components/alerts/alerts-sheet.tsx
 #: src/components/command-palette.tsx
 #: src/components/routes/home.tsx
@@ -207,6 +213,10 @@ msgstr "جميع الحاويات"
 #: src/components/systems-table/systems-table.tsx
 msgid "All Systems"
 msgstr "جميع الأنظمة"
+
+#: src/lib/alerts.ts
+msgid "All vulnerabilities"
+msgstr ""
 
 #: src/components/systems-table/systems-table-columns.tsx
 msgid "Are you sure you want to delete {name}?"
@@ -220,6 +230,10 @@ msgstr "هل أنت متأكد؟"
 msgid "Automatic copy requires a secure context."
 msgstr "النسخ التلقائي يتطلب سياقًا آمنًا."
 
+#: src/components/vuln-scan/vuln-scan-panel.tsx
+msgid "Automatic scan"
+msgstr ""
+
 #: src/components/routes/system/chart-card.tsx
 msgid "Average"
 msgstr "متوسط"
@@ -227,6 +241,10 @@ msgstr "متوسط"
 #: src/components/routes/system/charts/cpu-charts.tsx
 msgid "Average CPU utilization of containers"
 msgstr "متوسط استخدام وحدة المعالجة المركزية للحاويات"
+
+#: src/components/routes/system/charts/libvirt-charts.tsx
+msgid "Average CPU utilization of virtual machines"
+msgstr ""
 
 #. placeholder {0}: alertData.unit
 #: src/components/alerts/alerts-sheet.tsx
@@ -350,6 +368,10 @@ msgstr ""
 msgid "Cache / Buffers"
 msgstr "ذاكرة التخزين المؤقت / المخازن المؤقتة"
 
+#: src/components/vuln-scan/vuln-scan-panel.tsx
+msgid "Cache entries"
+msgstr ""
+
 #: src/components/systemd-table/systemd-table.tsx
 msgid "Can reload"
 msgstr "يمكن إعادة التحميل"
@@ -428,6 +450,7 @@ msgstr "تحقق من خدمة الإشعارات الخاصة بك"
 #: src/components/containers-table/containers-table.tsx
 #: src/components/routes/system/smart-table.tsx
 #: src/components/systems-table/systems-table.tsx
+#: src/components/vms-table/vms-table.tsx
 msgid "Clear"
 msgstr "مسح"
 
@@ -456,6 +479,10 @@ msgstr ""
 #: src/components/login/forgot-pass-form.tsx
 msgid "Command line instructions"
 msgstr "تعليمات سطر الأوامر"
+
+#: src/components/vuln-scan/vuln-scan-panel.tsx
+msgid "Completed"
+msgstr ""
 
 #: src/components/routes/settings/notifications.tsx
 msgid "Configure how you receive alert notifications."
@@ -551,6 +578,7 @@ msgstr "النواة"
 #: src/components/containers-table/containers-table-columns.tsx
 #: src/components/systemd-table/systemd-table-columns.tsx
 #: src/components/systems-table/systems-table-columns.tsx
+#: src/components/vms-table/vms-table-columns.tsx
 msgid "CPU"
 msgstr "المعالج"
 
@@ -607,6 +635,11 @@ msgstr "الرفع التراكمي"
 msgid "Current state"
 msgstr "الحالة الحالية"
 
+#. placeholder {0}: alert.value
+#: src/components/active-alerts.tsx
+msgid "CVSS ≥ {0} vulnerabilities detected"
+msgstr ""
+
 #. Power Cycles
 #: src/components/routes/system/smart-table.tsx
 msgid "Cycles"
@@ -660,6 +693,7 @@ msgid "Disk"
 msgstr "القرص"
 
 #: src/components/routes/system/charts/disk-charts.tsx
+#: src/components/vms-table/vms-table-columns.tsx
 msgid "Disk I/O"
 msgstr "إدخال/إخراج القرص"
 
@@ -840,6 +874,8 @@ msgid "Fahrenheit (°F)"
 msgstr "فهرنهايت (°ف)"
 
 #: src/components/systems-table/systems-table-columns.tsx
+#: src/components/vuln-scan/vuln-scan-panel.tsx
+#: src/components/vuln-scan/vuln-scan-panel.tsx
 msgid "Failed"
 msgstr "فشل"
 
@@ -881,6 +917,7 @@ msgstr "فشل: {0}"
 #: src/components/routes/system/smart-table.tsx
 #: src/components/systemd-table/systemd-table.tsx
 #: src/components/systems-table/systems-table.tsx
+#: src/components/vms-table/vms-table.tsx
 msgid "Filter..."
 msgstr "تصفية..."
 
@@ -954,6 +991,7 @@ msgid "Grid"
 msgstr "شبكة"
 
 #: src/components/containers-table/containers-table-columns.tsx
+#: src/components/vms-table/vms-table-columns.tsx
 msgid "Health"
 msgstr "الصحة"
 
@@ -968,6 +1006,10 @@ msgstr "مراقبة نبضة القلب"
 #: src/components/routes/settings/heartbeat.tsx
 msgid "Heartbeat sent successfully"
 msgstr "تم إرسال نبضة القلب بنجاح"
+
+#: src/lib/alerts.ts
+msgid "HIGH and CRITICAL vulnerabilities"
+msgstr ""
 
 #: src/components/add-system.tsx
 #: src/components/routes/settings/tokens-fingerprints.tsx
@@ -1002,6 +1044,11 @@ msgctxt "Percent of time the disk is busy with I/O"
 msgid "I/O Utilization"
 msgstr "استخدام الإدخال والإخراج"
 
+#: src/components/routes/system/info-bar.tsx
+#: src/components/systemd-table/systemd-table.tsx
+msgid "ID"
+msgstr ""
+
 #. Context: Battery state
 #. Web server workers
 #: src/components/routes/system/charts/webserver-charts.tsx
@@ -1017,6 +1064,10 @@ msgstr "إذا فقدت كلمة المرور لحساب المسؤول الخا
 msgctxt "Docker image"
 msgid "Image"
 msgstr "صورة"
+
+#: src/components/vuln-scan/vuln-scan-panel.tsx
+msgid "In queue"
+msgstr ""
 
 #: src/components/routes/settings/quiet-hours.tsx
 msgid "Inactive"
@@ -1034,8 +1085,28 @@ msgstr "عنوان البريد الإشباكي غير صالح."
 msgid "Kernel"
 msgstr ""
 
+#: src/components/routes/system/info-bar.tsx
+msgid "Kernel changed, rescan required"
+msgstr ""
+
+#: src/components/routes/system/info-bar.tsx
+msgid "Kernel version"
+msgstr ""
+
+#: src/components/routes/system/info-bar.tsx
+msgid "Kernel Vulnerability Details"
+msgstr ""
+
+#: src/components/vuln-scan/vuln-scan-panel.tsx
+msgid "Kernel vulnerable"
+msgstr ""
+
 #: src/components/routes/system/charts/mysql-charts.tsx
 msgid "Key Cache Hit Rate"
+msgstr ""
+
+#: src/components/active-alerts.tsx
+msgid "Known vulnerabilities detected"
 msgstr ""
 
 #: src/components/lang-toggle.tsx
@@ -1048,6 +1119,18 @@ msgstr "اللغة"
 msgid "Last ACK"
 msgstr ""
 
+#: src/components/vuln-scan/vuln-scan-panel.tsx
+msgid "Last full scan"
+msgstr ""
+
+#: src/components/vuln-scan/vuln-scan-panel.tsx
+msgid "Last scan"
+msgstr ""
+
+#: src/components/vuln-scan/vuln-scan-panel.tsx
+msgid "Last scan:"
+msgstr ""
+
 #: src/components/systems-table/systems-table.tsx
 msgid "Layout"
 msgstr "التخطيط"
@@ -1055,6 +1138,10 @@ msgstr "التخطيط"
 #: src/components/routes/settings/general.tsx
 msgid "Layout width"
 msgstr "عرض التخطيط"
+
+#: src/components/vms-table/vms-table.tsx
+msgid "Libvirt/KVM virtual machines on this host."
+msgstr ""
 
 #: src/components/systemd-table/systemd-table.tsx
 msgid "Lifecycle"
@@ -1095,6 +1182,10 @@ msgstr "متوسط التحميل"
 msgid "Load state"
 msgstr "حالة التحميل"
 
+#: src/components/vuln-scan/vuln-scan-panel.tsx
+msgid "Loading scan status…"
+msgstr ""
+
 #: src/components/systemd-table/systemd-table.tsx
 msgid "Loading..."
 msgstr "جاري التحميل..."
@@ -1123,6 +1214,10 @@ msgstr "السجلات"
 msgid "Looking instead for where to create alerts? Click the bell <0/> icons in the systems table."
 msgstr "هل تبحث عن مكان لإنشاء التنبيهات؟ انقر على أيقونات الجرس <0/> في جدول الأنظمة."
 
+#: src/lib/alerts.ts
+msgid "LOW and above vulnerabilities"
+msgstr ""
+
 #: src/components/systemd-table/systemd-table.tsx
 msgid "Main PID"
 msgstr "معرف العملية الرئيسي"
@@ -1141,11 +1236,16 @@ msgstr "تعليمات الإعداد اليدوي"
 msgid "Max 1 min"
 msgstr "الحد الأقصى دقيقة"
 
+#: src/lib/alerts.ts
+msgid "MEDIUM, HIGH and CRITICAL vulnerabilities"
+msgstr ""
+
 #: src/components/containers-table/containers-table-columns.tsx
 #: src/components/routes/system/info-bar.tsx
 #: src/components/systemd-table/systemd-table-columns.tsx
 #: src/components/systemd-table/systemd-table.tsx
 #: src/components/systems-table/systems-table-columns.tsx
+#: src/components/vms-table/vms-table-columns.tsx
 msgid "Memory"
 msgstr "الذاكرة"
 
@@ -1166,6 +1266,10 @@ msgstr "استخدام الذاكرة"
 #: src/components/routes/system/charts/memory-charts.tsx
 msgid "Memory usage of docker containers"
 msgstr "استخدام الذاكرة لحاويات دوكر"
+
+#: src/components/routes/system/charts/libvirt-charts.tsx
+msgid "Memory usage of virtual machines"
+msgstr ""
 
 #. Device model
 #: src/components/routes/system/smart-table.tsx
@@ -1189,11 +1293,13 @@ msgstr ""
 #: src/components/containers-table/containers-table-columns.tsx
 #: src/components/systemd-table/systemd-table-columns.tsx
 #: src/components/systemd-table/systemd-table.tsx
+#: src/components/vms-table/vms-table-columns.tsx
 msgid "Name"
 msgstr "الاسم"
 
 #: src/components/containers-table/containers-table-columns.tsx
 #: src/components/systems-table/systems-table-columns.tsx
+#: src/components/vms-table/vms-table-columns.tsx
 msgid "Net"
 msgstr "الشبكة"
 
@@ -1208,13 +1314,21 @@ msgstr "حركة مرور الشبكة لحاويات الدوكر"
 msgid "Network traffic of public interfaces"
 msgstr "حركة مرور الشبكة للواجهات العامة"
 
+#: src/components/routes/system/charts/libvirt-charts.tsx
+msgid "Network traffic of virtual machines"
+msgstr ""
+
 #. Context: Bytes or bits
 #: src/components/routes/settings/general.tsx
 msgid "Network unit"
 msgstr "وحدة الشبكة"
 
 #: src/lib/alerts.ts
-msgid "New vulnerability detected"
+#~ msgid "New vulnerability detected"
+#~ msgstr ""
+
+#: src/components/vuln-scan/vuln-scan-panel.tsx
+msgid "Next scheduled"
 msgstr ""
 
 #: src/components/systemd-table/systemd-table.tsx
@@ -1225,7 +1339,11 @@ msgstr "لا"
 
 #: src/components/systemd-table/systemd-table-columns.tsx
 #: src/components/systemd-table/systemd-table.tsx
-msgid "No known vulnerabilities"
+#~ msgid "No known vulnerabilities"
+#~ msgstr ""
+
+#: src/components/vuln-scan/vuln-scan-panel.tsx
+msgid "No packages"
 msgstr ""
 
 #: src/components/command-palette.tsx
@@ -1239,6 +1357,7 @@ msgstr "لم يتم العثور على نتائج."
 #: src/components/routes/settings/alerts-history-data-table.tsx
 #: src/components/routes/system/smart-table.tsx
 #: src/components/systemd-table/systemd-table.tsx
+#: src/components/vms-table/vms-table.tsx
 msgid "No results."
 msgstr "لا توجد نتائج."
 
@@ -1251,10 +1370,20 @@ msgstr "لا توجد سمات S.M.A.R.T. متاحة لهذا الجهاز."
 msgid "No systems found."
 msgstr "لم يتم العثور على أنظمة."
 
+#: src/components/vuln-scan/vuln-scan-panel.tsx
+msgid "No vulnerability scan data for this server yet."
+msgstr ""
+
+#: src/components/routes/system/info-bar.tsx
 #: src/components/systemd-table/systemd-table-columns.tsx
 #: src/components/systemd-table/systemd-table.tsx
-msgid "Not scanned yet"
+msgid "Not scanned"
 msgstr ""
+
+#: src/components/systemd-table/systemd-table-columns.tsx
+#: src/components/systemd-table/systemd-table.tsx
+#~ msgid "Not scanned yet"
+#~ msgstr ""
 
 #: src/components/command-palette.tsx
 #: src/components/routes/settings/layout.tsx
@@ -1279,6 +1408,10 @@ msgstr "مرة واحدة"
 msgid "One-time password"
 msgstr "كلمة مرور لمرة واحدة"
 
+#: src/lib/alerts.ts
+msgid "Only CRITICAL vulnerabilities"
+msgstr ""
+
 #: src/components/routes/settings/quiet-hours.tsx
 #: src/components/routes/settings/tokens-fingerprints.tsx
 #: src/components/routes/settings/tokens-fingerprints.tsx
@@ -1291,6 +1424,10 @@ msgstr "فتح القائمة"
 msgid "Or continue with"
 msgstr "أو المتابعة باستخدام"
 
+#: src/components/vuln-scan/vuln-scan-panel.tsx
+msgid "OSV.dev package scans, queue status, and per-server results."
+msgstr ""
+
 #: src/components/routes/system/cpu-sheet.tsx
 msgid "Other"
 msgstr "أخرى"
@@ -1298,6 +1435,14 @@ msgstr "أخرى"
 #: src/components/alerts/alerts-sheet.tsx
 msgid "Overwrite existing alerts"
 msgstr "الكتابة فوق التنبيهات الحالية"
+
+#: src/components/vuln-scan/vuln-scan-panel.tsx
+msgid "Packages"
+msgstr ""
+
+#: src/components/vuln-scan/vuln-scan-panel.tsx
+msgid "Packages:"
+msgstr ""
 
 #: src/components/command-palette.tsx
 #: src/components/command-palette.tsx
@@ -1351,6 +1496,14 @@ msgstr "متوقف مؤقتا ({pausedSystemsLength})"
 #: src/components/routes/settings/heartbeat.tsx
 msgid "Payload format"
 msgstr "تنسيق الحمولة"
+
+#: src/components/vuln-scan/vuln-scan-panel.tsx
+msgid "Pending"
+msgstr ""
+
+#: src/components/vuln-scan/vuln-scan-panel.tsx
+msgid "Pending scan"
+msgstr ""
 
 #: src/components/routes/system/cpu-sheet.tsx
 #: src/components/routes/system/cpu-sheet.tsx
@@ -1452,6 +1605,16 @@ msgctxt "Disk I/O average queue depth"
 msgid "Queue Depth"
 msgstr "عمق الدور"
 
+#: src/components/vuln-scan/vuln-scan-panel.tsx
+msgid "Queue is empty"
+msgstr ""
+
+#: src/components/vuln-scan/vuln-scan-panel.tsx
+#: src/components/vuln-scan/vuln-scan-panel.tsx
+#: src/components/vuln-scan/vuln-scan-panel.tsx
+msgid "Queued"
+msgstr ""
+
 #: src/components/routes/settings/quiet-hours.tsx
 msgid "Quiet Hours"
 msgstr "ساعات الهدوء"
@@ -1472,6 +1635,10 @@ msgstr ""
 #: src/components/routes/system/charts/network-charts.tsx
 msgid "Received"
 msgstr "تم الاستلام"
+
+#: src/components/vuln-scan/vuln-scan-panel.tsx
+msgid "Recent activity"
+msgstr ""
 
 #: src/components/containers-table/containers-table.tsx
 #: src/components/containers-table/containers-table.tsx
@@ -1546,6 +1713,11 @@ msgstr "تدوير الرمز المميز"
 msgid "Rows per page"
 msgstr "صفوف لكل صفحة"
 
+#: src/components/vuln-scan/vuln-scan-panel.tsx
+#: src/components/vuln-scan/vuln-scan-panel.tsx
+msgid "Running"
+msgstr ""
+
 #: src/components/systemd-table/systemd-table.tsx
 msgid "Runtime Metrics"
 msgstr "مقاييس وقت التشغيل"
@@ -1557,6 +1729,12 @@ msgstr "تفاصيل S.M.A.R.T."
 #: src/components/routes/system/smart-table.tsx
 msgid "S.M.A.R.T. Self-Test"
 msgstr "اختبار S.M.A.R.T. الذاتي"
+
+#: src/components/routes/system/info-bar.tsx
+#: src/components/systemd-table/systemd-table-columns.tsx
+#: src/components/systemd-table/systemd-table.tsx
+msgid "Safe"
+msgstr ""
 
 #: src/components/add-system.tsx
 msgid "Save {foo}"
@@ -1575,7 +1753,38 @@ msgstr "حفظ الإعدادات"
 msgid "Saved in the database and does not expire until you disable it."
 msgstr "محفوظ في قاعدة البيانات ولا ينتهي حتى تقوم بتعطيله."
 
+#: src/components/vuln-scan/vuln-scan-panel.tsx
+msgid "Scan all systems"
+msgstr ""
+
+#: src/components/vuln-scan/vuln-scan-panel.tsx
+msgid "Scan now"
+msgstr ""
+
+#: src/components/vuln-scan/vuln-scan-panel.tsx
+msgid "Scan queue"
+msgstr ""
+
+#: src/components/vuln-scan/vuln-scan-panel.tsx
+#: src/components/vuln-scan/vuln-scan-panel.tsx
+msgid "Scanned"
+msgstr ""
+
+#: src/components/routes/system/info-bar.tsx
+#: src/components/systemd-table/systemd-table.tsx
+msgid "Scanned at"
+msgstr ""
+
+#: src/components/routes/system/info-bar.tsx
+msgid "Scanned kernel"
+msgstr ""
+
+#: src/components/routes/settings/vulnerabilities.tsx
+msgid "Scans use OSV.dev with a shared package cache. Results appear on each server's Systemd Services table after scanning completes."
+msgstr ""
+
 #: src/components/routes/settings/quiet-hours.tsx
+#: src/components/vuln-scan/vuln-scan-panel.tsx
 msgid "Schedule"
 msgstr "جدولة"
 
@@ -1600,8 +1809,8 @@ msgid "Seconds between pings (default: 60)"
 msgstr "ثواني بين ال pings (الافتراضي: 60)"
 
 #: src/components/systemd-table/systemd-table-columns.tsx
-msgid "Security"
-msgstr ""
+#~ msgid "Security"
+#~ msgstr ""
 
 #: src/components/alerts/alerts-sheet.tsx
 msgid "See <0>notification settings</0> to configure how you receive alerts."
@@ -1630,6 +1839,10 @@ msgstr "تم الإرسال"
 #: src/components/routes/system/smart-table.tsx
 msgid "Serial Number"
 msgstr "الرقم التسلسلي"
+
+#: src/components/vuln-scan/vuln-scan-panel.tsx
+msgid "Server"
+msgstr ""
 
 #: src/components/systemd-table/systemd-table.tsx
 msgid "Service Details"
@@ -1670,6 +1883,11 @@ msgstr "الإعدادات"
 msgid "Settings saved"
 msgstr "تم حفظ الإعدادات"
 
+#: src/components/routes/system/info-bar.tsx
+#: src/components/systemd-table/systemd-table.tsx
+msgid "Severity"
+msgstr ""
+
 #: src/components/login/auth-form.tsx
 msgid "Sign in"
 msgstr "تسجيل الدخول"
@@ -1691,6 +1909,10 @@ msgstr "الترتيب حسب"
 msgid "Start Time"
 msgstr "وقت البدء"
 
+#: src/components/vuln-scan/vuln-scan-panel.tsx
+msgid "Started"
+msgstr ""
+
 #. Context: alert state (active or resolved)
 #: src/components/alerts-history-columns.tsx
 #: src/components/routes/settings/quiet-hours.tsx
@@ -1699,9 +1921,13 @@ msgid "State"
 msgstr "الحالة"
 
 #: src/components/containers-table/containers-table-columns.tsx
+#: src/components/routes/system/info-bar.tsx
 #: src/components/routes/system/smart-table.tsx
 #: src/components/systemd-table/systemd-table.tsx
+#: src/components/systemd-table/systemd-table.tsx
 #: src/components/systems-table/systems-table.tsx
+#: src/components/vms-table/vms-table-columns.tsx
+#: src/components/vuln-scan/vuln-scan-panel.tsx
 #: src/lib/alerts.ts
 msgid "Status"
 msgstr "الحالة"
@@ -1709,6 +1935,11 @@ msgstr "الحالة"
 #: src/components/systemd-table/systemd-table-columns.tsx
 msgid "Sub State"
 msgstr "الحالة الفرعية"
+
+#: src/components/routes/system/info-bar.tsx
+#: src/components/systemd-table/systemd-table.tsx
+msgid "Summary"
+msgstr ""
 
 #: src/components/routes/system/charts/memory-charts.tsx
 msgid "Swap space used by the system"
@@ -1882,6 +2113,22 @@ msgstr "تسمح الرموز المميزة للوكلاء بالاتصال و�
 msgid "Tokens and fingerprints are used to authenticate WebSocket connections to the hub."
 msgstr "تُستخدم الرموز المميزة والبصمات للمصادقة على اتصالات WebSocket إلى المحور."
 
+#: src/components/routes/system/charts/process-charts.tsx
+msgid "Top 10 processes by average CPU usage"
+msgstr ""
+
+#: src/components/routes/system/charts/process-charts.tsx
+msgid "Top 10 processes by average memory usage"
+msgstr ""
+
+#: src/components/routes/system/charts/process-charts.tsx
+msgid "Top Processes (CPU)"
+msgstr ""
+
+#: src/components/routes/system/charts/process-charts.tsx
+msgid "Top Processes (Memory)"
+msgstr ""
+
 #: src/components/ui/chart.tsx
 #: src/components/ui/chart.tsx
 msgid "Total"
@@ -1962,8 +2209,8 @@ msgid "Triggers when memory usage exceeds a threshold"
 msgstr "يتم التفعيل عندما يتجاوز استخدام الذاكرة عتبة معينة"
 
 #: src/lib/alerts.ts
-msgid "Triggers when new vulnerabilities are detected in service packages or the kernel"
-msgstr ""
+#~ msgid "Triggers when new vulnerabilities are detected in service packages or the kernel"
+#~ msgstr ""
 
 #: src/lib/alerts.ts
 msgid "Triggers when status switches between up and down"
@@ -1976,6 +2223,10 @@ msgstr ""
 #: src/lib/alerts.ts
 msgid "Triggers when usage of any disk exceeds a threshold"
 msgstr "يتم التفعيل عندما يتجاوز استخدام أي قرص عتبة معينة"
+
+#: src/lib/alerts.ts
+msgid "Triggers when vulnerabilities with CVSS score above the threshold are detected"
+msgstr ""
 
 #: src/components/routes/settings/quiet-hours.tsx
 #: src/components/routes/settings/quiet-hours.tsx
@@ -2071,6 +2322,10 @@ msgstr "الاستخدام"
 msgid "Value"
 msgstr "القيمة"
 
+#: src/components/vms-table/vms-table-columns.tsx
+msgid "vCPUs"
+msgstr ""
+
 #: src/components/systemd-table/systemd-table-columns.tsx
 #: src/components/systemd-table/systemd-table.tsx
 msgid "Version"
@@ -2090,12 +2345,50 @@ msgstr "عرض المزيد"
 msgid "View your 200 most recent alerts."
 msgstr "عرض أحدث 200 تنبيه."
 
+#: src/components/vms-table/vms-table.tsx
+msgid "Virtual Machines"
+msgstr ""
+
 #: src/components/systems-table/systems-table.tsx
 msgid "Visible Fields"
 msgstr "الأعمدة الظاهرة"
 
+#: src/components/routes/system/charts/libvirt-charts.tsx
+msgid "VM CPU Usage"
+msgstr ""
+
+#: src/components/routes/system/charts/libvirt-charts.tsx
+msgid "VM Memory Usage"
+msgstr ""
+
+#: src/components/routes/system/charts/libvirt-charts.tsx
+msgid "VM Network"
+msgstr ""
+
+#: src/components/routes/system.tsx
+msgid "VMs"
+msgstr ""
+
+#: src/components/routes/system/info-bar.tsx
+#: src/components/systemd-table/systemd-table.tsx
+msgid "Vulnerabilities found"
+msgstr ""
+
 #: src/lib/alerts.ts
 msgid "Vulnerability"
+msgstr ""
+
+#: src/components/systemd-table/systemd-table.tsx
+msgid "Vulnerability Scan"
+msgstr ""
+
+#: src/components/routes/settings/layout.tsx
+#: src/components/vuln-scan/vuln-scan-panel.tsx
+msgid "Vulnerability Scans"
+msgstr ""
+
+#: src/components/vuln-scan/vuln-scan-panel.tsx
+msgid "Vulns"
 msgstr ""
 
 #. Web server connections
@@ -2140,6 +2433,10 @@ msgstr "عند استخدام POST، تتضمن كل نبضة قلب حمولة 
 msgctxt "Button to copy install command"
 msgid "Windows command"
 msgstr "أمر ويندوز"
+
+#: src/components/vuln-scan/vuln-scan-panel.tsx
+msgid "With vulnerabilities"
+msgstr ""
 
 #. Disk write
 #: src/components/routes/system/charts/disk-charts.tsx

@@ -18,10 +18,9 @@ msgstr ""
 "X-Crowdin-File: /main/internal/site/src/locales/en/en.po\n"
 "X-Crowdin-File-ID: 32\n"
 
-#. placeholder {0}: vulnInfo.vulnCount - 3
 #: src/components/systemd-table/systemd-table.tsx
-msgid "...and {0} more"
-msgstr ""
+#~ msgid "...and {0} more"
+#~ msgstr ""
 
 #. placeholder {0}: newVersion.v
 #: src/components/footer-repo-link.tsx
@@ -35,14 +34,17 @@ msgstr "{0} disponível"
 msgid "{0} of {1} row(s) selected."
 msgstr "{0} de {1} linha(s) selecionada(s)."
 
-#. placeholder {0}: vulnInfo.vulnCount
 #: src/components/systemd-table/systemd-table.tsx
-msgid "{0} vulnerabilities found"
-msgstr ""
+#~ msgid "{0} vulnerabilities found"
+#~ msgstr ""
 
-#. placeholder {0}: vulnInfo.vulnCount
 #: src/components/systemd-table/systemd-table.tsx
-msgid "{0} vulnerability found"
+#~ msgid "{0} vulnerability found"
+#~ msgstr ""
+
+#. placeholder {0}: system.vulnerableServices
+#: src/components/vuln-scan/vuln-scan-panel.tsx
+msgid "{0} vulnerable services"
 msgstr ""
 
 #: src/components/routes/system/info-bar.tsx
@@ -199,6 +201,10 @@ msgstr "Alertas"
 msgid "All Containers"
 msgstr "Todos os Contêineres"
 
+#: src/components/vuln-scan/vuln-scan-panel.tsx
+msgid "All systems"
+msgstr ""
+
 #: src/components/alerts/alerts-sheet.tsx
 #: src/components/command-palette.tsx
 #: src/components/routes/home.tsx
@@ -207,6 +213,10 @@ msgstr "Todos os Contêineres"
 #: src/components/systems-table/systems-table.tsx
 msgid "All Systems"
 msgstr "Todos os Sistemas"
+
+#: src/lib/alerts.ts
+msgid "All vulnerabilities"
+msgstr ""
 
 #: src/components/systems-table/systems-table-columns.tsx
 msgid "Are you sure you want to delete {name}?"
@@ -220,6 +230,10 @@ msgstr "Tem certeza?"
 msgid "Automatic copy requires a secure context."
 msgstr "A cópia automática requer um contexto seguro."
 
+#: src/components/vuln-scan/vuln-scan-panel.tsx
+msgid "Automatic scan"
+msgstr ""
+
 #: src/components/routes/system/chart-card.tsx
 msgid "Average"
 msgstr "Média"
@@ -227,6 +241,10 @@ msgstr "Média"
 #: src/components/routes/system/charts/cpu-charts.tsx
 msgid "Average CPU utilization of containers"
 msgstr "Utilização média de CPU dos contêineres"
+
+#: src/components/routes/system/charts/libvirt-charts.tsx
+msgid "Average CPU utilization of virtual machines"
+msgstr ""
 
 #. placeholder {0}: alertData.unit
 #: src/components/alerts/alerts-sheet.tsx
@@ -350,6 +368,10 @@ msgstr ""
 msgid "Cache / Buffers"
 msgstr ""
 
+#: src/components/vuln-scan/vuln-scan-panel.tsx
+msgid "Cache entries"
+msgstr ""
+
 #: src/components/systemd-table/systemd-table.tsx
 msgid "Can reload"
 msgstr "Pode recarregar"
@@ -428,6 +450,7 @@ msgstr "Verifique seu serviço de notificação"
 #: src/components/containers-table/containers-table.tsx
 #: src/components/routes/system/smart-table.tsx
 #: src/components/systems-table/systems-table.tsx
+#: src/components/vms-table/vms-table.tsx
 msgid "Clear"
 msgstr "Limpar"
 
@@ -456,6 +479,10 @@ msgstr ""
 #: src/components/login/forgot-pass-form.tsx
 msgid "Command line instructions"
 msgstr "Instruções de linha de comando"
+
+#: src/components/vuln-scan/vuln-scan-panel.tsx
+msgid "Completed"
+msgstr ""
 
 #: src/components/routes/settings/notifications.tsx
 msgid "Configure how you receive alert notifications."
@@ -551,6 +578,7 @@ msgstr ""
 #: src/components/containers-table/containers-table-columns.tsx
 #: src/components/systemd-table/systemd-table-columns.tsx
 #: src/components/systems-table/systems-table-columns.tsx
+#: src/components/vms-table/vms-table-columns.tsx
 msgid "CPU"
 msgstr ""
 
@@ -607,6 +635,11 @@ msgstr "Upload cumulativo"
 msgid "Current state"
 msgstr "Estado atual"
 
+#. placeholder {0}: alert.value
+#: src/components/active-alerts.tsx
+msgid "CVSS ≥ {0} vulnerabilities detected"
+msgstr ""
+
 #. Power Cycles
 #: src/components/routes/system/smart-table.tsx
 msgid "Cycles"
@@ -660,6 +693,7 @@ msgid "Disk"
 msgstr "Disco"
 
 #: src/components/routes/system/charts/disk-charts.tsx
+#: src/components/vms-table/vms-table-columns.tsx
 msgid "Disk I/O"
 msgstr "E/S de Disco"
 
@@ -840,6 +874,8 @@ msgid "Fahrenheit (°F)"
 msgstr ""
 
 #: src/components/systems-table/systems-table-columns.tsx
+#: src/components/vuln-scan/vuln-scan-panel.tsx
+#: src/components/vuln-scan/vuln-scan-panel.tsx
 msgid "Failed"
 msgstr "Falhou"
 
@@ -881,6 +917,7 @@ msgstr "Falhou: {0}"
 #: src/components/routes/system/smart-table.tsx
 #: src/components/systemd-table/systemd-table.tsx
 #: src/components/systems-table/systems-table.tsx
+#: src/components/vms-table/vms-table.tsx
 msgid "Filter..."
 msgstr "Filtrar..."
 
@@ -954,6 +991,7 @@ msgid "Grid"
 msgstr "Grade"
 
 #: src/components/containers-table/containers-table-columns.tsx
+#: src/components/vms-table/vms-table-columns.tsx
 msgid "Health"
 msgstr "Saúde"
 
@@ -968,6 +1006,10 @@ msgstr "Monitorização de Heartbeat"
 #: src/components/routes/settings/heartbeat.tsx
 msgid "Heartbeat sent successfully"
 msgstr "Heartbeat enviado com sucesso"
+
+#: src/lib/alerts.ts
+msgid "HIGH and CRITICAL vulnerabilities"
+msgstr ""
 
 #: src/components/add-system.tsx
 #: src/components/routes/settings/tokens-fingerprints.tsx
@@ -1002,6 +1044,11 @@ msgctxt "Percent of time the disk is busy with I/O"
 msgid "I/O Utilization"
 msgstr "Utilização de E/S"
 
+#: src/components/routes/system/info-bar.tsx
+#: src/components/systemd-table/systemd-table.tsx
+msgid "ID"
+msgstr ""
+
 #. Context: Battery state
 #. Web server workers
 #: src/components/routes/system/charts/webserver-charts.tsx
@@ -1017,6 +1064,10 @@ msgstr "Se você perdeu a senha da sua conta de administrador, pode redefini-la 
 msgctxt "Docker image"
 msgid "Image"
 msgstr "Imagem"
+
+#: src/components/vuln-scan/vuln-scan-panel.tsx
+msgid "In queue"
+msgstr ""
 
 #: src/components/routes/settings/quiet-hours.tsx
 msgid "Inactive"
@@ -1034,8 +1085,28 @@ msgstr "Endereço de email inválido."
 msgid "Kernel"
 msgstr ""
 
+#: src/components/routes/system/info-bar.tsx
+msgid "Kernel changed, rescan required"
+msgstr ""
+
+#: src/components/routes/system/info-bar.tsx
+msgid "Kernel version"
+msgstr ""
+
+#: src/components/routes/system/info-bar.tsx
+msgid "Kernel Vulnerability Details"
+msgstr ""
+
+#: src/components/vuln-scan/vuln-scan-panel.tsx
+msgid "Kernel vulnerable"
+msgstr ""
+
 #: src/components/routes/system/charts/mysql-charts.tsx
 msgid "Key Cache Hit Rate"
+msgstr ""
+
+#: src/components/active-alerts.tsx
+msgid "Known vulnerabilities detected"
 msgstr ""
 
 #: src/components/lang-toggle.tsx
@@ -1048,6 +1119,18 @@ msgstr "Idioma"
 msgid "Last ACK"
 msgstr ""
 
+#: src/components/vuln-scan/vuln-scan-panel.tsx
+msgid "Last full scan"
+msgstr ""
+
+#: src/components/vuln-scan/vuln-scan-panel.tsx
+msgid "Last scan"
+msgstr ""
+
+#: src/components/vuln-scan/vuln-scan-panel.tsx
+msgid "Last scan:"
+msgstr ""
+
 #: src/components/systems-table/systems-table.tsx
 msgid "Layout"
 msgstr "Aspeto"
@@ -1055,6 +1138,10 @@ msgstr "Aspeto"
 #: src/components/routes/settings/general.tsx
 msgid "Layout width"
 msgstr "Largura do layout"
+
+#: src/components/vms-table/vms-table.tsx
+msgid "Libvirt/KVM virtual machines on this host."
+msgstr ""
 
 #: src/components/systemd-table/systemd-table.tsx
 msgid "Lifecycle"
@@ -1095,6 +1182,10 @@ msgstr "Carga Média"
 msgid "Load state"
 msgstr "Estado de carga"
 
+#: src/components/vuln-scan/vuln-scan-panel.tsx
+msgid "Loading scan status…"
+msgstr ""
+
 #: src/components/systemd-table/systemd-table.tsx
 msgid "Loading..."
 msgstr "Carregando..."
@@ -1123,6 +1214,10 @@ msgstr ""
 msgid "Looking instead for where to create alerts? Click the bell <0/> icons in the systems table."
 msgstr "Procurando onde criar alertas? Clique nos ícones de sino <0/> na tabela de sistemas."
 
+#: src/lib/alerts.ts
+msgid "LOW and above vulnerabilities"
+msgstr ""
+
 #: src/components/systemd-table/systemd-table.tsx
 msgid "Main PID"
 msgstr "PID principal"
@@ -1141,11 +1236,16 @@ msgstr "Instruções de configuração manual"
 msgid "Max 1 min"
 msgstr "Máx 1 min"
 
+#: src/lib/alerts.ts
+msgid "MEDIUM, HIGH and CRITICAL vulnerabilities"
+msgstr ""
+
 #: src/components/containers-table/containers-table-columns.tsx
 #: src/components/routes/system/info-bar.tsx
 #: src/components/systemd-table/systemd-table-columns.tsx
 #: src/components/systemd-table/systemd-table.tsx
 #: src/components/systems-table/systems-table-columns.tsx
+#: src/components/vms-table/vms-table-columns.tsx
 msgid "Memory"
 msgstr "Memória"
 
@@ -1166,6 +1266,10 @@ msgstr "Uso de Memória"
 #: src/components/routes/system/charts/memory-charts.tsx
 msgid "Memory usage of docker containers"
 msgstr "Uso de memória dos contêineres Docker"
+
+#: src/components/routes/system/charts/libvirt-charts.tsx
+msgid "Memory usage of virtual machines"
+msgstr ""
 
 #. Device model
 #: src/components/routes/system/smart-table.tsx
@@ -1189,11 +1293,13 @@ msgstr ""
 #: src/components/containers-table/containers-table-columns.tsx
 #: src/components/systemd-table/systemd-table-columns.tsx
 #: src/components/systemd-table/systemd-table.tsx
+#: src/components/vms-table/vms-table-columns.tsx
 msgid "Name"
 msgstr "Nome"
 
 #: src/components/containers-table/containers-table-columns.tsx
 #: src/components/systems-table/systems-table-columns.tsx
+#: src/components/vms-table/vms-table-columns.tsx
 msgid "Net"
 msgstr "Rede"
 
@@ -1208,13 +1314,21 @@ msgstr "Tráfego de rede dos contêineres Docker"
 msgid "Network traffic of public interfaces"
 msgstr "Tráfego de rede das interfaces públicas"
 
+#: src/components/routes/system/charts/libvirt-charts.tsx
+msgid "Network traffic of virtual machines"
+msgstr ""
+
 #. Context: Bytes or bits
 #: src/components/routes/settings/general.tsx
 msgid "Network unit"
 msgstr "Unidade de rede"
 
 #: src/lib/alerts.ts
-msgid "New vulnerability detected"
+#~ msgid "New vulnerability detected"
+#~ msgstr ""
+
+#: src/components/vuln-scan/vuln-scan-panel.tsx
+msgid "Next scheduled"
 msgstr ""
 
 #: src/components/systemd-table/systemd-table.tsx
@@ -1225,7 +1339,11 @@ msgstr "Não"
 
 #: src/components/systemd-table/systemd-table-columns.tsx
 #: src/components/systemd-table/systemd-table.tsx
-msgid "No known vulnerabilities"
+#~ msgid "No known vulnerabilities"
+#~ msgstr ""
+
+#: src/components/vuln-scan/vuln-scan-panel.tsx
+msgid "No packages"
 msgstr ""
 
 #: src/components/command-palette.tsx
@@ -1239,6 +1357,7 @@ msgstr "Nenhum resultado encontrado."
 #: src/components/routes/settings/alerts-history-data-table.tsx
 #: src/components/routes/system/smart-table.tsx
 #: src/components/systemd-table/systemd-table.tsx
+#: src/components/vms-table/vms-table.tsx
 msgid "No results."
 msgstr "Sem resultados."
 
@@ -1251,10 +1370,20 @@ msgstr "Nenhum atributo S.M.A.R.T. disponível para este dispositivo."
 msgid "No systems found."
 msgstr "Nenhum sistema encontrado."
 
+#: src/components/vuln-scan/vuln-scan-panel.tsx
+msgid "No vulnerability scan data for this server yet."
+msgstr ""
+
+#: src/components/routes/system/info-bar.tsx
 #: src/components/systemd-table/systemd-table-columns.tsx
 #: src/components/systemd-table/systemd-table.tsx
-msgid "Not scanned yet"
+msgid "Not scanned"
 msgstr ""
+
+#: src/components/systemd-table/systemd-table-columns.tsx
+#: src/components/systemd-table/systemd-table.tsx
+#~ msgid "Not scanned yet"
+#~ msgstr ""
 
 #: src/components/command-palette.tsx
 #: src/components/routes/settings/layout.tsx
@@ -1279,6 +1408,10 @@ msgstr "Uma vez"
 msgid "One-time password"
 msgstr "Senha de uso único"
 
+#: src/lib/alerts.ts
+msgid "Only CRITICAL vulnerabilities"
+msgstr ""
+
 #: src/components/routes/settings/quiet-hours.tsx
 #: src/components/routes/settings/tokens-fingerprints.tsx
 #: src/components/routes/settings/tokens-fingerprints.tsx
@@ -1291,6 +1424,10 @@ msgstr "Abrir menu"
 msgid "Or continue with"
 msgstr "Ou continue com"
 
+#: src/components/vuln-scan/vuln-scan-panel.tsx
+msgid "OSV.dev package scans, queue status, and per-server results."
+msgstr ""
+
 #: src/components/routes/system/cpu-sheet.tsx
 msgid "Other"
 msgstr "Outro"
@@ -1298,6 +1435,14 @@ msgstr "Outro"
 #: src/components/alerts/alerts-sheet.tsx
 msgid "Overwrite existing alerts"
 msgstr "Sobrescrever alertas existentes"
+
+#: src/components/vuln-scan/vuln-scan-panel.tsx
+msgid "Packages"
+msgstr ""
+
+#: src/components/vuln-scan/vuln-scan-panel.tsx
+msgid "Packages:"
+msgstr ""
 
 #: src/components/command-palette.tsx
 #: src/components/command-palette.tsx
@@ -1351,6 +1496,14 @@ msgstr "Pausado ({pausedSystemsLength})"
 #: src/components/routes/settings/heartbeat.tsx
 msgid "Payload format"
 msgstr "Formato do payload"
+
+#: src/components/vuln-scan/vuln-scan-panel.tsx
+msgid "Pending"
+msgstr ""
+
+#: src/components/vuln-scan/vuln-scan-panel.tsx
+msgid "Pending scan"
+msgstr ""
 
 #: src/components/routes/system/cpu-sheet.tsx
 #: src/components/routes/system/cpu-sheet.tsx
@@ -1452,6 +1605,16 @@ msgctxt "Disk I/O average queue depth"
 msgid "Queue Depth"
 msgstr "Profundidade da fila"
 
+#: src/components/vuln-scan/vuln-scan-panel.tsx
+msgid "Queue is empty"
+msgstr ""
+
+#: src/components/vuln-scan/vuln-scan-panel.tsx
+#: src/components/vuln-scan/vuln-scan-panel.tsx
+#: src/components/vuln-scan/vuln-scan-panel.tsx
+msgid "Queued"
+msgstr ""
+
 #: src/components/routes/settings/quiet-hours.tsx
 msgid "Quiet Hours"
 msgstr "Horas Silenciosas"
@@ -1472,6 +1635,10 @@ msgstr ""
 #: src/components/routes/system/charts/network-charts.tsx
 msgid "Received"
 msgstr "Recebido"
+
+#: src/components/vuln-scan/vuln-scan-panel.tsx
+msgid "Recent activity"
+msgstr ""
 
 #: src/components/containers-table/containers-table.tsx
 #: src/components/containers-table/containers-table.tsx
@@ -1546,6 +1713,11 @@ msgstr "Rotacionar token"
 msgid "Rows per page"
 msgstr "Linhas por página"
 
+#: src/components/vuln-scan/vuln-scan-panel.tsx
+#: src/components/vuln-scan/vuln-scan-panel.tsx
+msgid "Running"
+msgstr ""
+
 #: src/components/systemd-table/systemd-table.tsx
 msgid "Runtime Metrics"
 msgstr "Métricas de tempo de execução"
@@ -1557,6 +1729,12 @@ msgstr "Detalhes S.M.A.R.T."
 #: src/components/routes/system/smart-table.tsx
 msgid "S.M.A.R.T. Self-Test"
 msgstr "Auto-teste S.M.A.R.T."
+
+#: src/components/routes/system/info-bar.tsx
+#: src/components/systemd-table/systemd-table-columns.tsx
+#: src/components/systemd-table/systemd-table.tsx
+msgid "Safe"
+msgstr ""
 
 #: src/components/add-system.tsx
 msgid "Save {foo}"
@@ -1575,7 +1753,38 @@ msgstr "Guardar Definições"
 msgid "Saved in the database and does not expire until you disable it."
 msgstr "Salvo no banco de dados e não expira até você desativá-lo."
 
+#: src/components/vuln-scan/vuln-scan-panel.tsx
+msgid "Scan all systems"
+msgstr ""
+
+#: src/components/vuln-scan/vuln-scan-panel.tsx
+msgid "Scan now"
+msgstr ""
+
+#: src/components/vuln-scan/vuln-scan-panel.tsx
+msgid "Scan queue"
+msgstr ""
+
+#: src/components/vuln-scan/vuln-scan-panel.tsx
+#: src/components/vuln-scan/vuln-scan-panel.tsx
+msgid "Scanned"
+msgstr ""
+
+#: src/components/routes/system/info-bar.tsx
+#: src/components/systemd-table/systemd-table.tsx
+msgid "Scanned at"
+msgstr ""
+
+#: src/components/routes/system/info-bar.tsx
+msgid "Scanned kernel"
+msgstr ""
+
+#: src/components/routes/settings/vulnerabilities.tsx
+msgid "Scans use OSV.dev with a shared package cache. Results appear on each server's Systemd Services table after scanning completes."
+msgstr ""
+
 #: src/components/routes/settings/quiet-hours.tsx
+#: src/components/vuln-scan/vuln-scan-panel.tsx
 msgid "Schedule"
 msgstr "Agendar"
 
@@ -1600,8 +1809,8 @@ msgid "Seconds between pings (default: 60)"
 msgstr "Segundos entre pings (predefinido: 60)"
 
 #: src/components/systemd-table/systemd-table-columns.tsx
-msgid "Security"
-msgstr ""
+#~ msgid "Security"
+#~ msgstr ""
 
 #: src/components/alerts/alerts-sheet.tsx
 msgid "See <0>notification settings</0> to configure how you receive alerts."
@@ -1630,6 +1839,10 @@ msgstr "Enviado"
 #: src/components/routes/system/smart-table.tsx
 msgid "Serial Number"
 msgstr "Número de Série"
+
+#: src/components/vuln-scan/vuln-scan-panel.tsx
+msgid "Server"
+msgstr ""
 
 #: src/components/systemd-table/systemd-table.tsx
 msgid "Service Details"
@@ -1670,6 +1883,11 @@ msgstr "Configurações"
 msgid "Settings saved"
 msgstr "Definições guardadas"
 
+#: src/components/routes/system/info-bar.tsx
+#: src/components/systemd-table/systemd-table.tsx
+msgid "Severity"
+msgstr ""
+
 #: src/components/login/auth-form.tsx
 msgid "Sign in"
 msgstr "Entrar"
@@ -1691,6 +1909,10 @@ msgstr "Ordenar Por"
 msgid "Start Time"
 msgstr "Hora de Início"
 
+#: src/components/vuln-scan/vuln-scan-panel.tsx
+msgid "Started"
+msgstr ""
+
 #. Context: alert state (active or resolved)
 #: src/components/alerts-history-columns.tsx
 #: src/components/routes/settings/quiet-hours.tsx
@@ -1699,9 +1921,13 @@ msgid "State"
 msgstr "Estado"
 
 #: src/components/containers-table/containers-table-columns.tsx
+#: src/components/routes/system/info-bar.tsx
 #: src/components/routes/system/smart-table.tsx
 #: src/components/systemd-table/systemd-table.tsx
+#: src/components/systemd-table/systemd-table.tsx
 #: src/components/systems-table/systems-table.tsx
+#: src/components/vms-table/vms-table-columns.tsx
+#: src/components/vuln-scan/vuln-scan-panel.tsx
 #: src/lib/alerts.ts
 msgid "Status"
 msgstr "Estado"
@@ -1709,6 +1935,11 @@ msgstr "Estado"
 #: src/components/systemd-table/systemd-table-columns.tsx
 msgid "Sub State"
 msgstr "Subestado"
+
+#: src/components/routes/system/info-bar.tsx
+#: src/components/systemd-table/systemd-table.tsx
+msgid "Summary"
+msgstr ""
 
 #: src/components/routes/system/charts/memory-charts.tsx
 msgid "Swap space used by the system"
@@ -1882,6 +2113,22 @@ msgstr "Os tokens permitem que os agentes se conectem e registrem. As impressõe
 msgid "Tokens and fingerprints are used to authenticate WebSocket connections to the hub."
 msgstr "Tokens e impressões digitais são usados para autenticar conexões WebSocket ao hub."
 
+#: src/components/routes/system/charts/process-charts.tsx
+msgid "Top 10 processes by average CPU usage"
+msgstr ""
+
+#: src/components/routes/system/charts/process-charts.tsx
+msgid "Top 10 processes by average memory usage"
+msgstr ""
+
+#: src/components/routes/system/charts/process-charts.tsx
+msgid "Top Processes (CPU)"
+msgstr ""
+
+#: src/components/routes/system/charts/process-charts.tsx
+msgid "Top Processes (Memory)"
+msgstr ""
+
 #: src/components/ui/chart.tsx
 #: src/components/ui/chart.tsx
 msgid "Total"
@@ -1962,8 +2209,8 @@ msgid "Triggers when memory usage exceeds a threshold"
 msgstr "Dispara quando o uso de memória excede um limite"
 
 #: src/lib/alerts.ts
-msgid "Triggers when new vulnerabilities are detected in service packages or the kernel"
-msgstr ""
+#~ msgid "Triggers when new vulnerabilities are detected in service packages or the kernel"
+#~ msgstr ""
 
 #: src/lib/alerts.ts
 msgid "Triggers when status switches between up and down"
@@ -1976,6 +2223,10 @@ msgstr ""
 #: src/lib/alerts.ts
 msgid "Triggers when usage of any disk exceeds a threshold"
 msgstr "Dispara quando o uso de qualquer disco excede um limite"
+
+#: src/lib/alerts.ts
+msgid "Triggers when vulnerabilities with CVSS score above the threshold are detected"
+msgstr ""
 
 #: src/components/routes/settings/quiet-hours.tsx
 #: src/components/routes/settings/quiet-hours.tsx
@@ -2071,6 +2322,10 @@ msgstr "Utilização"
 msgid "Value"
 msgstr "Valor"
 
+#: src/components/vms-table/vms-table-columns.tsx
+msgid "vCPUs"
+msgstr ""
+
 #: src/components/systemd-table/systemd-table-columns.tsx
 #: src/components/systemd-table/systemd-table.tsx
 msgid "Version"
@@ -2090,12 +2345,50 @@ msgstr "Ver mais"
 msgid "View your 200 most recent alerts."
 msgstr "Veja os seus 200 alertas mais recentes."
 
+#: src/components/vms-table/vms-table.tsx
+msgid "Virtual Machines"
+msgstr ""
+
 #: src/components/systems-table/systems-table.tsx
 msgid "Visible Fields"
 msgstr "Campos Visíveis"
 
+#: src/components/routes/system/charts/libvirt-charts.tsx
+msgid "VM CPU Usage"
+msgstr ""
+
+#: src/components/routes/system/charts/libvirt-charts.tsx
+msgid "VM Memory Usage"
+msgstr ""
+
+#: src/components/routes/system/charts/libvirt-charts.tsx
+msgid "VM Network"
+msgstr ""
+
+#: src/components/routes/system.tsx
+msgid "VMs"
+msgstr ""
+
+#: src/components/routes/system/info-bar.tsx
+#: src/components/systemd-table/systemd-table.tsx
+msgid "Vulnerabilities found"
+msgstr ""
+
 #: src/lib/alerts.ts
 msgid "Vulnerability"
+msgstr ""
+
+#: src/components/systemd-table/systemd-table.tsx
+msgid "Vulnerability Scan"
+msgstr ""
+
+#: src/components/routes/settings/layout.tsx
+#: src/components/vuln-scan/vuln-scan-panel.tsx
+msgid "Vulnerability Scans"
+msgstr ""
+
+#: src/components/vuln-scan/vuln-scan-panel.tsx
+msgid "Vulns"
 msgstr ""
 
 #. Web server connections
@@ -2140,6 +2433,10 @@ msgstr "Ao usar POST, cada heartbeat inclui um payload JSON com o resumo do esta
 msgctxt "Button to copy install command"
 msgid "Windows command"
 msgstr "Comando Windows"
+
+#: src/components/vuln-scan/vuln-scan-panel.tsx
+msgid "With vulnerabilities"
+msgstr ""
 
 #. Disk write
 #: src/components/routes/system/charts/disk-charts.tsx

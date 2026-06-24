@@ -18,10 +18,9 @@ msgstr ""
 "X-Crowdin-File: /main/internal/site/src/locales/en/en.po\n"
 "X-Crowdin-File-ID: 32\n"
 
-#. placeholder {0}: vulnInfo.vulnCount - 3
 #: src/components/systemd-table/systemd-table.tsx
-msgid "...and {0} more"
-msgstr ""
+#~ msgid "...and {0} more"
+#~ msgstr ""
 
 #. placeholder {0}: newVersion.v
 #: src/components/footer-repo-link.tsx
@@ -35,14 +34,17 @@ msgstr "{0} tersedia"
 msgid "{0} of {1} row(s) selected."
 msgstr "{0} dari {1} baris terpilih."
 
-#. placeholder {0}: vulnInfo.vulnCount
 #: src/components/systemd-table/systemd-table.tsx
-msgid "{0} vulnerabilities found"
-msgstr ""
+#~ msgid "{0} vulnerabilities found"
+#~ msgstr ""
 
-#. placeholder {0}: vulnInfo.vulnCount
 #: src/components/systemd-table/systemd-table.tsx
-msgid "{0} vulnerability found"
+#~ msgid "{0} vulnerability found"
+#~ msgstr ""
+
+#. placeholder {0}: system.vulnerableServices
+#: src/components/vuln-scan/vuln-scan-panel.tsx
+msgid "{0} vulnerable services"
 msgstr ""
 
 #: src/components/routes/system/info-bar.tsx
@@ -199,6 +201,10 @@ msgstr "Peringatan"
 msgid "All Containers"
 msgstr "Semua Container"
 
+#: src/components/vuln-scan/vuln-scan-panel.tsx
+msgid "All systems"
+msgstr ""
+
 #: src/components/alerts/alerts-sheet.tsx
 #: src/components/command-palette.tsx
 #: src/components/routes/home.tsx
@@ -207,6 +213,10 @@ msgstr "Semua Container"
 #: src/components/systems-table/systems-table.tsx
 msgid "All Systems"
 msgstr "Semua Sistem"
+
+#: src/lib/alerts.ts
+msgid "All vulnerabilities"
+msgstr ""
 
 #: src/components/systems-table/systems-table-columns.tsx
 msgid "Are you sure you want to delete {name}?"
@@ -220,6 +230,10 @@ msgstr "Apakah anda yakin?"
 msgid "Automatic copy requires a secure context."
 msgstr "Copy memerlukan https."
 
+#: src/components/vuln-scan/vuln-scan-panel.tsx
+msgid "Automatic scan"
+msgstr ""
+
 #: src/components/routes/system/chart-card.tsx
 msgid "Average"
 msgstr "Rata-rata"
@@ -227,6 +241,10 @@ msgstr "Rata-rata"
 #: src/components/routes/system/charts/cpu-charts.tsx
 msgid "Average CPU utilization of containers"
 msgstr "Rata-rata utilisasi CPU untuk semua kontainer"
+
+#: src/components/routes/system/charts/libvirt-charts.tsx
+msgid "Average CPU utilization of virtual machines"
+msgstr ""
 
 #. placeholder {0}: alertData.unit
 #: src/components/alerts/alerts-sheet.tsx
@@ -350,6 +368,10 @@ msgstr ""
 msgid "Cache / Buffers"
 msgstr ""
 
+#: src/components/vuln-scan/vuln-scan-panel.tsx
+msgid "Cache entries"
+msgstr ""
+
 #: src/components/systemd-table/systemd-table.tsx
 msgid "Can reload"
 msgstr "Dapat dimuatulang"
@@ -428,6 +450,7 @@ msgstr "Periksa jasa penyedia notifikasi anda"
 #: src/components/containers-table/containers-table.tsx
 #: src/components/routes/system/smart-table.tsx
 #: src/components/systems-table/systems-table.tsx
+#: src/components/vms-table/vms-table.tsx
 msgid "Clear"
 msgstr "Bersihkan"
 
@@ -456,6 +479,10 @@ msgstr ""
 #: src/components/login/forgot-pass-form.tsx
 msgid "Command line instructions"
 msgstr "Instruksi command line"
+
+#: src/components/vuln-scan/vuln-scan-panel.tsx
+msgid "Completed"
+msgstr ""
 
 #: src/components/routes/settings/notifications.tsx
 msgid "Configure how you receive alert notifications."
@@ -551,6 +578,7 @@ msgstr "Inti"
 #: src/components/containers-table/containers-table-columns.tsx
 #: src/components/systemd-table/systemd-table-columns.tsx
 #: src/components/systems-table/systems-table-columns.tsx
+#: src/components/vms-table/vms-table-columns.tsx
 msgid "CPU"
 msgstr ""
 
@@ -607,6 +635,11 @@ msgstr "Akumulasi Upload"
 msgid "Current state"
 msgstr "Status saat ini"
 
+#. placeholder {0}: alert.value
+#: src/components/active-alerts.tsx
+msgid "CVSS ≥ {0} vulnerabilities detected"
+msgstr ""
+
 #. Power Cycles
 #: src/components/routes/system/smart-table.tsx
 msgid "Cycles"
@@ -660,6 +693,7 @@ msgid "Disk"
 msgstr ""
 
 #: src/components/routes/system/charts/disk-charts.tsx
+#: src/components/vms-table/vms-table-columns.tsx
 msgid "Disk I/O"
 msgstr "I/O Disk"
 
@@ -840,6 +874,8 @@ msgid "Fahrenheit (°F)"
 msgstr ""
 
 #: src/components/systems-table/systems-table-columns.tsx
+#: src/components/vuln-scan/vuln-scan-panel.tsx
+#: src/components/vuln-scan/vuln-scan-panel.tsx
 msgid "Failed"
 msgstr "Gagal"
 
@@ -881,6 +917,7 @@ msgstr "Gagal: {0}"
 #: src/components/routes/system/smart-table.tsx
 #: src/components/systemd-table/systemd-table.tsx
 #: src/components/systems-table/systems-table.tsx
+#: src/components/vms-table/vms-table.tsx
 msgid "Filter..."
 msgstr "Saring..."
 
@@ -954,6 +991,7 @@ msgid "Grid"
 msgstr "Kartu"
 
 #: src/components/containers-table/containers-table-columns.tsx
+#: src/components/vms-table/vms-table-columns.tsx
 msgid "Health"
 msgstr "Kesehatan"
 
@@ -968,6 +1006,10 @@ msgstr "Pemantauan Heartbeat"
 #: src/components/routes/settings/heartbeat.tsx
 msgid "Heartbeat sent successfully"
 msgstr "Heartbeat berhasil dikirim"
+
+#: src/lib/alerts.ts
+msgid "HIGH and CRITICAL vulnerabilities"
+msgstr ""
 
 #: src/components/add-system.tsx
 #: src/components/routes/settings/tokens-fingerprints.tsx
@@ -1002,6 +1044,11 @@ msgctxt "Percent of time the disk is busy with I/O"
 msgid "I/O Utilization"
 msgstr "Utilisasi I/O"
 
+#: src/components/routes/system/info-bar.tsx
+#: src/components/systemd-table/systemd-table.tsx
+msgid "ID"
+msgstr ""
+
 #. Context: Battery state
 #. Web server workers
 #: src/components/routes/system/charts/webserver-charts.tsx
@@ -1017,6 +1064,10 @@ msgstr "Jika anda kehilangan kata sandi untuk akun admin anda, anda dapat merese
 msgctxt "Docker image"
 msgid "Image"
 msgstr "Gambar"
+
+#: src/components/vuln-scan/vuln-scan-panel.tsx
+msgid "In queue"
+msgstr ""
 
 #: src/components/routes/settings/quiet-hours.tsx
 msgid "Inactive"
@@ -1034,8 +1085,28 @@ msgstr "Alamat email tidak valid."
 msgid "Kernel"
 msgstr ""
 
+#: src/components/routes/system/info-bar.tsx
+msgid "Kernel changed, rescan required"
+msgstr ""
+
+#: src/components/routes/system/info-bar.tsx
+msgid "Kernel version"
+msgstr ""
+
+#: src/components/routes/system/info-bar.tsx
+msgid "Kernel Vulnerability Details"
+msgstr ""
+
+#: src/components/vuln-scan/vuln-scan-panel.tsx
+msgid "Kernel vulnerable"
+msgstr ""
+
 #: src/components/routes/system/charts/mysql-charts.tsx
 msgid "Key Cache Hit Rate"
+msgstr ""
+
+#: src/components/active-alerts.tsx
+msgid "Known vulnerabilities detected"
 msgstr ""
 
 #: src/components/lang-toggle.tsx
@@ -1048,6 +1119,18 @@ msgstr "Bahasa"
 msgid "Last ACK"
 msgstr ""
 
+#: src/components/vuln-scan/vuln-scan-panel.tsx
+msgid "Last full scan"
+msgstr ""
+
+#: src/components/vuln-scan/vuln-scan-panel.tsx
+msgid "Last scan"
+msgstr ""
+
+#: src/components/vuln-scan/vuln-scan-panel.tsx
+msgid "Last scan:"
+msgstr ""
+
 #: src/components/systems-table/systems-table.tsx
 msgid "Layout"
 msgstr "Tampilan"
@@ -1055,6 +1138,10 @@ msgstr "Tampilan"
 #: src/components/routes/settings/general.tsx
 msgid "Layout width"
 msgstr "Lebar tampilan"
+
+#: src/components/vms-table/vms-table.tsx
+msgid "Libvirt/KVM virtual machines on this host."
+msgstr ""
 
 #: src/components/systemd-table/systemd-table.tsx
 msgid "Lifecycle"
@@ -1095,6 +1182,10 @@ msgstr "Rata-rata Beban"
 msgid "Load state"
 msgstr "Beban saat ini"
 
+#: src/components/vuln-scan/vuln-scan-panel.tsx
+msgid "Loading scan status…"
+msgstr ""
+
 #: src/components/systemd-table/systemd-table.tsx
 msgid "Loading..."
 msgstr "Memuat..."
@@ -1123,6 +1214,10 @@ msgstr "Log"
 msgid "Looking instead for where to create alerts? Click the bell <0/> icons in the systems table."
 msgstr "Mencari tempat untuk membuat peringatan? Klik ikon lonceng <0/> di tabel sistem."
 
+#: src/lib/alerts.ts
+msgid "LOW and above vulnerabilities"
+msgstr ""
+
 #: src/components/systemd-table/systemd-table.tsx
 msgid "Main PID"
 msgstr "PID utama"
@@ -1141,11 +1236,16 @@ msgstr "Instruksi setup manual"
 msgid "Max 1 min"
 msgstr "Maks 1 mnt"
 
+#: src/lib/alerts.ts
+msgid "MEDIUM, HIGH and CRITICAL vulnerabilities"
+msgstr ""
+
 #: src/components/containers-table/containers-table-columns.tsx
 #: src/components/routes/system/info-bar.tsx
 #: src/components/systemd-table/systemd-table-columns.tsx
 #: src/components/systemd-table/systemd-table.tsx
 #: src/components/systems-table/systems-table-columns.tsx
+#: src/components/vms-table/vms-table-columns.tsx
 msgid "Memory"
 msgstr "Memori"
 
@@ -1166,6 +1266,10 @@ msgstr "Penggunaan Memori"
 #: src/components/routes/system/charts/memory-charts.tsx
 msgid "Memory usage of docker containers"
 msgstr "Penggunaan memori kontainer docker"
+
+#: src/components/routes/system/charts/libvirt-charts.tsx
+msgid "Memory usage of virtual machines"
+msgstr ""
 
 #. Device model
 #: src/components/routes/system/smart-table.tsx
@@ -1189,11 +1293,13 @@ msgstr ""
 #: src/components/containers-table/containers-table-columns.tsx
 #: src/components/systemd-table/systemd-table-columns.tsx
 #: src/components/systemd-table/systemd-table.tsx
+#: src/components/vms-table/vms-table-columns.tsx
 msgid "Name"
 msgstr "Nama"
 
 #: src/components/containers-table/containers-table-columns.tsx
 #: src/components/systems-table/systems-table-columns.tsx
+#: src/components/vms-table/vms-table-columns.tsx
 msgid "Net"
 msgstr "Jaringan"
 
@@ -1208,13 +1314,21 @@ msgstr "Trafik jaringan kontainer docker"
 msgid "Network traffic of public interfaces"
 msgstr "Trafik jaringan antarmuka publik"
 
+#: src/components/routes/system/charts/libvirt-charts.tsx
+msgid "Network traffic of virtual machines"
+msgstr ""
+
 #. Context: Bytes or bits
 #: src/components/routes/settings/general.tsx
 msgid "Network unit"
 msgstr "Unit jaringan"
 
 #: src/lib/alerts.ts
-msgid "New vulnerability detected"
+#~ msgid "New vulnerability detected"
+#~ msgstr ""
+
+#: src/components/vuln-scan/vuln-scan-panel.tsx
+msgid "Next scheduled"
 msgstr ""
 
 #: src/components/systemd-table/systemd-table.tsx
@@ -1225,7 +1339,11 @@ msgstr "Tidak"
 
 #: src/components/systemd-table/systemd-table-columns.tsx
 #: src/components/systemd-table/systemd-table.tsx
-msgid "No known vulnerabilities"
+#~ msgid "No known vulnerabilities"
+#~ msgstr ""
+
+#: src/components/vuln-scan/vuln-scan-panel.tsx
+msgid "No packages"
 msgstr ""
 
 #: src/components/command-palette.tsx
@@ -1239,6 +1357,7 @@ msgstr "Tidak ada hasil ditemukan."
 #: src/components/routes/settings/alerts-history-data-table.tsx
 #: src/components/routes/system/smart-table.tsx
 #: src/components/systemd-table/systemd-table.tsx
+#: src/components/vms-table/vms-table.tsx
 msgid "No results."
 msgstr "Tidak ada hasil."
 
@@ -1251,10 +1370,20 @@ msgstr "Tidak ada atribut S.M.A.R.T. yang tersedia untuk perangkat ini."
 msgid "No systems found."
 msgstr "Sistem tidak ditemukan."
 
+#: src/components/vuln-scan/vuln-scan-panel.tsx
+msgid "No vulnerability scan data for this server yet."
+msgstr ""
+
+#: src/components/routes/system/info-bar.tsx
 #: src/components/systemd-table/systemd-table-columns.tsx
 #: src/components/systemd-table/systemd-table.tsx
-msgid "Not scanned yet"
+msgid "Not scanned"
 msgstr ""
+
+#: src/components/systemd-table/systemd-table-columns.tsx
+#: src/components/systemd-table/systemd-table.tsx
+#~ msgid "Not scanned yet"
+#~ msgstr ""
 
 #: src/components/command-palette.tsx
 #: src/components/routes/settings/layout.tsx
@@ -1279,6 +1408,10 @@ msgstr "Sekali pakai"
 msgid "One-time password"
 msgstr "Kata sandi sekali pakai (OTP)"
 
+#: src/lib/alerts.ts
+msgid "Only CRITICAL vulnerabilities"
+msgstr ""
+
 #: src/components/routes/settings/quiet-hours.tsx
 #: src/components/routes/settings/tokens-fingerprints.tsx
 #: src/components/routes/settings/tokens-fingerprints.tsx
@@ -1291,6 +1424,10 @@ msgstr "Buka menu"
 msgid "Or continue with"
 msgstr "Atau lanjutkan dengan"
 
+#: src/components/vuln-scan/vuln-scan-panel.tsx
+msgid "OSV.dev package scans, queue status, and per-server results."
+msgstr ""
+
 #: src/components/routes/system/cpu-sheet.tsx
 msgid "Other"
 msgstr "Lainnya"
@@ -1298,6 +1435,14 @@ msgstr "Lainnya"
 #: src/components/alerts/alerts-sheet.tsx
 msgid "Overwrite existing alerts"
 msgstr "Timpa peringatan yang ada"
+
+#: src/components/vuln-scan/vuln-scan-panel.tsx
+msgid "Packages"
+msgstr ""
+
+#: src/components/vuln-scan/vuln-scan-panel.tsx
+msgid "Packages:"
+msgstr ""
 
 #: src/components/command-palette.tsx
 #: src/components/command-palette.tsx
@@ -1351,6 +1496,14 @@ msgstr "Dijeda ({pausedSystemsLength})"
 #: src/components/routes/settings/heartbeat.tsx
 msgid "Payload format"
 msgstr "Format payload"
+
+#: src/components/vuln-scan/vuln-scan-panel.tsx
+msgid "Pending"
+msgstr ""
+
+#: src/components/vuln-scan/vuln-scan-panel.tsx
+msgid "Pending scan"
+msgstr ""
 
 #: src/components/routes/system/cpu-sheet.tsx
 #: src/components/routes/system/cpu-sheet.tsx
@@ -1452,6 +1605,16 @@ msgctxt "Disk I/O average queue depth"
 msgid "Queue Depth"
 msgstr "Kedalaman Antrian"
 
+#: src/components/vuln-scan/vuln-scan-panel.tsx
+msgid "Queue is empty"
+msgstr ""
+
+#: src/components/vuln-scan/vuln-scan-panel.tsx
+#: src/components/vuln-scan/vuln-scan-panel.tsx
+#: src/components/vuln-scan/vuln-scan-panel.tsx
+msgid "Queued"
+msgstr ""
+
 #: src/components/routes/settings/quiet-hours.tsx
 msgid "Quiet Hours"
 msgstr "Jam Tenang"
@@ -1472,6 +1635,10 @@ msgstr ""
 #: src/components/routes/system/charts/network-charts.tsx
 msgid "Received"
 msgstr "Diterima"
+
+#: src/components/vuln-scan/vuln-scan-panel.tsx
+msgid "Recent activity"
+msgstr ""
 
 #: src/components/containers-table/containers-table.tsx
 #: src/components/containers-table/containers-table.tsx
@@ -1546,6 +1713,11 @@ msgstr "Ganti ulang token"
 msgid "Rows per page"
 msgstr "Baris per halaman"
 
+#: src/components/vuln-scan/vuln-scan-panel.tsx
+#: src/components/vuln-scan/vuln-scan-panel.tsx
+msgid "Running"
+msgstr ""
+
 #: src/components/systemd-table/systemd-table.tsx
 msgid "Runtime Metrics"
 msgstr "Metrik Runtime"
@@ -1557,6 +1729,12 @@ msgstr "Detail S.M.A.R.T."
 #: src/components/routes/system/smart-table.tsx
 msgid "S.M.A.R.T. Self-Test"
 msgstr "Self-Test S.M.A.R.T."
+
+#: src/components/routes/system/info-bar.tsx
+#: src/components/systemd-table/systemd-table-columns.tsx
+#: src/components/systemd-table/systemd-table.tsx
+msgid "Safe"
+msgstr ""
 
 #: src/components/add-system.tsx
 msgid "Save {foo}"
@@ -1575,7 +1753,38 @@ msgstr "Simpan Pengaturan"
 msgid "Saved in the database and does not expire until you disable it."
 msgstr "Disimpan di database dan tidak kedaluwarsa sampai Anda menonaktifkannya."
 
+#: src/components/vuln-scan/vuln-scan-panel.tsx
+msgid "Scan all systems"
+msgstr ""
+
+#: src/components/vuln-scan/vuln-scan-panel.tsx
+msgid "Scan now"
+msgstr ""
+
+#: src/components/vuln-scan/vuln-scan-panel.tsx
+msgid "Scan queue"
+msgstr ""
+
+#: src/components/vuln-scan/vuln-scan-panel.tsx
+#: src/components/vuln-scan/vuln-scan-panel.tsx
+msgid "Scanned"
+msgstr ""
+
+#: src/components/routes/system/info-bar.tsx
+#: src/components/systemd-table/systemd-table.tsx
+msgid "Scanned at"
+msgstr ""
+
+#: src/components/routes/system/info-bar.tsx
+msgid "Scanned kernel"
+msgstr ""
+
+#: src/components/routes/settings/vulnerabilities.tsx
+msgid "Scans use OSV.dev with a shared package cache. Results appear on each server's Systemd Services table after scanning completes."
+msgstr ""
+
 #: src/components/routes/settings/quiet-hours.tsx
+#: src/components/vuln-scan/vuln-scan-panel.tsx
 msgid "Schedule"
 msgstr "Jadwal"
 
@@ -1600,8 +1809,8 @@ msgid "Seconds between pings (default: 60)"
 msgstr "Detik di antara ping (default: 60)"
 
 #: src/components/systemd-table/systemd-table-columns.tsx
-msgid "Security"
-msgstr ""
+#~ msgid "Security"
+#~ msgstr ""
 
 #: src/components/alerts/alerts-sheet.tsx
 msgid "See <0>notification settings</0> to configure how you receive alerts."
@@ -1630,6 +1839,10 @@ msgstr "Dikirim"
 #: src/components/routes/system/smart-table.tsx
 msgid "Serial Number"
 msgstr "Nomor Seri"
+
+#: src/components/vuln-scan/vuln-scan-panel.tsx
+msgid "Server"
+msgstr ""
 
 #: src/components/systemd-table/systemd-table.tsx
 msgid "Service Details"
@@ -1670,6 +1883,11 @@ msgstr "Pengaturan"
 msgid "Settings saved"
 msgstr "Pengaturan disimpan"
 
+#: src/components/routes/system/info-bar.tsx
+#: src/components/systemd-table/systemd-table.tsx
+msgid "Severity"
+msgstr ""
+
 #: src/components/login/auth-form.tsx
 msgid "Sign in"
 msgstr "Masuk"
@@ -1691,6 +1909,10 @@ msgstr "Urutkan Berdasarkan"
 msgid "Start Time"
 msgstr "Waktu Mulai"
 
+#: src/components/vuln-scan/vuln-scan-panel.tsx
+msgid "Started"
+msgstr ""
+
 #. Context: alert state (active or resolved)
 #: src/components/alerts-history-columns.tsx
 #: src/components/routes/settings/quiet-hours.tsx
@@ -1699,9 +1921,13 @@ msgid "State"
 msgstr "Status"
 
 #: src/components/containers-table/containers-table-columns.tsx
+#: src/components/routes/system/info-bar.tsx
 #: src/components/routes/system/smart-table.tsx
 #: src/components/systemd-table/systemd-table.tsx
+#: src/components/systemd-table/systemd-table.tsx
 #: src/components/systems-table/systems-table.tsx
+#: src/components/vms-table/vms-table-columns.tsx
+#: src/components/vuln-scan/vuln-scan-panel.tsx
 #: src/lib/alerts.ts
 msgid "Status"
 msgstr ""
@@ -1709,6 +1935,11 @@ msgstr ""
 #: src/components/systemd-table/systemd-table-columns.tsx
 msgid "Sub State"
 msgstr "Sub Status"
+
+#: src/components/routes/system/info-bar.tsx
+#: src/components/systemd-table/systemd-table.tsx
+msgid "Summary"
+msgstr ""
 
 #: src/components/routes/system/charts/memory-charts.tsx
 msgid "Swap space used by the system"
@@ -1882,6 +2113,22 @@ msgstr "Token memungkinkan agen untuk terhubung dan mendaftar. Fingerprint adala
 msgid "Tokens and fingerprints are used to authenticate WebSocket connections to the hub."
 msgstr "Token dan Fingerprint digunakan untuk mengautentikasi koneksi WebSocket ke hub."
 
+#: src/components/routes/system/charts/process-charts.tsx
+msgid "Top 10 processes by average CPU usage"
+msgstr ""
+
+#: src/components/routes/system/charts/process-charts.tsx
+msgid "Top 10 processes by average memory usage"
+msgstr ""
+
+#: src/components/routes/system/charts/process-charts.tsx
+msgid "Top Processes (CPU)"
+msgstr ""
+
+#: src/components/routes/system/charts/process-charts.tsx
+msgid "Top Processes (Memory)"
+msgstr ""
+
 #: src/components/ui/chart.tsx
 #: src/components/ui/chart.tsx
 msgid "Total"
@@ -1962,8 +2209,8 @@ msgid "Triggers when memory usage exceeds a threshold"
 msgstr "Dipicu ketika penggunaan memori melebihi ambang batas"
 
 #: src/lib/alerts.ts
-msgid "Triggers when new vulnerabilities are detected in service packages or the kernel"
-msgstr ""
+#~ msgid "Triggers when new vulnerabilities are detected in service packages or the kernel"
+#~ msgstr ""
 
 #: src/lib/alerts.ts
 msgid "Triggers when status switches between up and down"
@@ -1976,6 +2223,10 @@ msgstr ""
 #: src/lib/alerts.ts
 msgid "Triggers when usage of any disk exceeds a threshold"
 msgstr "Dipicu ketika penggunaan disk apa pun melebihi ambang batas"
+
+#: src/lib/alerts.ts
+msgid "Triggers when vulnerabilities with CVSS score above the threshold are detected"
+msgstr ""
 
 #: src/components/routes/settings/quiet-hours.tsx
 #: src/components/routes/settings/quiet-hours.tsx
@@ -2071,6 +2322,10 @@ msgstr "Utilisasi"
 msgid "Value"
 msgstr "Nilai"
 
+#: src/components/vms-table/vms-table-columns.tsx
+msgid "vCPUs"
+msgstr ""
+
 #: src/components/systemd-table/systemd-table-columns.tsx
 #: src/components/systemd-table/systemd-table.tsx
 msgid "Version"
@@ -2090,12 +2345,50 @@ msgstr "Lihat lebih banyak"
 msgid "View your 200 most recent alerts."
 msgstr "Lihat 200 peringatan terbaru anda."
 
+#: src/components/vms-table/vms-table.tsx
+msgid "Virtual Machines"
+msgstr ""
+
 #: src/components/systems-table/systems-table.tsx
 msgid "Visible Fields"
 msgstr "Metrik yang Terlihat"
 
+#: src/components/routes/system/charts/libvirt-charts.tsx
+msgid "VM CPU Usage"
+msgstr ""
+
+#: src/components/routes/system/charts/libvirt-charts.tsx
+msgid "VM Memory Usage"
+msgstr ""
+
+#: src/components/routes/system/charts/libvirt-charts.tsx
+msgid "VM Network"
+msgstr ""
+
+#: src/components/routes/system.tsx
+msgid "VMs"
+msgstr ""
+
+#: src/components/routes/system/info-bar.tsx
+#: src/components/systemd-table/systemd-table.tsx
+msgid "Vulnerabilities found"
+msgstr ""
+
 #: src/lib/alerts.ts
 msgid "Vulnerability"
+msgstr ""
+
+#: src/components/systemd-table/systemd-table.tsx
+msgid "Vulnerability Scan"
+msgstr ""
+
+#: src/components/routes/settings/layout.tsx
+#: src/components/vuln-scan/vuln-scan-panel.tsx
+msgid "Vulnerability Scans"
+msgstr ""
+
+#: src/components/vuln-scan/vuln-scan-panel.tsx
+msgid "Vulns"
 msgstr ""
 
 #. Web server connections
@@ -2140,6 +2433,10 @@ msgstr "Saat menggunakan POST, setiap heartbeat menyertakan payload JSON dengan 
 msgctxt "Button to copy install command"
 msgid "Windows command"
 msgstr "Perintah Windows"
+
+#: src/components/vuln-scan/vuln-scan-panel.tsx
+msgid "With vulnerabilities"
+msgstr ""
 
 #. Disk write
 #: src/components/routes/system/charts/disk-charts.tsx

@@ -18,10 +18,9 @@ msgstr ""
 "X-Crowdin-File: /main/internal/site/src/locales/en/en.po\n"
 "X-Crowdin-File-ID: 32\n"
 
-#. placeholder {0}: vulnInfo.vulnCount - 3
 #: src/components/systemd-table/systemd-table.tsx
-msgid "...and {0} more"
-msgstr ""
+#~ msgid "...and {0} more"
+#~ msgstr ""
 
 #. placeholder {0}: newVersion.v
 #: src/components/footer-repo-link.tsx
@@ -35,14 +34,17 @@ msgstr "{0} 現已推出"
 msgid "{0} of {1} row(s) selected."
 msgstr "已選取 {1} 個項目中的 {0} 個"
 
-#. placeholder {0}: vulnInfo.vulnCount
 #: src/components/systemd-table/systemd-table.tsx
-msgid "{0} vulnerabilities found"
-msgstr ""
+#~ msgid "{0} vulnerabilities found"
+#~ msgstr ""
 
-#. placeholder {0}: vulnInfo.vulnCount
 #: src/components/systemd-table/systemd-table.tsx
-msgid "{0} vulnerability found"
+#~ msgid "{0} vulnerability found"
+#~ msgstr ""
+
+#. placeholder {0}: system.vulnerableServices
+#: src/components/vuln-scan/vuln-scan-panel.tsx
+msgid "{0} vulnerable services"
 msgstr ""
 
 #: src/components/routes/system/info-bar.tsx
@@ -199,6 +201,10 @@ msgstr "警報"
 msgid "All Containers"
 msgstr "所有容器"
 
+#: src/components/vuln-scan/vuln-scan-panel.tsx
+msgid "All systems"
+msgstr ""
+
 #: src/components/alerts/alerts-sheet.tsx
 #: src/components/command-palette.tsx
 #: src/components/routes/home.tsx
@@ -207,6 +213,10 @@ msgstr "所有容器"
 #: src/components/systems-table/systems-table.tsx
 msgid "All Systems"
 msgstr "所有系統"
+
+#: src/lib/alerts.ts
+msgid "All vulnerabilities"
+msgstr ""
 
 #: src/components/systems-table/systems-table-columns.tsx
 msgid "Are you sure you want to delete {name}?"
@@ -220,6 +230,10 @@ msgstr "您確定嗎？"
 msgid "Automatic copy requires a secure context."
 msgstr "只有在受保護的環境（HTTPS）才能自動複製。"
 
+#: src/components/vuln-scan/vuln-scan-panel.tsx
+msgid "Automatic scan"
+msgstr ""
+
 #: src/components/routes/system/chart-card.tsx
 msgid "Average"
 msgstr "平均"
@@ -227,6 +241,10 @@ msgstr "平均"
 #: src/components/routes/system/charts/cpu-charts.tsx
 msgid "Average CPU utilization of containers"
 msgstr "容器的平均 CPU 使用率"
+
+#: src/components/routes/system/charts/libvirt-charts.tsx
+msgid "Average CPU utilization of virtual machines"
+msgstr ""
 
 #. placeholder {0}: alertData.unit
 #: src/components/alerts/alerts-sheet.tsx
@@ -350,6 +368,10 @@ msgstr ""
 msgid "Cache / Buffers"
 msgstr "快取/緩衝"
 
+#: src/components/vuln-scan/vuln-scan-panel.tsx
+msgid "Cache entries"
+msgstr ""
+
 #: src/components/systemd-table/systemd-table.tsx
 msgid "Can reload"
 msgstr "可重載"
@@ -428,6 +450,7 @@ msgstr "檢查您的通知服務"
 #: src/components/containers-table/containers-table.tsx
 #: src/components/routes/system/smart-table.tsx
 #: src/components/systems-table/systems-table.tsx
+#: src/components/vms-table/vms-table.tsx
 msgid "Clear"
 msgstr "清除"
 
@@ -456,6 +479,10 @@ msgstr ""
 #: src/components/login/forgot-pass-form.tsx
 msgid "Command line instructions"
 msgstr "命令列指令"
+
+#: src/components/vuln-scan/vuln-scan-panel.tsx
+msgid "Completed"
+msgstr ""
 
 #: src/components/routes/settings/notifications.tsx
 msgid "Configure how you receive alert notifications."
@@ -551,6 +578,7 @@ msgstr "核心指標"
 #: src/components/containers-table/containers-table-columns.tsx
 #: src/components/systemd-table/systemd-table-columns.tsx
 #: src/components/systems-table/systems-table-columns.tsx
+#: src/components/vms-table/vms-table-columns.tsx
 msgid "CPU"
 msgstr ""
 
@@ -607,6 +635,11 @@ msgstr "累計上傳"
 msgid "Current state"
 msgstr "目前狀態"
 
+#. placeholder {0}: alert.value
+#: src/components/active-alerts.tsx
+msgid "CVSS ≥ {0} vulnerabilities detected"
+msgstr ""
+
 #. Power Cycles
 #: src/components/routes/system/smart-table.tsx
 msgid "Cycles"
@@ -660,6 +693,7 @@ msgid "Disk"
 msgstr "磁碟"
 
 #: src/components/routes/system/charts/disk-charts.tsx
+#: src/components/vms-table/vms-table-columns.tsx
 msgid "Disk I/O"
 msgstr "磁碟 I/O"
 
@@ -840,6 +874,8 @@ msgid "Fahrenheit (°F)"
 msgstr "華氏 (°F)"
 
 #: src/components/systems-table/systems-table-columns.tsx
+#: src/components/vuln-scan/vuln-scan-panel.tsx
+#: src/components/vuln-scan/vuln-scan-panel.tsx
 msgid "Failed"
 msgstr "失敗"
 
@@ -881,6 +917,7 @@ msgstr "失敗：{0}"
 #: src/components/routes/system/smart-table.tsx
 #: src/components/systemd-table/systemd-table.tsx
 #: src/components/systems-table/systems-table.tsx
+#: src/components/vms-table/vms-table.tsx
 msgid "Filter..."
 msgstr "篩選..."
 
@@ -954,6 +991,7 @@ msgid "Grid"
 msgstr "網格"
 
 #: src/components/containers-table/containers-table-columns.tsx
+#: src/components/vms-table/vms-table-columns.tsx
 msgid "Health"
 msgstr "健康狀態"
 
@@ -968,6 +1006,10 @@ msgstr "Heartbeat 監控"
 #: src/components/routes/settings/heartbeat.tsx
 msgid "Heartbeat sent successfully"
 msgstr "Heartbeat 發送成功"
+
+#: src/lib/alerts.ts
+msgid "HIGH and CRITICAL vulnerabilities"
+msgstr ""
 
 #: src/components/add-system.tsx
 #: src/components/routes/settings/tokens-fingerprints.tsx
@@ -1002,6 +1044,11 @@ msgctxt "Percent of time the disk is busy with I/O"
 msgid "I/O Utilization"
 msgstr "I/O 利用率"
 
+#: src/components/routes/system/info-bar.tsx
+#: src/components/systemd-table/systemd-table.tsx
+msgid "ID"
+msgstr ""
+
 #. Context: Battery state
 #. Web server workers
 #: src/components/routes/system/charts/webserver-charts.tsx
@@ -1017,6 +1064,10 @@ msgstr "如果您遺失管理員帳號密碼，可以使用以下指令重設。
 msgctxt "Docker image"
 msgid "Image"
 msgstr "映像檔"
+
+#: src/components/vuln-scan/vuln-scan-panel.tsx
+msgid "In queue"
+msgstr ""
 
 #: src/components/routes/settings/quiet-hours.tsx
 msgid "Inactive"
@@ -1034,8 +1085,28 @@ msgstr "無效的電子郵件地址。"
 msgid "Kernel"
 msgstr ""
 
+#: src/components/routes/system/info-bar.tsx
+msgid "Kernel changed, rescan required"
+msgstr ""
+
+#: src/components/routes/system/info-bar.tsx
+msgid "Kernel version"
+msgstr ""
+
+#: src/components/routes/system/info-bar.tsx
+msgid "Kernel Vulnerability Details"
+msgstr ""
+
+#: src/components/vuln-scan/vuln-scan-panel.tsx
+msgid "Kernel vulnerable"
+msgstr ""
+
 #: src/components/routes/system/charts/mysql-charts.tsx
 msgid "Key Cache Hit Rate"
+msgstr ""
+
+#: src/components/active-alerts.tsx
+msgid "Known vulnerabilities detected"
 msgstr ""
 
 #: src/components/lang-toggle.tsx
@@ -1048,6 +1119,18 @@ msgstr "語言"
 msgid "Last ACK"
 msgstr ""
 
+#: src/components/vuln-scan/vuln-scan-panel.tsx
+msgid "Last full scan"
+msgstr ""
+
+#: src/components/vuln-scan/vuln-scan-panel.tsx
+msgid "Last scan"
+msgstr ""
+
+#: src/components/vuln-scan/vuln-scan-panel.tsx
+msgid "Last scan:"
+msgstr ""
+
 #: src/components/systems-table/systems-table.tsx
 msgid "Layout"
 msgstr "版面配置"
@@ -1055,6 +1138,10 @@ msgstr "版面配置"
 #: src/components/routes/settings/general.tsx
 msgid "Layout width"
 msgstr "版面寬度"
+
+#: src/components/vms-table/vms-table.tsx
+msgid "Libvirt/KVM virtual machines on this host."
+msgstr ""
 
 #: src/components/systemd-table/systemd-table.tsx
 msgid "Lifecycle"
@@ -1095,6 +1182,10 @@ msgstr "平均負載"
 msgid "Load state"
 msgstr "載入狀態"
 
+#: src/components/vuln-scan/vuln-scan-panel.tsx
+msgid "Loading scan status…"
+msgstr ""
+
 #: src/components/systemd-table/systemd-table.tsx
 msgid "Loading..."
 msgstr "載入中..."
@@ -1123,6 +1214,10 @@ msgstr "系統記錄"
 msgid "Looking instead for where to create alerts? Click the bell <0/> icons in the systems table."
 msgstr "在尋找從哪裡建立警報嗎？點擊系統列表中的小鈴鐺<0/>。"
 
+#: src/lib/alerts.ts
+msgid "LOW and above vulnerabilities"
+msgstr ""
+
 #: src/components/systemd-table/systemd-table.tsx
 msgid "Main PID"
 msgstr "主 PID"
@@ -1141,11 +1236,16 @@ msgstr "手動設定說明"
 msgid "Max 1 min"
 msgstr "最多 1 分鐘"
 
+#: src/lib/alerts.ts
+msgid "MEDIUM, HIGH and CRITICAL vulnerabilities"
+msgstr ""
+
 #: src/components/containers-table/containers-table-columns.tsx
 #: src/components/routes/system/info-bar.tsx
 #: src/components/systemd-table/systemd-table-columns.tsx
 #: src/components/systemd-table/systemd-table.tsx
 #: src/components/systems-table/systems-table-columns.tsx
+#: src/components/vms-table/vms-table-columns.tsx
 msgid "Memory"
 msgstr "記憶體"
 
@@ -1166,6 +1266,10 @@ msgstr "記憶體使用量"
 #: src/components/routes/system/charts/memory-charts.tsx
 msgid "Memory usage of docker containers"
 msgstr "Docker 容器的記憶體使用量"
+
+#: src/components/routes/system/charts/libvirt-charts.tsx
+msgid "Memory usage of virtual machines"
+msgstr ""
 
 #. Device model
 #: src/components/routes/system/smart-table.tsx
@@ -1189,11 +1293,13 @@ msgstr ""
 #: src/components/containers-table/containers-table-columns.tsx
 #: src/components/systemd-table/systemd-table-columns.tsx
 #: src/components/systemd-table/systemd-table.tsx
+#: src/components/vms-table/vms-table-columns.tsx
 msgid "Name"
 msgstr "名稱"
 
 #: src/components/containers-table/containers-table-columns.tsx
 #: src/components/systems-table/systems-table-columns.tsx
+#: src/components/vms-table/vms-table-columns.tsx
 msgid "Net"
 msgstr "網路"
 
@@ -1208,13 +1314,21 @@ msgstr "Docker 容器的網路流量"
 msgid "Network traffic of public interfaces"
 msgstr "公開介面的網路流量"
 
+#: src/components/routes/system/charts/libvirt-charts.tsx
+msgid "Network traffic of virtual machines"
+msgstr ""
+
 #. Context: Bytes or bits
 #: src/components/routes/settings/general.tsx
 msgid "Network unit"
 msgstr "網路單位"
 
 #: src/lib/alerts.ts
-msgid "New vulnerability detected"
+#~ msgid "New vulnerability detected"
+#~ msgstr ""
+
+#: src/components/vuln-scan/vuln-scan-panel.tsx
+msgid "Next scheduled"
 msgstr ""
 
 #: src/components/systemd-table/systemd-table.tsx
@@ -1225,7 +1339,11 @@ msgstr "否"
 
 #: src/components/systemd-table/systemd-table-columns.tsx
 #: src/components/systemd-table/systemd-table.tsx
-msgid "No known vulnerabilities"
+#~ msgid "No known vulnerabilities"
+#~ msgstr ""
+
+#: src/components/vuln-scan/vuln-scan-panel.tsx
+msgid "No packages"
 msgstr ""
 
 #: src/components/command-palette.tsx
@@ -1239,6 +1357,7 @@ msgstr "找不到結果。"
 #: src/components/routes/settings/alerts-history-data-table.tsx
 #: src/components/routes/system/smart-table.tsx
 #: src/components/systemd-table/systemd-table.tsx
+#: src/components/vms-table/vms-table.tsx
 msgid "No results."
 msgstr "沒有結果。"
 
@@ -1251,10 +1370,20 @@ msgstr "此裝置沒有可用的 S.M.A.R.T. 屬性。"
 msgid "No systems found."
 msgstr "找不到任何系統。"
 
+#: src/components/vuln-scan/vuln-scan-panel.tsx
+msgid "No vulnerability scan data for this server yet."
+msgstr ""
+
+#: src/components/routes/system/info-bar.tsx
 #: src/components/systemd-table/systemd-table-columns.tsx
 #: src/components/systemd-table/systemd-table.tsx
-msgid "Not scanned yet"
+msgid "Not scanned"
 msgstr ""
+
+#: src/components/systemd-table/systemd-table-columns.tsx
+#: src/components/systemd-table/systemd-table.tsx
+#~ msgid "Not scanned yet"
+#~ msgstr ""
 
 #: src/components/command-palette.tsx
 #: src/components/routes/settings/layout.tsx
@@ -1279,6 +1408,10 @@ msgstr "一次性"
 msgid "One-time password"
 msgstr "一次性密碼"
 
+#: src/lib/alerts.ts
+msgid "Only CRITICAL vulnerabilities"
+msgstr ""
+
 #: src/components/routes/settings/quiet-hours.tsx
 #: src/components/routes/settings/tokens-fingerprints.tsx
 #: src/components/routes/settings/tokens-fingerprints.tsx
@@ -1291,6 +1424,10 @@ msgstr "開啟選單"
 msgid "Or continue with"
 msgstr "或繼續使用"
 
+#: src/components/vuln-scan/vuln-scan-panel.tsx
+msgid "OSV.dev package scans, queue status, and per-server results."
+msgstr ""
+
 #: src/components/routes/system/cpu-sheet.tsx
 msgid "Other"
 msgstr "其他"
@@ -1298,6 +1435,14 @@ msgstr "其他"
 #: src/components/alerts/alerts-sheet.tsx
 msgid "Overwrite existing alerts"
 msgstr "覆蓋現有警報"
+
+#: src/components/vuln-scan/vuln-scan-panel.tsx
+msgid "Packages"
+msgstr ""
+
+#: src/components/vuln-scan/vuln-scan-panel.tsx
+msgid "Packages:"
+msgstr ""
 
 #: src/components/command-palette.tsx
 #: src/components/command-palette.tsx
@@ -1351,6 +1496,14 @@ msgstr "已暫停 ({pausedSystemsLength})"
 #: src/components/routes/settings/heartbeat.tsx
 msgid "Payload format"
 msgstr "Payload 格式"
+
+#: src/components/vuln-scan/vuln-scan-panel.tsx
+msgid "Pending"
+msgstr ""
+
+#: src/components/vuln-scan/vuln-scan-panel.tsx
+msgid "Pending scan"
+msgstr ""
 
 #: src/components/routes/system/cpu-sheet.tsx
 #: src/components/routes/system/cpu-sheet.tsx
@@ -1452,6 +1605,16 @@ msgctxt "Disk I/O average queue depth"
 msgid "Queue Depth"
 msgstr "隊列深度"
 
+#: src/components/vuln-scan/vuln-scan-panel.tsx
+msgid "Queue is empty"
+msgstr ""
+
+#: src/components/vuln-scan/vuln-scan-panel.tsx
+#: src/components/vuln-scan/vuln-scan-panel.tsx
+#: src/components/vuln-scan/vuln-scan-panel.tsx
+msgid "Queued"
+msgstr ""
+
 #: src/components/routes/settings/quiet-hours.tsx
 msgid "Quiet Hours"
 msgstr "靜音時段"
@@ -1472,6 +1635,10 @@ msgstr ""
 #: src/components/routes/system/charts/network-charts.tsx
 msgid "Received"
 msgstr "接收"
+
+#: src/components/vuln-scan/vuln-scan-panel.tsx
+msgid "Recent activity"
+msgstr ""
 
 #: src/components/containers-table/containers-table.tsx
 #: src/components/containers-table/containers-table.tsx
@@ -1546,6 +1713,11 @@ msgstr "重設 Token"
 msgid "Rows per page"
 msgstr "每頁列數"
 
+#: src/components/vuln-scan/vuln-scan-panel.tsx
+#: src/components/vuln-scan/vuln-scan-panel.tsx
+msgid "Running"
+msgstr ""
+
 #: src/components/systemd-table/systemd-table.tsx
 msgid "Runtime Metrics"
 msgstr "運行時指標"
@@ -1557,6 +1729,12 @@ msgstr "S.M.A.R.T. 詳細資訊"
 #: src/components/routes/system/smart-table.tsx
 msgid "S.M.A.R.T. Self-Test"
 msgstr "S.M.A.R.T. 自我測試"
+
+#: src/components/routes/system/info-bar.tsx
+#: src/components/systemd-table/systemd-table-columns.tsx
+#: src/components/systemd-table/systemd-table.tsx
+msgid "Safe"
+msgstr ""
 
 #: src/components/add-system.tsx
 msgid "Save {foo}"
@@ -1575,7 +1753,38 @@ msgstr "儲存設定"
 msgid "Saved in the database and does not expire until you disable it."
 msgstr "儲存在資料庫中，在您停用之前不會過期。"
 
+#: src/components/vuln-scan/vuln-scan-panel.tsx
+msgid "Scan all systems"
+msgstr ""
+
+#: src/components/vuln-scan/vuln-scan-panel.tsx
+msgid "Scan now"
+msgstr ""
+
+#: src/components/vuln-scan/vuln-scan-panel.tsx
+msgid "Scan queue"
+msgstr ""
+
+#: src/components/vuln-scan/vuln-scan-panel.tsx
+#: src/components/vuln-scan/vuln-scan-panel.tsx
+msgid "Scanned"
+msgstr ""
+
+#: src/components/routes/system/info-bar.tsx
+#: src/components/systemd-table/systemd-table.tsx
+msgid "Scanned at"
+msgstr ""
+
+#: src/components/routes/system/info-bar.tsx
+msgid "Scanned kernel"
+msgstr ""
+
+#: src/components/routes/settings/vulnerabilities.tsx
+msgid "Scans use OSV.dev with a shared package cache. Results appear on each server's Systemd Services table after scanning completes."
+msgstr ""
+
 #: src/components/routes/settings/quiet-hours.tsx
+#: src/components/vuln-scan/vuln-scan-panel.tsx
 msgid "Schedule"
 msgstr "排程"
 
@@ -1600,8 +1809,8 @@ msgid "Seconds between pings (default: 60)"
 msgstr "Ping 之間的秒數 (預設：60)"
 
 #: src/components/systemd-table/systemd-table-columns.tsx
-msgid "Security"
-msgstr ""
+#~ msgid "Security"
+#~ msgstr ""
 
 #: src/components/alerts/alerts-sheet.tsx
 msgid "See <0>notification settings</0> to configure how you receive alerts."
@@ -1630,6 +1839,10 @@ msgstr "傳送"
 #: src/components/routes/system/smart-table.tsx
 msgid "Serial Number"
 msgstr "序號"
+
+#: src/components/vuln-scan/vuln-scan-panel.tsx
+msgid "Server"
+msgstr ""
 
 #: src/components/systemd-table/systemd-table.tsx
 msgid "Service Details"
@@ -1670,6 +1883,11 @@ msgstr "設定"
 msgid "Settings saved"
 msgstr "已儲存設定"
 
+#: src/components/routes/system/info-bar.tsx
+#: src/components/systemd-table/systemd-table.tsx
+msgid "Severity"
+msgstr ""
+
 #: src/components/login/auth-form.tsx
 msgid "Sign in"
 msgstr "登入"
@@ -1691,6 +1909,10 @@ msgstr "排序"
 msgid "Start Time"
 msgstr "開始時間"
 
+#: src/components/vuln-scan/vuln-scan-panel.tsx
+msgid "Started"
+msgstr ""
+
 #. Context: alert state (active or resolved)
 #: src/components/alerts-history-columns.tsx
 #: src/components/routes/settings/quiet-hours.tsx
@@ -1699,9 +1921,13 @@ msgid "State"
 msgstr "狀態"
 
 #: src/components/containers-table/containers-table-columns.tsx
+#: src/components/routes/system/info-bar.tsx
 #: src/components/routes/system/smart-table.tsx
 #: src/components/systemd-table/systemd-table.tsx
+#: src/components/systemd-table/systemd-table.tsx
 #: src/components/systems-table/systems-table.tsx
+#: src/components/vms-table/vms-table-columns.tsx
+#: src/components/vuln-scan/vuln-scan-panel.tsx
 #: src/lib/alerts.ts
 msgid "Status"
 msgstr "狀態"
@@ -1709,6 +1935,11 @@ msgstr "狀態"
 #: src/components/systemd-table/systemd-table-columns.tsx
 msgid "Sub State"
 msgstr "子狀態"
+
+#: src/components/routes/system/info-bar.tsx
+#: src/components/systemd-table/systemd-table.tsx
+msgid "Summary"
+msgstr ""
 
 #: src/components/routes/system/charts/memory-charts.tsx
 msgid "Swap space used by the system"
@@ -1882,6 +2113,22 @@ msgstr "Token 用於 Agent 的連線和註冊。Fingerprint 則是每個系統�
 msgid "Tokens and fingerprints are used to authenticate WebSocket connections to the hub."
 msgstr "Token 與 Fingerprint 用於驗證連往 Hub 的 WebSocket 連線。"
 
+#: src/components/routes/system/charts/process-charts.tsx
+msgid "Top 10 processes by average CPU usage"
+msgstr ""
+
+#: src/components/routes/system/charts/process-charts.tsx
+msgid "Top 10 processes by average memory usage"
+msgstr ""
+
+#: src/components/routes/system/charts/process-charts.tsx
+msgid "Top Processes (CPU)"
+msgstr ""
+
+#: src/components/routes/system/charts/process-charts.tsx
+msgid "Top Processes (Memory)"
+msgstr ""
+
 #: src/components/ui/chart.tsx
 #: src/components/ui/chart.tsx
 msgid "Total"
@@ -1962,8 +2209,8 @@ msgid "Triggers when memory usage exceeds a threshold"
 msgstr "當記憶體使用率超過閾值時觸發"
 
 #: src/lib/alerts.ts
-msgid "Triggers when new vulnerabilities are detected in service packages or the kernel"
-msgstr ""
+#~ msgid "Triggers when new vulnerabilities are detected in service packages or the kernel"
+#~ msgstr ""
 
 #: src/lib/alerts.ts
 msgid "Triggers when status switches between up and down"
@@ -1976,6 +2223,10 @@ msgstr ""
 #: src/lib/alerts.ts
 msgid "Triggers when usage of any disk exceeds a threshold"
 msgstr "當任何磁碟使用率超過閾值時觸發"
+
+#: src/lib/alerts.ts
+msgid "Triggers when vulnerabilities with CVSS score above the threshold are detected"
+msgstr ""
 
 #: src/components/routes/settings/quiet-hours.tsx
 #: src/components/routes/settings/quiet-hours.tsx
@@ -2071,6 +2322,10 @@ msgstr "利用率"
 msgid "Value"
 msgstr "值"
 
+#: src/components/vms-table/vms-table-columns.tsx
+msgid "vCPUs"
+msgstr ""
+
 #: src/components/systemd-table/systemd-table-columns.tsx
 #: src/components/systemd-table/systemd-table.tsx
 msgid "Version"
@@ -2090,12 +2345,50 @@ msgstr "查看更多"
 msgid "View your 200 most recent alerts."
 msgstr "檢視最近 200 則警報。"
 
+#: src/components/vms-table/vms-table.tsx
+msgid "Virtual Machines"
+msgstr ""
+
 #: src/components/systems-table/systems-table.tsx
 msgid "Visible Fields"
 msgstr "顯示欄位"
 
+#: src/components/routes/system/charts/libvirt-charts.tsx
+msgid "VM CPU Usage"
+msgstr ""
+
+#: src/components/routes/system/charts/libvirt-charts.tsx
+msgid "VM Memory Usage"
+msgstr ""
+
+#: src/components/routes/system/charts/libvirt-charts.tsx
+msgid "VM Network"
+msgstr ""
+
+#: src/components/routes/system.tsx
+msgid "VMs"
+msgstr ""
+
+#: src/components/routes/system/info-bar.tsx
+#: src/components/systemd-table/systemd-table.tsx
+msgid "Vulnerabilities found"
+msgstr ""
+
 #: src/lib/alerts.ts
 msgid "Vulnerability"
+msgstr ""
+
+#: src/components/systemd-table/systemd-table.tsx
+msgid "Vulnerability Scan"
+msgstr ""
+
+#: src/components/routes/settings/layout.tsx
+#: src/components/vuln-scan/vuln-scan-panel.tsx
+msgid "Vulnerability Scans"
+msgstr ""
+
+#: src/components/vuln-scan/vuln-scan-panel.tsx
+msgid "Vulns"
 msgstr ""
 
 #. Web server connections
@@ -2140,6 +2433,10 @@ msgstr "使用 POST 時，每個 Heartbeat 都會包含一個 JSON Payload，內
 msgctxt "Button to copy install command"
 msgid "Windows command"
 msgstr "Windows 指令"
+
+#: src/components/vuln-scan/vuln-scan-panel.tsx
+msgid "With vulnerabilities"
+msgstr ""
 
 #. Disk write
 #: src/components/routes/system/charts/disk-charts.tsx
