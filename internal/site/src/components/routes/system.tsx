@@ -11,15 +11,16 @@ import { RootDiskCharts, ExtraFsCharts } from "./system/charts/disk-charts"
 import { BandwidthChart, ContainerNetworkChart } from "./system/charts/network-charts"
 import { TemperatureChart, BatteryChart } from "./system/charts/sensor-charts"
 import { GpuPowerChart, GpuDetailCharts } from "./system/charts/gpu-charts"
-import { LazyContainersTable, LazySmartTable, LazySystemdTable } from "./system/lazy-tables"
+import { LazyContainersTable, LazySmartTable, LazySystemdTable, LazyVMsTable } from "./system/lazy-tables"
 import { LoadAverageChart } from "./system/charts/load-average-chart"
 import { TcpConnectionsChart } from "./system/charts/tcp-connections-chart"
 import { TopProcessesCpuChart, TopProcessesMemoryChart } from "./system/charts/process-charts"
-import { TopLibvirtCpuChart, TopLibvirtMemoryChart } from "./system/charts/libvirt-charts"
-import { ContainerIcon, CpuIcon, HardDriveIcon, TerminalSquareIcon } from "lucide-react"
+import { LibvirtCharts } from "./system/charts/libvirt-charts"
+import { ContainerIcon, CpuIcon, HardDriveIcon, ServerIcon, TerminalSquareIcon } from "lucide-react"
 import { GpuIcon } from "../ui/icons"
 import SystemdTable from "../systemd-table/systemd-table"
 import ContainersTable from "../containers-table/containers-table"
+import VMsTable from "../vms-table/vms-table"
 
 const SEMVER_0_14_0 = parseSemVer("0.14.0")
 const SEMVER_0_15_0 = parseSemVer("0.15.0")
@@ -33,6 +34,7 @@ export default memo(function SystemDetail({ id }: { id: string }) {
 		containerData,
 		chartData,
 		containerChartConfigs,
+		vmChartConfigs,
 		details,
 		grid,
 		setGrid,
@@ -62,6 +64,7 @@ export default memo(function SystemDetail({ id }: { id: string }) {
 	}
 
 	const hasContainers = containerData.length > 0
+	const hasVMs = chartData.vmData.length > 0
 	const maybeHasSmartData = compareSemVer(chartData.agentVersion, SEMVER_0_15_0) >= 0
 	const hasContainersTable = hasContainers && compareSemVer(chartData.agentVersion, SEMVER_0_14_0) >= 0
 	const hasSystemd = system.info.sv
@@ -71,6 +74,7 @@ export default memo(function SystemDetail({ id }: { id: string }) {
 	const tabs = ["core", "disk"]
 	if (hasGpu) tabs.push("gpu")
 	if (hasContainers) tabs.push("containers")
+	if (hasVMs) tabs.push("vms")
 	if (hasSystemd) tabs.push("services")
 	tabsRef.current = tabs
 
@@ -130,9 +134,7 @@ export default memo(function SystemDetail({ id }: { id: string }) {
 
 					<TopProcessesMemoryChart chartData={chartData} grid={grid} dataEmpty={dataEmpty} />
 
-					<TopLibvirtCpuChart chartData={chartData} grid={grid} dataEmpty={dataEmpty} />
-
-					<TopLibvirtMemoryChart chartData={chartData} grid={grid} dataEmpty={dataEmpty} />
+					<LibvirtCharts chartData={chartData} grid={grid} dataEmpty={dataEmpty} vmChartConfigs={vmChartConfigs} />
 
 					<TemperatureChart {...coreProps} />
 
@@ -157,6 +159,8 @@ export default memo(function SystemDetail({ id }: { id: string }) {
 
 				{hasContainersTable && <LazyContainersTable systemId={system.id} />}
 
+				{hasVMs && <LazyVMsTable systemId={system.id} />}
+
 				{hasSystemd && <LazySystemdTable systemId={system.id} />}
 			</>
 		)
@@ -180,12 +184,18 @@ export default memo(function SystemDetail({ id }: { id: string }) {
 							<Trans>GPU</Trans>
 						</TabsTrigger>
 					)}
-					{hasContainers && (
-						<TabsTrigger value="containers" className="w-full flex items-center gap-2">
-							<ContainerIcon className="size-3.5" />
-							<Trans>Containers</Trans>
-						</TabsTrigger>
-					)}
+				{hasContainers && (
+					<TabsTrigger value="containers" className="w-full flex items-center gap-2">
+						<ContainerIcon className="size-3.5" />
+						<Trans>Containers</Trans>
+					</TabsTrigger>
+				)}
+				{hasVMs && (
+					<TabsTrigger value="vms" className="w-full flex items-center gap-2">
+						<ServerIcon className="size-3.5" />
+						<Trans>VMs</Trans>
+					</TabsTrigger>
+				)}
 					{hasSystemd && (
 						<TabsTrigger value="services" className="w-full flex items-center gap-2">
 							<TerminalSquareIcon className="size-3.5" />
@@ -202,8 +212,7 @@ export default memo(function SystemDetail({ id }: { id: string }) {
 						<TcpConnectionsChart chartData={chartData} grid={grid} dataEmpty={dataEmpty} />
 						<TopProcessesCpuChart chartData={chartData} grid={grid} dataEmpty={dataEmpty} />
 						<TopProcessesMemoryChart chartData={chartData} grid={grid} dataEmpty={dataEmpty} />
-						<TopLibvirtCpuChart chartData={chartData} grid={grid} dataEmpty={dataEmpty} />
-						<TopLibvirtMemoryChart chartData={chartData} grid={grid} dataEmpty={dataEmpty} />
+						<LibvirtCharts chartData={chartData} grid={grid} dataEmpty={dataEmpty} vmChartConfigs={vmChartConfigs} />
 						<BandwidthChart {...coreProps} systemStats={systemStats} />
 						<TemperatureChart {...coreProps} setPageBottomExtraMargin={setPageBottomExtraMargin} />
 						<BatteryChart {...coreProps} />
@@ -269,6 +278,19 @@ export default memo(function SystemDetail({ id }: { id: string }) {
 									/>
 								</div>
 								{hasContainersTable && <ContainersTable systemId={system.id} />}
+							</>
+						)}
+					</TabsContent>
+				)}
+
+				{hasVMs && (
+					<TabsContent value="vms" forceMount className={activeTab === "vms" ? "contents" : "hidden"}>
+						{mountedTabs.has("vms") && (
+							<>
+								<div className="grid xl:grid-cols-2 gap-4">
+									<LibvirtCharts chartData={chartData} grid={grid} dataEmpty={dataEmpty} vmChartConfigs={vmChartConfigs} />
+								</div>
+								<VMsTable systemId={system.id} />
 							</>
 						)}
 					</TabsContent>

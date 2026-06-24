@@ -78,7 +78,7 @@ func setCollectionAuthSettings(app core.App) error {
 		return err
 	}
 
-	if err := applyCollectionRules(app, []string{"containers", "container_stats", "system_stats", "systemd_services"}, collectionRules{
+	if err := applyCollectionRules(app, []string{"containers", "container_stats", "libvirt_vms", "libvirt_vm_stats", "system_stats", "systemd_services"}, collectionRules{
 		list: &systemScopedReadRule,
 	}); err != nil {
 		return err

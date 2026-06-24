@@ -2,7 +2,7 @@
 
 package agent
 
-import "github.com/henrygd/beszel/internal/entities/system"
+import "github.com/henrygd/beszel/internal/entities/libvirt"
 
 type libvirtManager struct{}
 
@@ -10,6 +10,6 @@ func newLibvirtManager() *libvirtManager {
 	return nil
 }
 
-func (m *libvirtManager) getTopVMs(limit int) []system.TopProcess {
+func (m *libvirtManager) getVMStats() []*libvirt.Stats {
 	return nil
 }

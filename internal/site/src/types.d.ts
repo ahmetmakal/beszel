@@ -168,8 +168,35 @@ export interface SystemStats {
 	mysql?: MySQLStatsData
 	/** top processes */
 	tp?: TopProcess[]
-	/** top libvirt VMs */
-	tlv?: TopProcess[]
+}
+
+export interface LibvirtVMStats {
+	n: string
+	c: number
+	m: number
+	b?: [number, number]
+	d?: [number, number]
+}
+
+export interface LibvirtVMStatsRecord extends RecordModel {
+	system: string
+	stats: LibvirtVMStats[]
+	created: string | number
+}
+
+export interface LibvirtVMRecord extends RecordModel {
+	id: string
+	system: string
+	name: string
+	status: string
+	health: number
+	cpu: number
+	memory: number
+	net: number
+	disk: number
+	vcpus: number
+	mem_max: number
+	updated: number
 }
 
 export interface TopProcess {
@@ -379,6 +406,12 @@ type ChartDataContainer = {
 	[key: string]: key extends "created" ? never : ContainerStats
 }
 
+type ChartDataVM = {
+	created: number | null
+} & {
+	[key: string]: key extends "created" ? never : LibvirtVMStats
+}
+
 export interface SemVer {
 	major: number
 	minor: number
@@ -389,6 +422,7 @@ export interface ChartData {
 	agentVersion: SemVer
 	systemStats: SystemStatsRecord[]
 	containerData: ChartDataContainer[]
+	vmData: ChartDataVM[]
 	orientation: "right" | "left"
 	ticks: number[]
 	domain: number[]

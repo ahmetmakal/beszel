@@ -2,7 +2,7 @@ import { useStore } from "@nanostores/react"
 import { getPagePath } from "@nanostores/router"
 import { subscribeKeys } from "nanostores"
 import { useEffect, useMemo, useRef, useState } from "react"
-import { useContainerChartConfigs } from "@/components/charts/hooks"
+import { useContainerChartConfigs, useVMChartConfigs } from "@/components/charts/hooks"
 import { pb } from "@/lib/api"
 import { SystemStatus } from "@/lib/enums"
 import {
@@ -19,6 +19,7 @@ import { chartTimeData, listen, parseSemVer, useBrowserStorage } from "@/lib/uti
 import type {
 	ChartData,
 	ContainerStatsRecord,
+	LibvirtVMStatsRecord,
 	SystemDetailsRecord,
 	SystemInfo,
 	SystemRecord,
@@ -26,7 +27,7 @@ import type {
 	SystemStatsRecord,
 } from "@/types"
 import { $router, navigate } from "../../router"
-import { appendData, cache, getStats, getTimeData, makeContainerData, makeContainerPoint } from "./chart-data"
+import { appendData, cache, getStats, getTimeData, makeContainerData, makeContainerPoint, makeVMData, makeVMPoint } from "./chart-data"
 
 export type SystemData = ReturnType<typeof useSystemData>
 
@@ -48,6 +49,7 @@ export function useSystemData(id: string) {
 	const [system, setSystem] = useState({} as SystemRecord)
 	const [systemStats, setSystemStats] = useState([] as SystemStatsRecord[])
 	const [containerData, setContainerData] = useState([] as ChartData["containerData"])
+	const [vmData, setVmData] = useState([] as ChartData["vmData"])
 	const persistChartTime = useRef(false)
 	const statsRequestId = useRef(0)
 	const [chartLoading, setChartLoading] = useState(true)
@@ -61,6 +63,7 @@ export function useSystemData(id: string) {
 			persistChartTime.current = false
 			setSystemStats([])
 			setContainerData([])
+			setVmData([])
 			setDetails({} as SystemDetailsRecord)
 			$containerFilter.set("")
 		}
@@ -119,23 +122,30 @@ export function useSystemData(id: string) {
 		pb.realtime
 			.subscribe(
 				`rt_metrics`,
-				(data: { container: ContainerStatsRecord[]; info: SystemInfo; stats: SystemStats }) => {
+				(data: { container: ContainerStatsRecord[]; libvirt: LibvirtVMStatsRecord[]; info: SystemInfo; stats: SystemStats }) => {
 					const now = Date.now()
 					const statsPoint = { created: now, stats: data.stats } as SystemStatsRecord
 					const containerPoint =
 						data.container?.length > 0
 							? makeContainerPoint(now, data.container as unknown as ContainerStatsRecord["stats"])
 							: null
-					// on first message, make sure we clear out data from other time periods
+					const vmPoint =
+						data.libvirt?.length > 0
+							? makeVMPoint(now, data.libvirt as unknown as LibvirtVMStatsRecord["stats"])
+							: null
 					if (isFirst) {
 						isFirst = false
 						setSystemStats([statsPoint])
 						setContainerData(containerPoint ? [containerPoint] : [])
+						setVmData(vmPoint ? [vmPoint] : [])
 						return
 					}
 					setSystemStats((prev) => appendData(prev, [statsPoint], 1000, 60))
 					if (containerPoint) {
 						setContainerData((prev) => appendData(prev, [containerPoint], 1000, 60))
+					}
+					if (vmPoint) {
+						setVmData((prev) => appendData(prev, [vmPoint], 1000, 60))
 					}
 				},
 				{ query: { system: system.id } }
@@ -153,20 +163,22 @@ export function useSystemData(id: string) {
 	const chartData: ChartData = useMemo(() => {
 		const lastCreated = Math.max(
 			(systemStats.at(-1)?.created as number) ?? 0,
-			(containerData.at(-1)?.created as number) ?? 0
+			(containerData.at(-1)?.created as number) ?? 0,
+			(vmData.at(-1)?.created as number) ?? 0
 		)
 		return {
 			systemStats,
 			containerData,
+			vmData,
 			chartTime,
 			orientation: direction === "rtl" ? "right" : "left",
 			...getTimeData(chartTime, lastCreated),
 			agentVersion,
 		}
-	}, [systemStats, containerData, direction])
+	}, [systemStats, containerData, vmData, direction, chartTime, agentVersion])
 
-	// Share chart config computation for all container charts
 	const containerChartConfigs = useContainerChartConfigs(containerData)
+	const vmChartConfigs = useVMChartConfigs(vmData)
 
 	// get stats when system "changes." (Not just system to system,
 	// also when new info comes in via systemManager realtime connection, indicating an update)
@@ -179,15 +191,17 @@ export function useSystemData(id: string) {
 		const { expectedInterval } = chartTimeData[chartTime]
 		const ss_cache_key = `${systemId}_${chartTime}_system_stats`
 		const cs_cache_key = `${systemId}_${chartTime}_container_stats`
+		const vs_cache_key = `${systemId}_${chartTime}_libvirt_vm_stats`
 		const requestId = ++statsRequestId.current
 
 		const cachedSystemStats = cache.get(ss_cache_key) as SystemStatsRecord[] | undefined
 		const cachedContainerData = cache.get(cs_cache_key) as ChartData["containerData"] | undefined
+		const cachedVMData = cache.get(vs_cache_key) as ChartData["vmData"] | undefined
 
-		// Render from cache immediately if available
 		if (cachedSystemStats?.length) {
 			setSystemStats(cachedSystemStats)
 			setContainerData(cachedContainerData || [])
+			setVmData(cachedVMData || [])
 			setChartLoading(false)
 
 			// Skip the fetch if the latest cached point is recent enough that no new point is expected yet
@@ -202,7 +216,8 @@ export function useSystemData(id: string) {
 		Promise.allSettled([
 			getStats<SystemStatsRecord>("system_stats", systemId, chartTime),
 			getStats<ContainerStatsRecord>("container_stats", systemId, chartTime),
-		]).then(([systemStats, containerStats]) => {
+			getStats<LibvirtVMStatsRecord>("libvirt_vm_stats", systemId, chartTime),
+		]).then(([systemStats, containerStats, vmStats]) => {
 			// If another request has been made since this one, ignore the results
 			if (requestId !== statsRequestId.current) {
 				return
@@ -224,6 +239,12 @@ export function useSystemData(id: string) {
 				cache.set(cs_cache_key, containerData)
 			}
 			setContainerData(containerData)
+			let vmChartData = (cache.get(vs_cache_key) || []) as ChartData["vmData"]
+			if (vmStats.status === "fulfilled" && vmStats.value.length) {
+				vmChartData = appendData(vmChartData, makeVMData(vmStats.value), expectedInterval, 100)
+				cache.set(vs_cache_key, vmChartData)
+			}
+			setVmData(vmChartData)
 		})
 	}, [system, chartTime])
 
@@ -322,8 +343,10 @@ export function useSystemData(id: string) {
 		system,
 		systemStats,
 		containerData,
+		vmData,
 		chartData,
 		containerChartConfigs,
+		vmChartConfigs,
 		details,
 		grid,
 		setGrid,

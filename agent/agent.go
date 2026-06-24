@@ -235,12 +235,14 @@ func (a *Agent) gatherStats(options common.DataRequestOptions) *system.CombinedD
 	}
 	slog.Debug("Extra FS", "data", data.Stats.ExtraFs)
 
-	// collect top processes and libvirt VMs (only on default 60s interval, same as systemd)
+	// collect libvirt VM stats (same cycle as containers)
+	if a.libvirtManager != nil {
+		data.LibvirtVMs = a.libvirtManager.getVMStats()
+	}
+
+	// collect top processes (only on default 60s interval, same as systemd)
 	if cacheTimeMs == defaultDataCacheTimeMs {
 		data.Stats.TopProc = a.getTopProcesses(10)
-		if a.libvirtManager != nil {
-			data.Stats.TopLibvirt = a.libvirtManager.getTopVMs(10)
-		}
 	}
 
 	a.cache.Set(data, cacheTimeMs)

@@ -19,6 +19,7 @@ import (
 	"github.com/henrygd/beszel/internal/hub/ws"
 
 	"github.com/henrygd/beszel/internal/entities/container"
+	"github.com/henrygd/beszel/internal/entities/libvirt"
 	"github.com/henrygd/beszel/internal/entities/smart"
 	"github.com/henrygd/beszel/internal/entities/system"
 	"github.com/henrygd/beszel/internal/entities/systemd"
@@ -226,6 +227,26 @@ func (sys *System) createRecords(data *system.CombinedData) (*core.Record, error
 			}
 		}
 
+		// add libvirt VM records
+		if len(data.LibvirtVMs) > 0 {
+			if data.LibvirtVMs[0].Id != "" {
+				if err := createLibvirtVMRecords(txApp, data.LibvirtVMs, sys.Id); err != nil {
+					return err
+				}
+			}
+			libvirtStatsCollection, err := txApp.FindCachedCollectionByNameOrId("libvirt_vm_stats")
+			if err != nil {
+				return err
+			}
+			libvirtStatsRecord := core.NewRecord(libvirtStatsCollection)
+			libvirtStatsRecord.Set("system", systemRecord.Id)
+			libvirtStatsRecord.Set("stats", data.LibvirtVMs)
+			libvirtStatsRecord.Set("type", "1m")
+			if err := txApp.SaveNoValidate(libvirtStatsRecord); err != nil {
+				return err
+			}
+		}
+
 		// add new systemd_stats record
 		if len(data.SystemdServices) > 0 {
 			if err := createSystemdStatsRecords(txApp, data.SystemdServices, sys.Id); err != nil {
@@ -376,6 +397,42 @@ func createContainerRecords(app core.App, data []*container.Stats, systemId stri
 	}
 	queryString := fmt.Sprintf(
 		"INSERT INTO containers (id, system, name, image, ports, status, health, cpu, memory, net, updated) VALUES %s ON CONFLICT(id) DO UPDATE SET system = excluded.system, name = excluded.name, image = excluded.image, ports = excluded.ports, status = excluded.status, health = excluded.health, cpu = excluded.cpu, memory = excluded.memory, net = excluded.net, updated = excluded.updated",
+		strings.Join(valueStrings, ","),
+	)
+	_, err := app.DB().NewQuery(queryString).Bind(params).Execute()
+	return err
+}
+
+func createLibvirtVMRecords(app core.App, data []*libvirt.Stats, systemId string) error {
+	if len(data) == 0 {
+		return nil
+	}
+	params := dbx.Params{
+		"system":  systemId,
+		"updated": time.Now().UTC().UnixMilli(),
+	}
+	valueStrings := make([]string, 0, len(data))
+	for i, vm := range data {
+		suffix := fmt.Sprintf("%d", i)
+		valueStrings = append(valueStrings, fmt.Sprintf("({:id%[1]s}, {:system}, {:name%[1]s}, {:status%[1]s}, {:health%[1]s}, {:cpu%[1]s}, {:memory%[1]s}, {:net%[1]s}, {:disk%[1]s}, {:vcpus%[1]s}, {:mem_max%[1]s}, {:updated})", suffix))
+		params["id"+suffix] = vm.Id
+		params["name"+suffix] = vm.Name
+		params["status"+suffix] = vm.Status
+		params["health"+suffix] = vm.Health
+		params["cpu"+suffix] = vm.Cpu
+		params["memory"+suffix] = vm.Mem
+		netBytes := vm.Bandwidth[0] + vm.Bandwidth[1]
+		params["net"+suffix] = netBytes
+		params["disk"+suffix] = vm.DiskSum
+		params["vcpus"+suffix] = vm.Vcpus
+		memMaxMB := float64(0)
+		if vm.MemMax > 0 {
+			memMaxMB = float64(vm.MemMax) / 1024 / 1024
+		}
+		params["mem_max"+suffix] = memMaxMB
+	}
+	queryString := fmt.Sprintf(
+		"INSERT INTO libvirt_vms (id, system, name, status, health, cpu, memory, net, disk, vcpus, mem_max, updated) VALUES %s ON CONFLICT(id) DO UPDATE SET system = excluded.system, name = excluded.name, status = excluded.status, health = excluded.health, cpu = excluded.cpu, memory = excluded.memory, net = excluded.net, disk = excluded.disk, vcpus = excluded.vcpus, mem_max = excluded.mem_max, updated = excluded.updated",
 		strings.Join(valueStrings, ","),
 	)
 	_, err := app.DB().NewQuery(queryString).Bind(params).Execute()

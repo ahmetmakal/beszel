@@ -13,6 +13,17 @@ export function LazyContainersTable({ systemId }: { systemId: string }) {
 	)
 }
 
+const VMsTable = lazy(() => import("../../vms-table/vms-table"))
+
+export function LazyVMsTable({ systemId }: { systemId: string }) {
+	const { isIntersecting, ref } = useIntersectionObserver({ rootMargin: "90px" })
+	return (
+		<div ref={ref} className={cn(isIntersecting && "contents")}>
+			{isIntersecting && <VMsTable systemId={systemId} />}
+		</div>
+	)
+}
+
 const SmartTable = lazy(() => import("./smart-table"))
 
 export function LazySmartTable({ systemId }: { systemId: string }) {

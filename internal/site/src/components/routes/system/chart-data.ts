@@ -1,7 +1,7 @@
 import { timeTicks } from "d3-time"
 import { getPbTimestamp, pb } from "@/lib/api"
 import { chartTimeData } from "@/lib/utils"
-import type { ChartData, ChartTimes, ContainerStatsRecord, SystemStatsRecord } from "@/types"
+import type { ChartData, ChartTimes, ContainerStatsRecord, LibvirtVMStatsRecord, SystemStatsRecord } from "@/types"
 
 type ChartTimeData = {
 	time: number
@@ -14,7 +14,7 @@ type ChartTimeData = {
 
 export const cache = new Map<
 	string,
-	ChartTimeData | SystemStatsRecord[] | ContainerStatsRecord[] | ChartData["containerData"]
+	ChartTimeData | SystemStatsRecord[] | ContainerStatsRecord[] | LibvirtVMStatsRecord[] | ChartData["containerData"] | ChartData["vmData"]
 >()
 
 // create ticks and domain for charts
@@ -66,7 +66,7 @@ export function appendData<T extends { created: string | number | null }>(
 	return result
 }
 
-export async function getStats<T extends SystemStatsRecord | ContainerStatsRecord>(
+export async function getStats<T extends SystemStatsRecord | ContainerStatsRecord | LibvirtVMStatsRecord>(
 	collection: string,
 	systemId: string,
 	chartTime: ChartTimes
@@ -104,6 +104,26 @@ export function makeContainerPoint(
 	const point: ChartData["containerData"][0] = { created } as ChartData["containerData"][0]
 	for (const container of stats) {
 		;(point as Record<string, unknown>)[container.n] = container
+	}
+	return point
+}
+
+export function makeVMData(vms: LibvirtVMStatsRecord[]): ChartData["vmData"] {
+	const result = [] as ChartData["vmData"]
+	for (const { created, stats } of vms) {
+		if (!created) {
+			result.push({ created: null } as ChartData["vmData"][0])
+			continue
+		}
+		result.push(makeVMPoint(new Date(created).getTime(), stats))
+	}
+	return result
+}
+
+export function makeVMPoint(created: number, stats: LibvirtVMStatsRecord["stats"]): ChartData["vmData"][0] {
+	const point: ChartData["vmData"][0] = { created } as ChartData["vmData"][0]
+	for (const vm of stats) {
+		;(point as Record<string, unknown>)[vm.n] = vm
 	}
 	return point
 }

@@ -11,6 +11,7 @@ import (
 	"time"
 
 	"github.com/henrygd/beszel/internal/entities/container"
+	"github.com/henrygd/beszel/internal/entities/libvirt"
 	"github.com/henrygd/beszel/internal/entities/system"
 
 	"github.com/pocketbase/dbx"
@@ -44,10 +45,12 @@ type StatsRecord struct {
 var (
 	statsRecord    StatsRecord
 	containerStats []container.Stats
+	libvirtVMStats []libvirt.Stats
 	sumStats       system.Stats
 	tempStats      system.Stats
 	queryParams    = make(dbx.Params, 1)
 	containerSums  = make(map[string]*container.Stats)
+	libvirtVMSums  = make(map[string]*libvirt.Stats)
 )
 
 // Create longer records by averaging shorter records
@@ -83,14 +86,13 @@ func (rm *RecordManager) CreateLongerRecords() {
 	// wrap the operations in a transaction
 	rm.app.RunInTransaction(func(txApp core.App) error {
 		var err error
-		collections := [2]*core.Collection{}
-		collections[0], err = txApp.FindCachedCollectionByNameOrId("system_stats")
-		if err != nil {
-			return err
-		}
-		collections[1], err = txApp.FindCachedCollectionByNameOrId("container_stats")
-		if err != nil {
-			return err
+		collectionNames := []string{"system_stats", "container_stats", "libvirt_vm_stats"}
+		collections := make([]*core.Collection, len(collectionNames))
+		for i, name := range collectionNames {
+			collections[i], err = txApp.FindCachedCollectionByNameOrId(name)
+			if err != nil {
+				return err
+			}
 		}
 		var systems RecordIds
 		db := txApp.DB()
@@ -151,8 +153,9 @@ func (rm *RecordManager) CreateLongerRecords() {
 					case "system_stats":
 						longerRecord.Set("stats", rm.AverageSystemStats(db, recordIds))
 					case "container_stats":
-
 						longerRecord.Set("stats", rm.AverageContainerStats(db, recordIds))
+					case "libvirt_vm_stats":
+						longerRecord.Set("stats", rm.AverageLibvirtVMStats(db, recordIds))
 					}
 					if err := txApp.SaveNoValidate(longerRecord); err != nil {
 						log.Println("failed to save longer record", "err", err)
@@ -191,7 +194,6 @@ func (rm *RecordManager) AverageSystemStats(db dbx.Builder, records RecordIds) *
 		seen   float64 // how many records this process appeared in
 	}
 	procSums := make(map[string]*procAccum)
-	libvirtSums := make(map[string]*procAccum)
 
 	count := float64(len(records))
 	tempCount := float64(0)
@@ -416,29 +418,6 @@ func (rm *RecordManager) AverageSystemStats(db dbx.Builder, records RecordIds) *
 				}
 			}
 		}
-
-		// Accumulate libvirt VM stats
-		for _, vm := range stats.TopLibvirt {
-			if pa, ok := libvirtSums[vm.Name]; ok {
-				pa.cpuSum += vm.CpuPct
-				pa.memSum += vm.MemPct
-				if vm.Rss > pa.rssMax {
-					pa.rssMax = vm.Rss
-				}
-				if vm.Count > pa.count {
-					pa.count = vm.Count
-				}
-				pa.seen++
-			} else {
-				libvirtSums[vm.Name] = &procAccum{
-					cpuSum: vm.CpuPct,
-					memSum: vm.MemPct,
-					rssMax: vm.Rss,
-					count:  vm.Count,
-					seen:   1,
-				}
-			}
-		}
 	}
 
 	// Compute averages in place
@@ -601,30 +580,6 @@ func (rm *RecordManager) AverageSystemStats(db dbx.Builder, records RecordIds) *
 		sum.TopProc = procs
 	}
 
-	// Average libvirt VMs and pick top 10
-	if len(libvirtSums) > 0 {
-		vms := make([]system.TopProcess, 0, len(libvirtSums))
-		for name, pa := range libvirtSums {
-			vms = append(vms, system.TopProcess{
-				Name:   name,
-				CpuPct: twoDecimals(pa.cpuSum / pa.seen),
-				MemPct: float32(twoDecimals(float64(pa.memSum) / pa.seen)),
-				Rss:    pa.rssMax,
-				Count:  pa.count,
-			})
-		}
-		sort.Slice(vms, func(i, j int) bool {
-			if vms[i].CpuPct != vms[j].CpuPct {
-				return vms[i].CpuPct > vms[j].CpuPct
-			}
-			return vms[i].Rss > vms[j].Rss
-		})
-		if len(vms) > 10 {
-			vms = vms[:10]
-		}
-		sum.TopLibvirt = vms
-	}
-
 	return sum
 }
 
@@ -681,6 +636,56 @@ func (rm *RecordManager) AverageContainerStats(db dbx.Builder, records RecordIds
 	return result
 }
 
+func (rm *RecordManager) AverageLibvirtVMStats(db dbx.Builder, records RecordIds) []libvirt.Stats {
+	for k := range libvirtVMSums {
+		delete(libvirtVMSums, k)
+	}
+	sums := libvirtVMSums
+	count := float64(len(records))
+
+	for i := range records {
+		id := records[i].Id
+		statsRecord.Stats = statsRecord.Stats[:0]
+		libvirtVMStats = nil
+
+		queryParams["id"] = id
+		db.NewQuery("SELECT stats FROM libvirt_vm_stats WHERE id = {:id}").Bind(queryParams).One(&statsRecord)
+		if err := json.Unmarshal(statsRecord.Stats, &libvirtVMStats); err != nil {
+			return []libvirt.Stats{}
+		}
+		for i := range libvirtVMStats {
+			stat := libvirtVMStats[i]
+			if _, ok := sums[stat.Name]; !ok {
+				sums[stat.Name] = &libvirt.Stats{Name: stat.Name}
+			}
+			sums[stat.Name].Cpu += stat.Cpu
+			sums[stat.Name].Mem += stat.Mem
+			sums[stat.Name].Bandwidth[0] += stat.Bandwidth[0]
+			sums[stat.Name].Bandwidth[1] += stat.Bandwidth[1]
+			sums[stat.Name].Disk[0] += stat.Disk[0]
+			sums[stat.Name].Disk[1] += stat.Disk[1]
+		}
+	}
+
+	result := make([]libvirt.Stats, 0, len(sums))
+	for _, value := range sums {
+		result = append(result, libvirt.Stats{
+			Name: value.Name,
+			Cpu:  twoDecimals(value.Cpu / count),
+			Mem:  twoDecimals(value.Mem / count),
+			Bandwidth: [2]uint64{
+				uint64(float64(value.Bandwidth[0]) / count),
+				uint64(float64(value.Bandwidth[1]) / count),
+			},
+			Disk: [2]uint64{
+				uint64(float64(value.Disk[0]) / count),
+				uint64(float64(value.Disk[1]) / count),
+			},
+		})
+	}
+	return result
+}
+
 // Delete old records
 func (rm *RecordManager) DeleteOldRecords() {
 	rm.app.RunInTransaction(func(txApp core.App) error {
@@ -689,6 +694,10 @@ func (rm *RecordManager) DeleteOldRecords() {
 			return err
 		}
 		err = deleteOldContainerRecords(txApp)
+		if err != nil {
+			return err
+		}
+		err = deleteOldLibvirtVMRecords(txApp)
 		if err != nil {
 			return err
 		}
@@ -730,7 +739,7 @@ func deleteOldAlertsHistory(app core.App, countToKeep, countBeforeDeletion int) 
 // Deletes system_stats records older than what is displayed in the UI
 func deleteOldSystemStats(app core.App) error {
 	// Collections to process
-	collections := [2]string{"system_stats", "container_stats"}
+	collections := [3]string{"system_stats", "container_stats", "libvirt_vm_stats"}
 
 	// Record types and their retention periods
 	type RecordDeletionData struct {
@@ -794,6 +803,15 @@ func deleteOldContainerRecords(app core.App) error {
 		return fmt.Errorf("failed to delete old container records: %v", err)
 	}
 
+	return nil
+}
+
+func deleteOldLibvirtVMRecords(app core.App) error {
+	tenMinutesAgo := time.Now().UTC().Add(-10 * time.Minute)
+	_, err := app.DB().NewQuery("DELETE FROM libvirt_vms WHERE updated < {:updated}").Bind(dbx.Params{"updated": tenMinutesAgo.UnixMilli()}).Execute()
+	if err != nil {
+		return fmt.Errorf("failed to delete old libvirt VM records: %v", err)
+	}
 	return nil
 }
 

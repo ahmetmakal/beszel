@@ -7,6 +7,7 @@ import (
 	"time"
 
 	"github.com/henrygd/beszel/internal/entities/container"
+	"github.com/henrygd/beszel/internal/entities/libvirt"
 	"github.com/henrygd/beszel/internal/entities/packages"
 	"github.com/henrygd/beszel/internal/entities/systemd"
 )
@@ -54,8 +55,7 @@ type Stats struct {
 	TcpConns          map[string]uint32    `json:"tcp,omitempty" cbor:"36,keyasint,omitempty"`   // TCP connection counts by state
 	WebServer         *WebServerStats      `json:"ws,omitempty" cbor:"37,keyasint,omitempty"`    // Web server stats
 	MySQL             *MySQLStats          `json:"mysql,omitempty" cbor:"38,keyasint,omitempty"` // MySQL/MariaDB stats
-	TopProc           []TopProcess         `json:"tp,omitempty" cbor:"39,keyasint,omitempty"`    // Top processes by CPU/memory
-	TopLibvirt        []TopProcess         `json:"tlv,omitempty" cbor:"40,keyasint,omitempty"`   // Top libvirt VMs by CPU/memory
+	TopProc           []TopProcess         `json:"tp,omitempty" cbor:"39,keyasint,omitempty"`  // Top processes by CPU/memory
 }
 
 // TopProcess holds compact per-process metrics for embedding in system stats.
@@ -197,6 +197,7 @@ type CombinedData struct {
 	Stats           Stats              `json:"stats" cbor:"0,keyasint"`
 	Info            Info               `json:"info" cbor:"1,keyasint"`
 	Containers      []*container.Stats `json:"container" cbor:"2,keyasint"`
+	LibvirtVMs      []*libvirt.Stats   `json:"libvirt,omitempty" cbor:"7,keyasint,omitempty"`
 	SystemdServices []*systemd.Service     `json:"systemd,omitempty" cbor:"3,keyasint,omitempty"`
 	Details         *Details               `cbor:"4,keyasint,omitempty"`
 	PackageVersions []*packages.PackageInfo `json:"pv,omitempty" cbor:"6,keyasint,omitempty"`
