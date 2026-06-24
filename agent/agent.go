@@ -50,6 +50,7 @@ type Agent struct {
 	systemdManager            *systemdManager                                       // Manages systemd services
 	webServerManager          *webServerManager                                     // Manages web server stats
 	mysqlManager              *mysqlManager                                         // Manages MySQL/MariaDB stats
+	libvirtManager            *libvirtManager                                       // Manages libvirt VM stats
 	packageManager            *packageManager                                       // Detects package versions for systemd services
 }
 
@@ -166,6 +167,8 @@ func NewAgent(dataDir ...string) (agent *Agent, err error) {
 		slog.Debug("MySQL", "err", err)
 	}
 
+	agent.libvirtManager = newLibvirtManager()
+
 	// if debugging, print stats
 	if agent.debug {
 		slog.Debug("Stats", "data", agent.gatherStats(common.DataRequestOptions{CacheTimeMs: defaultDataCacheTimeMs, IncludeDetails: true}))
@@ -232,9 +235,12 @@ func (a *Agent) gatherStats(options common.DataRequestOptions) *system.CombinedD
 	}
 	slog.Debug("Extra FS", "data", data.Stats.ExtraFs)
 
-	// collect top processes (only on default 60s interval, same as systemd)
+	// collect top processes and libvirt VMs (only on default 60s interval, same as systemd)
 	if cacheTimeMs == defaultDataCacheTimeMs {
 		data.Stats.TopProc = a.getTopProcesses(10)
+		if a.libvirtManager != nil {
+			data.Stats.TopLibvirt = a.libvirtManager.getTopVMs(10)
+		}
 	}
 
 	a.cache.Set(data, cacheTimeMs)

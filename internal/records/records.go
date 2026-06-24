@@ -191,6 +191,7 @@ func (rm *RecordManager) AverageSystemStats(db dbx.Builder, records RecordIds) *
 		seen   float64 // how many records this process appeared in
 	}
 	procSums := make(map[string]*procAccum)
+	libvirtSums := make(map[string]*procAccum)
 
 	count := float64(len(records))
 	tempCount := float64(0)
@@ -415,6 +416,29 @@ func (rm *RecordManager) AverageSystemStats(db dbx.Builder, records RecordIds) *
 				}
 			}
 		}
+
+		// Accumulate libvirt VM stats
+		for _, vm := range stats.TopLibvirt {
+			if pa, ok := libvirtSums[vm.Name]; ok {
+				pa.cpuSum += vm.CpuPct
+				pa.memSum += vm.MemPct
+				if vm.Rss > pa.rssMax {
+					pa.rssMax = vm.Rss
+				}
+				if vm.Count > pa.count {
+					pa.count = vm.Count
+				}
+				pa.seen++
+			} else {
+				libvirtSums[vm.Name] = &procAccum{
+					cpuSum: vm.CpuPct,
+					memSum: vm.MemPct,
+					rssMax: vm.Rss,
+					count:  vm.Count,
+					seen:   1,
+				}
+			}
+		}
 	}
 
 	// Compute averages in place
@@ -575,6 +599,30 @@ func (rm *RecordManager) AverageSystemStats(db dbx.Builder, records RecordIds) *
 			procs = procs[:10]
 		}
 		sum.TopProc = procs
+	}
+
+	// Average libvirt VMs and pick top 10
+	if len(libvirtSums) > 0 {
+		vms := make([]system.TopProcess, 0, len(libvirtSums))
+		for name, pa := range libvirtSums {
+			vms = append(vms, system.TopProcess{
+				Name:   name,
+				CpuPct: twoDecimals(pa.cpuSum / pa.seen),
+				MemPct: float32(twoDecimals(float64(pa.memSum) / pa.seen)),
+				Rss:    pa.rssMax,
+				Count:  pa.count,
+			})
+		}
+		sort.Slice(vms, func(i, j int) bool {
+			if vms[i].CpuPct != vms[j].CpuPct {
+				return vms[i].CpuPct > vms[j].CpuPct
+			}
+			return vms[i].Rss > vms[j].Rss
+		})
+		if len(vms) > 10 {
+			vms = vms[:10]
+		}
+		sum.TopLibvirt = vms
 	}
 
 	return sum

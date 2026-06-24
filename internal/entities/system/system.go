@@ -55,6 +55,7 @@ type Stats struct {
 	WebServer         *WebServerStats      `json:"ws,omitempty" cbor:"37,keyasint,omitempty"`    // Web server stats
 	MySQL             *MySQLStats          `json:"mysql,omitempty" cbor:"38,keyasint,omitempty"` // MySQL/MariaDB stats
 	TopProc           []TopProcess         `json:"tp,omitempty" cbor:"39,keyasint,omitempty"`    // Top processes by CPU/memory
+	TopLibvirt        []TopProcess         `json:"tlv,omitempty" cbor:"40,keyasint,omitempty"`   // Top libvirt VMs by CPU/memory
 }
 
 // TopProcess holds compact per-process metrics for embedding in system stats.

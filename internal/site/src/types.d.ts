@@ -168,6 +168,8 @@ export interface SystemStats {
 	mysql?: MySQLStatsData
 	/** top processes */
 	tp?: TopProcess[]
+	/** top libvirt VMs */
+	tlv?: TopProcess[]
 }
 
 export interface TopProcess {

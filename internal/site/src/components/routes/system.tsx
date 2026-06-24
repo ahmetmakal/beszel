@@ -15,6 +15,7 @@ import { LazyContainersTable, LazySmartTable, LazySystemdTable } from "./system/
 import { LoadAverageChart } from "./system/charts/load-average-chart"
 import { TcpConnectionsChart } from "./system/charts/tcp-connections-chart"
 import { TopProcessesCpuChart, TopProcessesMemoryChart } from "./system/charts/process-charts"
+import { TopLibvirtCpuChart, TopLibvirtMemoryChart } from "./system/charts/libvirt-charts"
 import { ContainerIcon, CpuIcon, HardDriveIcon, TerminalSquareIcon } from "lucide-react"
 import { GpuIcon } from "../ui/icons"
 import SystemdTable from "../systemd-table/systemd-table"
@@ -129,6 +130,10 @@ export default memo(function SystemDetail({ id }: { id: string }) {
 
 					<TopProcessesMemoryChart chartData={chartData} grid={grid} dataEmpty={dataEmpty} />
 
+					<TopLibvirtCpuChart chartData={chartData} grid={grid} dataEmpty={dataEmpty} />
+
+					<TopLibvirtMemoryChart chartData={chartData} grid={grid} dataEmpty={dataEmpty} />
+
 					<TemperatureChart {...coreProps} />
 
 					<BatteryChart {...coreProps} />
@@ -197,6 +202,8 @@ export default memo(function SystemDetail({ id }: { id: string }) {
 						<TcpConnectionsChart chartData={chartData} grid={grid} dataEmpty={dataEmpty} />
 						<TopProcessesCpuChart chartData={chartData} grid={grid} dataEmpty={dataEmpty} />
 						<TopProcessesMemoryChart chartData={chartData} grid={grid} dataEmpty={dataEmpty} />
+						<TopLibvirtCpuChart chartData={chartData} grid={grid} dataEmpty={dataEmpty} />
+						<TopLibvirtMemoryChart chartData={chartData} grid={grid} dataEmpty={dataEmpty} />
 						<BandwidthChart {...coreProps} systemStats={systemStats} />
 						<TemperatureChart {...coreProps} setPageBottomExtraMargin={setPageBottomExtraMargin} />
 						<BatteryChart {...coreProps} />
