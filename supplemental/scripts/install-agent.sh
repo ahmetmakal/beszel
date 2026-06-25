@@ -737,6 +737,58 @@ detect_nvidia_devices() {
   echo "$devices"
 }
 
+# Grant beszel-agent read access to libvirt QEMU runtime XML (VM network stats).
+configure_libvirt_agent_perms() {
+  local agent_user="${1:-beszel}"
+  local qemu_dir="/run/libvirt/qemu"
+
+  if [ ! -d "$qemu_dir" ] && [ -d "/var/run/libvirt/qemu" ]; then
+    qemu_dir="/var/run/libvirt/qemu"
+  fi
+  if [ ! -d "$qemu_dir" ]; then
+    return 0
+  fi
+
+  if ! id "$agent_user" >/dev/null 2>&1; then
+    echo "WARNING: libvirt permissions skipped; user not found: $agent_user" >&2
+    return 1
+  fi
+
+  echo "==> Libvirt host detected; configuring XML permissions for $agent_user"
+
+  local perms_script=""
+  local install_dir
+  install_dir="$(cd "$(dirname "$0")" && pwd)"
+  if [ -f "$install_dir/libvirt-agent-perms.sh" ]; then
+    perms_script="$install_dir/libvirt-agent-perms.sh"
+  else
+    perms_script="/tmp/libvirt-agent-perms.sh"
+    if ! curl -fsSL "https://raw.githubusercontent.com/ahmetmakal/beszel/main/supplemental/scripts/libvirt-agent-perms.sh" -o "$perms_script"; then
+      echo "WARNING: Could not fetch libvirt-agent-perms.sh; VM network stats may be unavailable." >&2
+      return 1
+    fi
+    chmod +x "$perms_script"
+  fi
+
+  if ! BESZEL_AGENT_user="$agent_user" bash "$perms_script"; then
+    echo "WARNING: libvirt permission setup failed; run libvirt-agent-perms.sh manually if VM stats are missing." >&2
+    return 1
+  fi
+  return 0
+}
+
+restart_beszel_agent_if_running() {
+  if command -v systemctl >/dev/null 2>&1 && systemctl is-active beszel-agent.service >/dev/null 2>&1; then
+    systemctl restart beszel-agent.service
+  elif is_alpine && command -v rc-service >/dev/null 2>&1; then
+    rc-service beszel-agent restart 2>/dev/null || true
+  elif [ -f /etc/init.d/beszel-agent ]; then
+    /etc/init.d/beszel-agent restart 2>/dev/null || true
+  elif command -v service >/dev/null 2>&1; then
+    service beszel-agent restart 2>/dev/null || true
+  fi
+}
+
 # Modify service installation part, add Alpine check before systemd service creation
 if is_alpine; then
   if [ ! -f /etc/init.d/beszel-agent ]; then
@@ -1071,6 +1123,12 @@ EOF
     echo "Error: The Beszel Agent service is not running."
     echo "$(systemctl status beszel-agent.service)"
     exit 1
+  fi
+fi
+
+if [ -d /run/libvirt/qemu ] || [ -d /var/run/libvirt/qemu ]; then
+  if configure_libvirt_agent_perms beszel; then
+    restart_beszel_agent_if_running
   fi
 fi
 
