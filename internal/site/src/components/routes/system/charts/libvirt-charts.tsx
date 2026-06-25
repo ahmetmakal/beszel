@@ -1,7 +1,7 @@
 import { t } from "@lingui/core/macro"
 import type { ChartConfig } from "@/components/ui/chart"
 import AreaChartDefault from "@/components/charts/area-chart"
-import { useContainerDataPoints } from "@/components/charts/hooks"
+import { useContainerDataPoints, type VMChartConfigs } from "@/components/charts/hooks"
 import { decimalString, formatBytes, toFixedFloat } from "@/lib/utils"
 import { pinnedAxisDomain } from "@/components/ui/chart"
 import type { ChartData } from "@/types"
@@ -113,6 +113,46 @@ function VmNetworkChart({
 	)
 }
 
+function VmDiskChart({
+	chartData,
+	grid,
+	dataEmpty,
+	diskConfig,
+}: {
+	chartData: ChartData
+	grid: boolean
+	dataEmpty: boolean
+	diskConfig: ChartConfig
+}) {
+	const { dataPoints } = useContainerDataPoints(diskConfig, (key, data) => {
+		const vm = data[key]
+		if (!vm) return null
+		return (vm.d?.[0] ?? 0) + (vm.d?.[1] ?? 0)
+	})
+	if (!dataPoints.length) return null
+	return (
+		<ChartCard empty={dataEmpty} grid={grid} title={t`VM Disk I/O`} description={t`Disk read and write throughput of virtual machines`} legend={true}>
+			<AreaChartDefault
+				chartData={chartData}
+				customData={chartData.vmData}
+				dataPoints={dataPoints}
+				tickFormatter={(val) => {
+					const f = formatBytes(val, true, undefined, false)
+					return `${toFixedFloat(f.value, 1)} ${f.unit}`
+				}}
+				contentFormatter={({ value }) => {
+					const f = formatBytes(value, true, undefined, false)
+					return `${decimalString(f.value)} ${f.unit}`
+				}}
+				domain={pinnedAxisDomain()}
+				legend={true}
+				showTotal={true}
+				itemSorter={(a, b) => b.value - a.value}
+			/>
+		</ChartCard>
+	)
+}
+
 export function LibvirtCharts({
 	chartData,
 	grid,
@@ -122,7 +162,7 @@ export function LibvirtCharts({
 	chartData: ChartData
 	grid: boolean
 	dataEmpty: boolean
-	vmChartConfigs: { cpu: ChartConfig; memory: ChartConfig; network: ChartConfig }
+	vmChartConfigs: VMChartConfigs
 }) {
 	if (!chartData.vmData.length) return null
 	return (
@@ -130,6 +170,7 @@ export function LibvirtCharts({
 			<VmCpuChart chartData={chartData} grid={grid} dataEmpty={dataEmpty} cpuConfig={vmChartConfigs.cpu} />
 			<VmMemoryChart chartData={chartData} grid={grid} dataEmpty={dataEmpty} memoryConfig={vmChartConfigs.memory} />
 			<VmNetworkChart chartData={chartData} grid={grid} dataEmpty={dataEmpty} networkConfig={vmChartConfigs.network} />
+			<VmDiskChart chartData={chartData} grid={grid} dataEmpty={dataEmpty} diskConfig={vmChartConfigs.disk} />
 		</>
 	)
 }

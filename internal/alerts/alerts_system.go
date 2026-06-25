@@ -73,6 +73,20 @@ func (am *AlertManager) HandleSystemAlerts(systemRecord *core.Record, data *syst
 				total += count
 			}
 			val = float64(total)
+		case "IOWait":
+			if len(data.Stats.CpuBreakdown) < 3 {
+				continue
+			}
+			val = data.Stats.CpuBreakdown[2]
+		case "DiskAwait":
+			if len(data.Stats.DiskIoStats) < 5 {
+				continue
+			}
+			val = data.Stats.DiskIoStats[3]
+			if data.Stats.DiskIoStats[4] > val {
+				val = data.Stats.DiskIoStats[4]
+			}
+			unit = " ms"
 		case "WebReqPerSec":
 			if data.Stats.WebServer == nil {
 				continue
@@ -277,6 +291,18 @@ func (am *AlertManager) HandleSystemAlerts(systemRecord *core.Record, data *syst
 					total += count
 				}
 				alert.val += float64(total)
+			case "IOWait":
+				if len(stats.CpuBreakdown) >= 3 {
+					alert.val += stats.CpuBreakdown[2]
+				}
+			case "DiskAwait":
+				if len(stats.DiskIoStats) >= 5 {
+					await := stats.DiskIoStats[3]
+					if stats.DiskIoStats[4] > await {
+						await = stats.DiskIoStats[4]
+					}
+					alert.val += await
+				}
 			case "WebReqPerSec":
 				if stats.WebServer != nil {
 					alert.val += stats.WebServer.ReqPerSec
@@ -369,6 +395,12 @@ func (am *AlertManager) sendSystemAlert(alert SystemAlertData) {
 	// change TcpConns to TCP connections
 	if alert.name == "TcpConns" {
 		alert.name = "TCP connections"
+	}
+	if alert.name == "IOWait" {
+		alert.name = "I/O wait"
+	}
+	if alert.name == "DiskAwait" {
+		alert.name = "disk await"
 	}
 	if alert.name == "WebReqPerSec" {
 		alert.name = "Web requests/sec"

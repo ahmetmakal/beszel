@@ -28,7 +28,7 @@ export default function VMsTable({ systemId }: { systemId?: string }) {
 	const [data, setData] = useState<LibvirtVMRecord[] | undefined>(undefined)
 	const [sorting, setSorting] = useBrowserStorage<SortingState>(
 		`sort-v-${systemId ? 1 : 0}`,
-		[{ id: "name", desc: false }],
+		systemId ? [{ id: "disk_write", desc: true }] : [{ id: "name", desc: false }],
 		sessionStorage
 	)
 	const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([])
@@ -39,7 +39,7 @@ export default function VMsTable({ systemId }: { systemId?: string }) {
 		function fetchData(filterSystemId?: string) {
 			pb.collection<LibvirtVMRecord>("libvirt_vms")
 				.getList(0, 2000, {
-					fields: "id,name,status,health,cpu,memory,net,disk,vcpus,mem_max,system,updated",
+					fields: "id,name,status,health,cpu,memory,memory_pct,net,net_rx,net_wx,disk,disk_read,disk_write,disk_iops,vcpus,mem_max,ip,bridge,uptime,disk_cap,system,updated",
 					filter: filterSystemId ? pb.filter("system={:system}", { system: filterSystemId }) : undefined,
 				})
 				.then(({ items }) => {
@@ -89,7 +89,7 @@ export default function VMsTable({ systemId }: { systemId?: string }) {
 		onGlobalFilterChange: setGlobalFilter,
 		globalFilterFn: (row, _columnId, filterValue) => {
 			const vm = row.original
-			const search = `${vm.name} ${vm.status} ${vm.id}`.toLowerCase()
+			const search = `${vm.name} ${vm.status} ${vm.id} ${vm.ip ?? ""} ${vm.bridge ?? ""}`.toLowerCase()
 			return (filterValue as string).toLowerCase().split(" ").every((term) => search.includes(term))
 		},
 	})

@@ -218,6 +218,10 @@ msgstr "Svi Sustavi"
 msgid "All vulnerabilities"
 msgstr ""
 
+#: src/lib/alerts.ts
+msgid "Any VM blocked"
+msgstr ""
+
 #: src/components/systems-table/systems-table-columns.tsx
 msgid "Are you sure you want to delete {name}?"
 msgstr "Jeste li sigurni da želite izbrisati {name}?"
@@ -338,9 +342,17 @@ msgstr "Binarni"
 msgid "Bits (Kbps, Mbps, Gbps)"
 msgstr "Bitovi (Kbps, Mbps, Gbps)"
 
+#: src/lib/alerts.ts
+msgid "Blocked VM"
+msgstr ""
+
 #: src/components/systemd-table/systemd-table.tsx
 msgid "Boot state"
 msgstr "Stanje pokretanja"
+
+#: src/components/vms-table/vms-table-columns.tsx
+msgid "Bridge"
+msgstr ""
 
 #: src/components/routes/system/charts/mysql-charts.tsx
 msgid "Buffer pool and key cache hit rates"
@@ -586,6 +598,10 @@ msgstr "Procesor"
 msgid "CPU Cores"
 msgstr "CPU jezgre"
 
+#: src/components/routes/system/charts/kvm-host-io-card.tsx
+msgid "CPU I/O wait and disk latency on the hypervisor — common KVM bottleneck signals"
+msgstr ""
+
 #: src/components/systemd-table/systemd-table-columns.tsx
 msgid "CPU Peak"
 msgstr "CPU vrhunac"
@@ -689,12 +705,25 @@ msgstr "Prazni se"
 
 #: src/components/routes/system.tsx
 #: src/components/systems-table/systems-table-columns.tsx
+#: src/components/vms-table/vms-table-columns.tsx
 msgid "Disk"
+msgstr ""
+
+#: src/lib/alerts.ts
+msgid "Disk Await"
 msgstr ""
 
 #: src/components/routes/system/charts/disk-charts.tsx
 #: src/components/vms-table/vms-table-columns.tsx
 msgid "Disk I/O"
+msgstr ""
+
+#: src/components/vms-table/vms-table-columns.tsx
+#~ msgid "Disk R"
+#~ msgstr ""
+
+#: src/components/routes/system/charts/libvirt-charts.tsx
+msgid "Disk read and write throughput of virtual machines"
 msgstr ""
 
 #: src/components/routes/settings/general.tsx
@@ -710,6 +739,10 @@ msgstr "Iskorištenost Diska"
 #: src/components/routes/system/charts/disk-charts.tsx
 msgid "Disk usage of {extraFsName}"
 msgstr "Iskorištenost diska od {extraFsName}"
+
+#: src/components/vms-table/vms-table-columns.tsx
+msgid "Disk W"
+msgstr ""
 
 #: src/components/routes/system/info-bar.tsx
 msgctxt "Layout display options"
@@ -1011,6 +1044,10 @@ msgstr "Heartbeat uspješno poslan"
 msgid "HIGH and CRITICAL vulnerabilities"
 msgstr ""
 
+#: src/components/routes/system/charts/kvm-host-io-card.tsx
+msgid "High I/O wait or disk await often points to storage pressure affecting VMs on this host."
+msgstr ""
+
 #: src/components/add-system.tsx
 #: src/components/routes/settings/tokens-fingerprints.tsx
 msgctxt "Button to copy install command"
@@ -1019,6 +1056,10 @@ msgstr "Homebrew naredba"
 
 #: src/components/add-system.tsx
 msgid "Host / IP"
+msgstr ""
+
+#: src/components/routes/system/charts/kvm-host-io-card.tsx
+msgid "Host I/O Stall Indicators"
 msgstr ""
 
 #: src/components/routes/settings/heartbeat.tsx
@@ -1043,6 +1084,12 @@ msgstr "I/O vrijeme"
 msgctxt "Percent of time the disk is busy with I/O"
 msgid "I/O Utilization"
 msgstr "I/O iskorištenost"
+
+#: src/components/routes/system/charts/kvm-host-io-card.tsx
+#: src/components/routes/system/charts/kvm-host-io-card.tsx
+#: src/lib/alerts.ts
+msgid "I/O Wait"
+msgstr ""
 
 #: src/components/routes/system/info-bar.tsx
 #: src/components/systemd-table/systemd-table.tsx
@@ -1080,6 +1127,14 @@ msgstr ""
 #: src/components/login/auth-form.tsx
 msgid "Invalid email address."
 msgstr "Nevažeća email adresa."
+
+#: src/components/vms-table/vms-table-columns.tsx
+msgid "IOPS"
+msgstr ""
+
+#: src/components/vms-table/vms-table-columns.tsx
+msgid "IP"
+msgstr ""
 
 #: src/components/routes/system/info-bar.tsx
 msgid "Kernel"
@@ -1240,6 +1295,10 @@ msgstr "Maksimalno 1 minuta"
 msgid "MEDIUM, HIGH and CRITICAL vulnerabilities"
 msgstr ""
 
+#: src/components/vms-table/vms-table-columns.tsx
+msgid "Mem %"
+msgstr ""
+
 #: src/components/containers-table/containers-table-columns.tsx
 #: src/components/routes/system/info-bar.tsx
 #: src/components/systemd-table/systemd-table-columns.tsx
@@ -1299,9 +1358,16 @@ msgstr "Ime"
 
 #: src/components/containers-table/containers-table-columns.tsx
 #: src/components/systems-table/systems-table-columns.tsx
-#: src/components/vms-table/vms-table-columns.tsx
 msgid "Net"
 msgstr "Mreža"
+
+#: src/components/vms-table/vms-table-columns.tsx
+msgid "Net ↑"
+msgstr ""
+
+#: src/components/vms-table/vms-table-columns.tsx
+msgid "Net ↓"
+msgstr ""
 
 #: src/components/routes/system/charts/network-charts.tsx
 msgid "Network traffic of docker containers"
@@ -1626,6 +1692,11 @@ msgstr "Tihi sati"
 #: src/components/routes/system/disk-io-sheet.tsx
 msgid "Read"
 msgstr "Pročitaj"
+
+#: src/components/routes/system/charts/kvm-host-io-card.tsx
+#: src/components/routes/system/charts/kvm-host-io-card.tsx
+msgid "Read await"
+msgstr ""
 
 #. Web server connections
 #: src/components/routes/system/charts/webserver-charts.tsx
@@ -2185,6 +2256,10 @@ msgid "Triggers when a monitored service is no longer active"
 msgstr ""
 
 #: src/lib/alerts.ts
+msgid "Triggers when any libvirt/KVM VM enters blocked state"
+msgstr ""
+
+#: src/lib/alerts.ts
 msgid "Triggers when any sensor exceeds a threshold"
 msgstr "Pokreće se kada bilo koji senzor prijeđe prag"
 
@@ -2197,8 +2272,16 @@ msgid "Triggers when combined up/down exceeds a threshold"
 msgstr "Pokreće se kada kumulativna propusnost gore/dolje premaši prag"
 
 #: src/lib/alerts.ts
+msgid "Triggers when CPU I/O wait exceeds a threshold (hypervisor disk bottleneck signal)"
+msgstr ""
+
+#: src/lib/alerts.ts
 msgid "Triggers when CPU usage exceeds a threshold"
 msgstr "Pokreće se kada iskorištenost procesora premaši prag"
+
+#: src/lib/alerts.ts
+msgid "Triggers when disk read or write await exceeds a threshold"
+msgstr ""
 
 #: src/lib/alerts.ts
 msgid "Triggers when GPU usage exceeds a threshold"
@@ -2288,6 +2371,7 @@ msgstr "Otpremi"
 
 #: src/components/routes/system/info-bar.tsx
 #: src/components/systems-table/systems-table-columns.tsx
+#: src/components/vms-table/vms-table-columns.tsx
 msgid "Uptime"
 msgstr "Vrijeme rada"
 
@@ -2355,6 +2439,10 @@ msgstr "Vidljiva polja"
 
 #: src/components/routes/system/charts/libvirt-charts.tsx
 msgid "VM CPU Usage"
+msgstr ""
+
+#: src/components/routes/system/charts/libvirt-charts.tsx
+msgid "VM Disk I/O"
 msgstr ""
 
 #: src/components/routes/system/charts/libvirt-charts.tsx
@@ -2445,6 +2533,11 @@ msgstr ""
 #: src/components/routes/system/disk-io-sheet.tsx
 msgid "Write"
 msgstr "Piši"
+
+#: src/components/routes/system/charts/kvm-host-io-card.tsx
+#: src/components/routes/system/charts/kvm-host-io-card.tsx
+msgid "Write await"
+msgstr ""
 
 #. Web server connections
 #: src/components/routes/system/charts/webserver-charts.tsx

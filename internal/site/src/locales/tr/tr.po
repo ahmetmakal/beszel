@@ -45,7 +45,7 @@ msgstr "{1} satırdan {0} tanesi seçildi."
 #. placeholder {0}: system.vulnerableServices
 #: src/components/vuln-scan/vuln-scan-panel.tsx
 msgid "{0} vulnerable services"
-msgstr ""
+msgstr "{0} güvenlik açığı olan hizmet"
 
 #: src/components/routes/system/info-bar.tsx
 msgid "{cores, plural, one {# core} other {# cores}}"
@@ -129,7 +129,7 @@ msgstr "Aktif Uyarılar"
 
 #: src/components/routes/system/charts/webserver-charts.tsx
 msgid "Active connections and worker status"
-msgstr ""
+msgstr "Aktif bağlantılar ve worker durumu"
 
 #: src/components/systemd-table/systemd-table.tsx
 msgid "Active state"
@@ -137,7 +137,7 @@ msgstr "Aktif durum"
 
 #: src/components/alerts/service-alerts.tsx
 msgid "Add"
-msgstr ""
+msgstr "Ekle"
 
 #: src/components/add-system.tsx
 #: src/components/add-system.tsx
@@ -180,7 +180,7 @@ msgstr "Aracı"
 
 #: src/components/alerts/service-alerts.tsx
 msgid "Alert already exists for this service"
-msgstr ""
+msgstr "Bu hizmet için uyarı zaten mevcut"
 
 #: src/components/command-palette.tsx
 #: src/components/routes/settings/alerts-history-data-table.tsx
@@ -203,7 +203,7 @@ msgstr "Tüm Konteynerler"
 
 #: src/components/vuln-scan/vuln-scan-panel.tsx
 msgid "All systems"
-msgstr ""
+msgstr "Tüm sistemler"
 
 #: src/components/alerts/alerts-sheet.tsx
 #: src/components/command-palette.tsx
@@ -216,7 +216,11 @@ msgstr "Tüm Sistemler"
 
 #: src/lib/alerts.ts
 msgid "All vulnerabilities"
-msgstr ""
+msgstr "Tüm güvenlik açıkları"
+
+#: src/lib/alerts.ts
+msgid "Any VM blocked"
+msgstr "Herhangi bir VM bloke"
 
 #: src/components/systems-table/systems-table-columns.tsx
 msgid "Are you sure you want to delete {name}?"
@@ -232,7 +236,7 @@ msgstr "Otomatik kopyalama güvenli bir bağlam gerektirir."
 
 #: src/components/vuln-scan/vuln-scan-panel.tsx
 msgid "Automatic scan"
-msgstr ""
+msgstr "Otomatik tarama"
 
 #: src/components/routes/system/chart-card.tsx
 msgid "Average"
@@ -244,7 +248,7 @@ msgstr "Konteynerlerin ortalama CPU kullanımı"
 
 #: src/components/routes/system/charts/libvirt-charts.tsx
 msgid "Average CPU utilization of virtual machines"
-msgstr ""
+msgstr "Sanal makinelerin ortalama CPU kullanımı"
 
 #. placeholder {0}: alertData.unit
 #: src/components/alerts/alerts-sheet.tsx
@@ -338,22 +342,30 @@ msgstr "İkili"
 msgid "Bits (Kbps, Mbps, Gbps)"
 msgstr "Bit (Kbps, Mbps, Gbps)"
 
+#: src/lib/alerts.ts
+msgid "Blocked VM"
+msgstr "Bloke VM"
+
 #: src/components/systemd-table/systemd-table.tsx
 msgid "Boot state"
 msgstr "Önyükleme durumu"
 
+#: src/components/vms-table/vms-table-columns.tsx
+msgid "Bridge"
+msgstr "Köprü"
+
 #: src/components/routes/system/charts/mysql-charts.tsx
 msgid "Buffer pool and key cache hit rates"
-msgstr ""
+msgstr "Buffer pool ve key cache isabet oranları"
 
 #: src/components/routes/system/charts/mysql-charts.tsx
 msgid "Buffer Pool Hit Rate"
-msgstr ""
+msgstr "Buffer Pool isabet oranı"
 
 #. Web server workers
 #: src/components/routes/system/charts/webserver-charts.tsx
 msgid "Busy"
-msgstr ""
+msgstr "Meşgul"
 
 #: src/components/routes/settings/general.tsx
 #: src/components/routes/settings/general.tsx
@@ -362,7 +374,7 @@ msgstr "Bayt (KB/s, MB/s, GB/s)"
 
 #: src/components/routes/system/charts/webserver-charts.tsx
 msgid "Bytes/sec"
-msgstr ""
+msgstr "Bayt/sn"
 
 #: src/components/routes/system/charts/memory-charts.tsx
 msgid "Cache / Buffers"
@@ -370,7 +382,7 @@ msgstr "Önbellek / Tamponlar"
 
 #: src/components/vuln-scan/vuln-scan-panel.tsx
 msgid "Cache entries"
-msgstr ""
+msgstr "Önbellek kayıtları"
 
 #: src/components/systemd-table/systemd-table.tsx
 msgid "Can reload"
@@ -473,7 +485,7 @@ msgstr "Kopyalamak için tıklayın"
 #. TCP connection state
 #: src/components/routes/system/charts/tcp-connections-chart.tsx
 msgid "Close Wait"
-msgstr ""
+msgstr "Close Wait"
 
 #: src/components/login/forgot-pass-form.tsx
 #: src/components/login/forgot-pass-form.tsx
@@ -482,7 +494,7 @@ msgstr "Komut satırı talimatları"
 
 #: src/components/vuln-scan/vuln-scan-panel.tsx
 msgid "Completed"
-msgstr ""
+msgstr "Tamamlandı"
 
 #: src/components/routes/settings/notifications.tsx
 msgid "Configure how you receive alert notifications."
@@ -504,7 +516,7 @@ msgstr "Bağlantı kesildi"
 #: src/components/routes/system/charts/mysql-charts.tsx
 #: src/components/routes/system/charts/webserver-charts.tsx
 msgid "Connections"
-msgstr ""
+msgstr "Bağlantılar"
 
 #: src/components/routes/system.tsx
 msgid "Containers"
@@ -586,6 +598,10 @@ msgstr "İşlemci"
 msgid "CPU Cores"
 msgstr "CPU Çekirdekleri"
 
+#: src/components/routes/system/charts/kvm-host-io-card.tsx
+msgid "CPU I/O wait and disk latency on the hypervisor — common KVM bottleneck signals"
+msgstr "Hypervisor üzerinde CPU I/O bekleme ve disk gecikmesi — yaygın KVM darboğaz göstergeleri"
+
 #: src/components/systemd-table/systemd-table-columns.tsx
 msgid "CPU Peak"
 msgstr "CPU Tepe Değeri"
@@ -638,7 +654,7 @@ msgstr "Mevcut durum"
 #. placeholder {0}: alert.value
 #: src/components/active-alerts.tsx
 msgid "CVSS ≥ {0} vulnerabilities detected"
-msgstr ""
+msgstr "CVSS ≥ {0} güvenlik açığı tespit edildi"
 
 #. Power Cycles
 #: src/components/routes/system/smart-table.tsx
@@ -689,13 +705,26 @@ msgstr "Boşalıyor"
 
 #: src/components/routes/system.tsx
 #: src/components/systems-table/systems-table-columns.tsx
+#: src/components/vms-table/vms-table-columns.tsx
 msgid "Disk"
 msgstr "Depolama alanı"
+
+#: src/lib/alerts.ts
+msgid "Disk Await"
+msgstr "Disk bekleme süresi"
 
 #: src/components/routes/system/charts/disk-charts.tsx
 #: src/components/vms-table/vms-table-columns.tsx
 msgid "Disk I/O"
 msgstr "Disk G/Ç"
+
+#: src/components/vms-table/vms-table-columns.tsx
+#~ msgid "Disk R"
+#~ msgstr ""
+
+#: src/components/routes/system/charts/libvirt-charts.tsx
+msgid "Disk read and write throughput of virtual machines"
+msgstr "Sanal makinelerin disk okuma/yazma verimi"
 
 #: src/components/routes/settings/general.tsx
 msgid "Disk unit"
@@ -710,6 +739,10 @@ msgstr "Disk Kullanımı"
 #: src/components/routes/system/charts/disk-charts.tsx
 msgid "Disk usage of {extraFsName}"
 msgstr "{extraFsName} disk kullanımı"
+
+#: src/components/vms-table/vms-table-columns.tsx
+msgid "Disk W"
+msgstr "Disk Y"
 
 #: src/components/routes/system/info-bar.tsx
 msgctxt "Layout display options"
@@ -755,7 +788,7 @@ msgstr "Süre"
 
 #: src/components/alerts/service-alerts.tsx
 msgid "e.g. nginx"
-msgstr ""
+msgstr "ör. nginx"
 
 #: src/components/routes/settings/quiet-hours.tsx
 #: src/components/systems-table/systems-table-columns.tsx
@@ -828,7 +861,7 @@ msgstr "Hata"
 #. TCP connection state
 #: src/components/routes/system/charts/tcp-connections-chart.tsx
 msgid "Established"
-msgstr ""
+msgstr "Established"
 
 #: src/components/routes/settings/heartbeat.tsx
 msgid "Example:"
@@ -924,12 +957,12 @@ msgstr "Filtrele..."
 #. TCP connection state
 #: src/components/routes/system/charts/tcp-connections-chart.tsx
 msgid "FIN Wait 1"
-msgstr ""
+msgstr "FIN Wait 1"
 
 #. TCP connection state
 #: src/components/routes/system/charts/tcp-connections-chart.tsx
 msgid "FIN Wait 2"
-msgstr ""
+msgstr "FIN Wait 2"
 
 #: src/components/routes/settings/tokens-fingerprints.tsx
 msgid "Fingerprint"
@@ -971,7 +1004,7 @@ msgstr "Genel"
 
 #: src/components/routes/system.tsx
 msgid "GPU"
-msgstr ""
+msgstr "GPU"
 
 #: src/components/routes/system/charts/gpu-charts.tsx
 msgid "GPU Engines"
@@ -997,7 +1030,7 @@ msgstr "Sağlık"
 
 #: src/components/routes/settings/layout.tsx
 msgid "Heartbeat"
-msgstr ""
+msgstr "Heartbeat"
 
 #: src/components/routes/settings/heartbeat.tsx
 msgid "Heartbeat Monitoring"
@@ -1009,7 +1042,11 @@ msgstr "Heartbeat başarıyla gönderildi"
 
 #: src/lib/alerts.ts
 msgid "HIGH and CRITICAL vulnerabilities"
-msgstr ""
+msgstr "YÜKSEK ve KRİTİK güvenlik açıkları"
+
+#: src/components/routes/system/charts/kvm-host-io-card.tsx
+msgid "High I/O wait or disk await often points to storage pressure affecting VMs on this host."
+msgstr "Yüksek I/O bekleme veya disk gecikmesi, bu hosttaki VM'leri etkileyen depolama baskısına işaret eder."
 
 #: src/components/add-system.tsx
 #: src/components/routes/settings/tokens-fingerprints.tsx
@@ -1020,6 +1057,10 @@ msgstr "Homebrew komutu"
 #: src/components/add-system.tsx
 msgid "Host / IP"
 msgstr "Ana Bilgisayar / IP"
+
+#: src/components/routes/system/charts/kvm-host-io-card.tsx
+msgid "Host I/O Stall Indicators"
+msgstr "Host I/O takılma göstergeleri"
 
 #: src/components/routes/settings/heartbeat.tsx
 msgid "HTTP Method"
@@ -1044,10 +1085,16 @@ msgctxt "Percent of time the disk is busy with I/O"
 msgid "I/O Utilization"
 msgstr "G/Ç Kullanımı"
 
+#: src/components/routes/system/charts/kvm-host-io-card.tsx
+#: src/components/routes/system/charts/kvm-host-io-card.tsx
+#: src/lib/alerts.ts
+msgid "I/O Wait"
+msgstr "I/O Bekleme"
+
 #: src/components/routes/system/info-bar.tsx
 #: src/components/systemd-table/systemd-table.tsx
 msgid "ID"
-msgstr ""
+msgstr "Kimlik"
 
 #. Context: Battery state
 #. Web server workers
@@ -1067,7 +1114,7 @@ msgstr "İmaj"
 
 #: src/components/vuln-scan/vuln-scan-panel.tsx
 msgid "In queue"
-msgstr ""
+msgstr "Kuyrukta"
 
 #: src/components/routes/settings/quiet-hours.tsx
 msgid "Inactive"
@@ -1081,33 +1128,41 @@ msgstr "Aralık"
 msgid "Invalid email address."
 msgstr "Geçersiz e-posta adresi."
 
+#: src/components/vms-table/vms-table-columns.tsx
+msgid "IOPS"
+msgstr "IOPS"
+
+#: src/components/vms-table/vms-table-columns.tsx
+msgid "IP"
+msgstr "IP"
+
 #: src/components/routes/system/info-bar.tsx
 msgid "Kernel"
-msgstr ""
+msgstr "Çekirdek"
 
 #: src/components/routes/system/info-bar.tsx
 msgid "Kernel changed, rescan required"
-msgstr ""
+msgstr "Çekirdek değişti, yeniden tarama gerekli"
 
 #: src/components/routes/system/info-bar.tsx
 msgid "Kernel version"
-msgstr ""
+msgstr "Çekirdek sürümü"
 
 #: src/components/routes/system/info-bar.tsx
 msgid "Kernel Vulnerability Details"
-msgstr ""
+msgstr "Çekirdek güvenlik açığı ayrıntıları"
 
 #: src/components/vuln-scan/vuln-scan-panel.tsx
 msgid "Kernel vulnerable"
-msgstr ""
+msgstr "Çekirdek savunmasız"
 
 #: src/components/routes/system/charts/mysql-charts.tsx
 msgid "Key Cache Hit Rate"
-msgstr ""
+msgstr "Key Cache isabet oranı"
 
 #: src/components/active-alerts.tsx
 msgid "Known vulnerabilities detected"
-msgstr ""
+msgstr "Bilinen güvenlik açıkları tespit edildi"
 
 #: src/components/lang-toggle.tsx
 #: src/components/routes/settings/general.tsx
@@ -1117,19 +1172,19 @@ msgstr "Dil"
 #. TCP connection state
 #: src/components/routes/system/charts/tcp-connections-chart.tsx
 msgid "Last ACK"
-msgstr ""
+msgstr "Last ACK"
 
 #: src/components/vuln-scan/vuln-scan-panel.tsx
 msgid "Last full scan"
-msgstr ""
+msgstr "Son tam tarama"
 
 #: src/components/vuln-scan/vuln-scan-panel.tsx
 msgid "Last scan"
-msgstr ""
+msgstr "Son tarama"
 
 #: src/components/vuln-scan/vuln-scan-panel.tsx
 msgid "Last scan:"
-msgstr ""
+msgstr "Son tarama:"
 
 #: src/components/systems-table/systems-table.tsx
 msgid "Layout"
@@ -1141,7 +1196,7 @@ msgstr "Düzen genişliği"
 
 #: src/components/vms-table/vms-table.tsx
 msgid "Libvirt/KVM virtual machines on this host."
-msgstr ""
+msgstr "Bu hosttaki Libvirt/KVM sanal makineleri."
 
 #: src/components/systemd-table/systemd-table.tsx
 msgid "Lifecycle"
@@ -1155,7 +1210,7 @@ msgstr "Sınır"
 #. TCP connection state
 #: src/components/routes/system/charts/tcp-connections-chart.tsx
 msgid "Listen"
-msgstr ""
+msgstr "Listen"
 
 #: src/components/routes/system/charts/load-average-chart.tsx
 msgid "Load Average"
@@ -1184,7 +1239,7 @@ msgstr "Yükleme durumu"
 
 #: src/components/vuln-scan/vuln-scan-panel.tsx
 msgid "Loading scan status…"
-msgstr ""
+msgstr "Tarama durumu yükleniyor…"
 
 #: src/components/systemd-table/systemd-table.tsx
 msgid "Loading..."
@@ -1216,7 +1271,7 @@ msgstr "Uyarı oluşturma yerini mi arıyorsunuz? Sistemler tablosundaki zil <0/
 
 #: src/lib/alerts.ts
 msgid "LOW and above vulnerabilities"
-msgstr ""
+msgstr "DÜŞÜK ve üzeri güvenlik açıkları"
 
 #: src/components/systemd-table/systemd-table.tsx
 msgid "Main PID"
@@ -1238,7 +1293,11 @@ msgstr "Maks 1 dk"
 
 #: src/lib/alerts.ts
 msgid "MEDIUM, HIGH and CRITICAL vulnerabilities"
-msgstr ""
+msgstr "ORTA, YÜKSEK ve KRİTİK güvenlik açıkları"
+
+#: src/components/vms-table/vms-table-columns.tsx
+msgid "Mem %"
+msgstr "Bellek %"
 
 #: src/components/containers-table/containers-table-columns.tsx
 #: src/components/routes/system/info-bar.tsx
@@ -1269,24 +1328,24 @@ msgstr "Docker konteynerlerinin bellek kullanımı"
 
 #: src/components/routes/system/charts/libvirt-charts.tsx
 msgid "Memory usage of virtual machines"
-msgstr ""
+msgstr "Sanal makinelerin bellek kullanımı"
 
 #. Device model
 #: src/components/routes/system/smart-table.tsx
 msgid "Model"
-msgstr ""
+msgstr "Model"
 
 #: src/components/routes/system/charts/mysql-charts.tsx
 msgid "MySQL Cache Performance"
-msgstr ""
+msgstr "MySQL önbellek performansı"
 
 #: src/components/routes/system/charts/mysql-charts.tsx
 msgid "MySQL Queries & Connections"
-msgstr ""
+msgstr "MySQL sorguları ve bağlantılar"
 
 #: src/components/routes/system/charts/mysql-charts.tsx
 msgid "MySQL Replication"
-msgstr ""
+msgstr "MySQL replikasyon"
 
 #: src/components/add-system.tsx
 #: src/components/alerts-history-columns.tsx
@@ -1299,9 +1358,16 @@ msgstr "Ad"
 
 #: src/components/containers-table/containers-table-columns.tsx
 #: src/components/systems-table/systems-table-columns.tsx
-#: src/components/vms-table/vms-table-columns.tsx
 msgid "Net"
 msgstr "Ağ"
+
+#: src/components/vms-table/vms-table-columns.tsx
+msgid "Net ↑"
+msgstr "Ağ ↑"
+
+#: src/components/vms-table/vms-table-columns.tsx
+msgid "Net ↓"
+msgstr "Ağ ↓"
 
 #: src/components/routes/system/charts/network-charts.tsx
 msgid "Network traffic of docker containers"
@@ -1316,7 +1382,7 @@ msgstr "Genel arayüzlerin ağ trafiği"
 
 #: src/components/routes/system/charts/libvirt-charts.tsx
 msgid "Network traffic of virtual machines"
-msgstr ""
+msgstr "Sanal makinelerin ağ trafiği"
 
 #. Context: Bytes or bits
 #: src/components/routes/settings/general.tsx
@@ -1329,7 +1395,7 @@ msgstr "Ağ birimi"
 
 #: src/components/vuln-scan/vuln-scan-panel.tsx
 msgid "Next scheduled"
-msgstr ""
+msgstr "Sonraki planlanan"
 
 #: src/components/systemd-table/systemd-table.tsx
 #: src/components/systemd-table/systemd-table.tsx
@@ -1344,7 +1410,7 @@ msgstr "Hayır"
 
 #: src/components/vuln-scan/vuln-scan-panel.tsx
 msgid "No packages"
-msgstr ""
+msgstr "Paket yok"
 
 #: src/components/command-palette.tsx
 #: src/components/systemd-table/systemd-table.tsx
@@ -1372,13 +1438,13 @@ msgstr "Sistem bulunamadı."
 
 #: src/components/vuln-scan/vuln-scan-panel.tsx
 msgid "No vulnerability scan data for this server yet."
-msgstr ""
+msgstr "Bu sunucu için henüz güvenlik açığı tarama verisi yok."
 
 #: src/components/routes/system/info-bar.tsx
 #: src/components/systemd-table/systemd-table-columns.tsx
 #: src/components/systemd-table/systemd-table.tsx
 msgid "Not scanned"
-msgstr ""
+msgstr "Taranmadı"
 
 #: src/components/systemd-table/systemd-table-columns.tsx
 #: src/components/systemd-table/systemd-table.tsx
@@ -1410,7 +1476,7 @@ msgstr "Tek kullanımlık şifre"
 
 #: src/lib/alerts.ts
 msgid "Only CRITICAL vulnerabilities"
-msgstr ""
+msgstr "Yalnızca KRİTİK güvenlik açıkları"
 
 #: src/components/routes/settings/quiet-hours.tsx
 #: src/components/routes/settings/tokens-fingerprints.tsx
@@ -1426,7 +1492,7 @@ msgstr "Veya devam et"
 
 #: src/components/vuln-scan/vuln-scan-panel.tsx
 msgid "OSV.dev package scans, queue status, and per-server results."
-msgstr ""
+msgstr "OSV.dev paket taramaları, kuyruk durumu ve sunucu bazlı sonuçlar."
 
 #: src/components/routes/system/cpu-sheet.tsx
 msgid "Other"
@@ -1438,11 +1504,11 @@ msgstr "Mevcut uyarıların üzerine yaz"
 
 #: src/components/vuln-scan/vuln-scan-panel.tsx
 msgid "Packages"
-msgstr ""
+msgstr "Paketler"
 
 #: src/components/vuln-scan/vuln-scan-panel.tsx
 msgid "Packages:"
-msgstr ""
+msgstr "Paketler:"
 
 #: src/components/command-palette.tsx
 #: src/components/command-palette.tsx
@@ -1499,11 +1565,11 @@ msgstr "Yük (Payload) formatı"
 
 #: src/components/vuln-scan/vuln-scan-panel.tsx
 msgid "Pending"
-msgstr ""
+msgstr "Beklemede"
 
 #: src/components/vuln-scan/vuln-scan-panel.tsx
 msgid "Pending scan"
-msgstr ""
+msgstr "Tarama bekliyor"
 
 #: src/components/routes/system/cpu-sheet.tsx
 #: src/components/routes/system/cpu-sheet.tsx
@@ -1562,7 +1628,7 @@ msgstr "Lütfen hesabınıza giriş yapın"
 
 #: src/components/add-system.tsx
 msgid "Port"
-msgstr ""
+msgstr "Port"
 
 #: src/components/containers-table/containers-table-columns.tsx
 msgctxt "Container ports"
@@ -1594,11 +1660,11 @@ msgstr "Genel Anahtar"
 
 #: src/components/routes/system/charts/mysql-charts.tsx
 msgid "Queries/sec"
-msgstr ""
+msgstr "Sorgu/sn"
 
 #: src/components/routes/system/charts/mysql-charts.tsx
 msgid "Query rate and connection usage"
-msgstr ""
+msgstr "Sorgu hızı ve bağlantı kullanımı"
 
 #: src/components/routes/system/disk-io-sheet.tsx
 msgctxt "Disk I/O average queue depth"
@@ -1607,13 +1673,13 @@ msgstr "Kuyruk Derinliği"
 
 #: src/components/vuln-scan/vuln-scan-panel.tsx
 msgid "Queue is empty"
-msgstr ""
+msgstr "Kuyruk boş"
 
 #: src/components/vuln-scan/vuln-scan-panel.tsx
 #: src/components/vuln-scan/vuln-scan-panel.tsx
 #: src/components/vuln-scan/vuln-scan-panel.tsx
 msgid "Queued"
-msgstr ""
+msgstr "Kuyrukta"
 
 #: src/components/routes/settings/quiet-hours.tsx
 msgid "Quiet Hours"
@@ -1627,10 +1693,15 @@ msgstr "Sessiz Saatler"
 msgid "Read"
 msgstr "Oku"
 
+#: src/components/routes/system/charts/kvm-host-io-card.tsx
+#: src/components/routes/system/charts/kvm-host-io-card.tsx
+msgid "Read await"
+msgstr "Okuma bekleme"
+
 #. Web server connections
 #: src/components/routes/system/charts/webserver-charts.tsx
 msgid "Reading"
-msgstr ""
+msgstr "Okuma"
 
 #: src/components/routes/system/charts/network-charts.tsx
 msgid "Received"
@@ -1638,7 +1709,7 @@ msgstr "Alındı"
 
 #: src/components/vuln-scan/vuln-scan-panel.tsx
 msgid "Recent activity"
-msgstr ""
+msgstr "Son etkinlik"
 
 #: src/components/containers-table/containers-table.tsx
 #: src/components/containers-table/containers-table.tsx
@@ -1652,11 +1723,11 @@ msgstr "İlişkiler"
 
 #: src/components/routes/system/charts/mysql-charts.tsx
 msgid "Replication Lag"
-msgstr ""
+msgstr "Replikasyon gecikmesi"
 
 #: src/components/routes/system/charts/mysql-charts.tsx
 msgid "Replication lag in seconds"
-msgstr ""
+msgstr "Saniye cinsinden replikasyon gecikmesi"
 
 #: src/components/login/login.tsx
 msgid "Request a one-time password"
@@ -1668,11 +1739,11 @@ msgstr "OTP iste"
 
 #: src/components/routes/system/charts/webserver-charts.tsx
 msgid "Requests per second and bandwidth"
-msgstr ""
+msgstr "Saniye başına istek ve bant genişliği"
 
 #: src/components/routes/system/charts/webserver-charts.tsx
 msgid "Requests/sec"
-msgstr ""
+msgstr "İstek/sn"
 
 #: src/components/systemd-table/systemd-table.tsx
 msgid "Required by"
@@ -1716,7 +1787,7 @@ msgstr "Sayfa başına satır"
 #: src/components/vuln-scan/vuln-scan-panel.tsx
 #: src/components/vuln-scan/vuln-scan-panel.tsx
 msgid "Running"
-msgstr ""
+msgstr "Çalışıyor"
 
 #: src/components/systemd-table/systemd-table.tsx
 msgid "Runtime Metrics"
@@ -1734,7 +1805,7 @@ msgstr "S.M.A.R.T. Kendiliğinden Test"
 #: src/components/systemd-table/systemd-table-columns.tsx
 #: src/components/systemd-table/systemd-table.tsx
 msgid "Safe"
-msgstr ""
+msgstr "Güvenli"
 
 #: src/components/add-system.tsx
 msgid "Save {foo}"
@@ -1755,33 +1826,33 @@ msgstr "Veritabanında kaydedilir ve siz devre dışı bırakana kadar süresi d
 
 #: src/components/vuln-scan/vuln-scan-panel.tsx
 msgid "Scan all systems"
-msgstr ""
+msgstr "Tüm sistemleri tara"
 
 #: src/components/vuln-scan/vuln-scan-panel.tsx
 msgid "Scan now"
-msgstr ""
+msgstr "Şimdi tara"
 
 #: src/components/vuln-scan/vuln-scan-panel.tsx
 msgid "Scan queue"
-msgstr ""
+msgstr "Tarama kuyruğu"
 
 #: src/components/vuln-scan/vuln-scan-panel.tsx
 #: src/components/vuln-scan/vuln-scan-panel.tsx
 msgid "Scanned"
-msgstr ""
+msgstr "Tarandı"
 
 #: src/components/routes/system/info-bar.tsx
 #: src/components/systemd-table/systemd-table.tsx
 msgid "Scanned at"
-msgstr ""
+msgstr "Taranma zamanı"
 
 #: src/components/routes/system/info-bar.tsx
 msgid "Scanned kernel"
-msgstr ""
+msgstr "Taranan çekirdek"
 
 #: src/components/routes/settings/vulnerabilities.tsx
 msgid "Scans use OSV.dev with a shared package cache. Results appear on each server's Systemd Services table after scanning completes."
-msgstr ""
+msgstr "Taramalar paylaşımlı paket önbelleği ile OSV.dev kullanır. Sonuçlar tarama tamamlandıktan sonra her sunucunun Systemd Hizmetleri tablosunda görünür."
 
 #: src/components/routes/settings/quiet-hours.tsx
 #: src/components/vuln-scan/vuln-scan-panel.tsx
@@ -1842,7 +1913,7 @@ msgstr "Seri Numarası"
 
 #: src/components/vuln-scan/vuln-scan-panel.tsx
 msgid "Server"
-msgstr ""
+msgstr "Sunucu"
 
 #: src/components/systemd-table/systemd-table.tsx
 msgid "Service Details"
@@ -1850,11 +1921,11 @@ msgstr "Hizmet Ayrıntıları"
 
 #: src/components/active-alerts.tsx
 msgid "Service is not active"
-msgstr ""
+msgstr "Hizmet aktif değil"
 
 #: src/components/alerts/service-alerts.tsx
 msgid "Service Status"
-msgstr ""
+msgstr "Hizmet durumu"
 
 #: src/components/routes/system.tsx
 #: src/components/systems-table/systems-table-columns.tsx
@@ -1886,7 +1957,7 @@ msgstr "Ayarlar kaydedildi"
 #: src/components/routes/system/info-bar.tsx
 #: src/components/systemd-table/systemd-table.tsx
 msgid "Severity"
-msgstr ""
+msgstr "Önem"
 
 #: src/components/login/auth-form.tsx
 msgid "Sign in"
@@ -1894,7 +1965,7 @@ msgstr "Giriş yap"
 
 #: src/components/routes/system/charts/mysql-charts.tsx
 msgid "Slow Queries/sec"
-msgstr ""
+msgstr "Yavaş sorgu/sn"
 
 #: src/components/command-palette.tsx
 msgid "SMTP settings"
@@ -1911,7 +1982,7 @@ msgstr "Başlangıç Saati"
 
 #: src/components/vuln-scan/vuln-scan-panel.tsx
 msgid "Started"
-msgstr ""
+msgstr "Başladı"
 
 #. Context: alert state (active or resolved)
 #: src/components/alerts-history-columns.tsx
@@ -1939,7 +2010,7 @@ msgstr "Alt Durum"
 #: src/components/routes/system/info-bar.tsx
 #: src/components/systemd-table/systemd-table.tsx
 msgid "Summary"
-msgstr ""
+msgstr "Özet"
 
 #: src/components/routes/system/charts/memory-charts.tsx
 msgid "Swap space used by the system"
@@ -1952,17 +2023,17 @@ msgstr "Takas Kullanımı"
 #: src/components/mode-toggle.tsx
 #: src/components/mode-toggle.tsx
 msgid "Switch theme"
-msgstr ""
+msgstr "Temayı değiştir"
 
 #. TCP connection state
 #: src/components/routes/system/charts/tcp-connections-chart.tsx
 msgid "SYN Recv"
-msgstr ""
+msgstr "SYN Recv"
 
 #. TCP connection state
 #: src/components/routes/system/charts/tcp-connections-chart.tsx
 msgid "SYN Sent"
-msgstr ""
+msgstr "SYN Sent"
 
 #: src/components/add-system.tsx
 #: src/components/alerts-history-columns.tsx
@@ -2010,12 +2081,12 @@ msgstr "Görevler"
 
 #: src/components/routes/system/charts/tcp-connections-chart.tsx
 msgid "TCP connection counts by state"
-msgstr ""
+msgstr "Duruma göre TCP bağlantı sayıları"
 
 #: src/components/routes/system/charts/tcp-connections-chart.tsx
 #: src/lib/alerts.ts
 msgid "TCP Connections"
-msgstr ""
+msgstr "TCP bağlantıları"
 
 #. Temperature label in systems table
 #: src/components/routes/system/smart-table.tsx
@@ -2066,7 +2137,7 @@ msgstr "Bu, seçilen tüm kayıtları veritabanından kalıcı olarak silecektir
 
 #: src/components/routes/system/charts/mysql-charts.tsx
 msgid "Threads Running"
-msgstr ""
+msgstr "Çalışan thread"
 
 #: src/components/routes/system/charts/disk-charts.tsx
 msgid "Throughput of {extraFsName}"
@@ -2083,7 +2154,7 @@ msgstr "Zaman formatı"
 #. TCP connection state
 #: src/components/routes/system/charts/tcp-connections-chart.tsx
 msgid "Time Wait"
-msgstr ""
+msgstr "Time Wait"
 
 #: src/components/routes/settings/notifications.tsx
 msgid "To email(s)"
@@ -2115,19 +2186,19 @@ msgstr "Token'lar ve parmak izleri hub'a WebSocket bağlantılarını doğrulama
 
 #: src/components/routes/system/charts/process-charts.tsx
 msgid "Top 10 processes by average CPU usage"
-msgstr ""
+msgstr "Ortalama CPU kullanımına göre ilk 10 süreç"
 
 #: src/components/routes/system/charts/process-charts.tsx
 msgid "Top 10 processes by average memory usage"
-msgstr ""
+msgstr "Ortalama bellek kullanımına göre ilk 10 süreç"
 
 #: src/components/routes/system/charts/process-charts.tsx
 msgid "Top Processes (CPU)"
-msgstr ""
+msgstr "En yoğun süreçler (CPU)"
 
 #: src/components/routes/system/charts/process-charts.tsx
 msgid "Top Processes (Memory)"
-msgstr ""
+msgstr "En yoğun süreçler (Bellek)"
 
 #: src/components/ui/chart.tsx
 #: src/components/ui/chart.tsx
@@ -2145,7 +2216,7 @@ msgstr "Her arayüz için gönderilen toplam veri"
 #: src/components/routes/system/disk-io-sheet.tsx
 msgctxt "Disk I/O"
 msgid "Total time spent on read/write (can exceed 100%)"
-msgstr ""
+msgstr "Okuma/yazmada geçen toplam süre (%100'ü aşabilir)"
 
 #. placeholder {0}: data.length
 #: src/components/systemd-table/systemd-table.tsx
@@ -2154,11 +2225,11 @@ msgstr "Toplam: {0}"
 
 #: src/components/routes/system/charts/webserver-charts.tsx
 msgid "Traffic"
-msgstr ""
+msgstr "Trafik"
 
 #: src/components/alerts/service-alerts.tsx
 msgid "Triggered"
-msgstr ""
+msgstr "Tetiklendi"
 
 #: src/components/systemd-table/systemd-table.tsx
 msgid "Triggered by"
@@ -2182,7 +2253,11 @@ msgstr "5 dakikalık yük ortalaması bir eşiği aştığında tetiklenir"
 
 #: src/components/alerts/service-alerts.tsx
 msgid "Triggers when a monitored service is no longer active"
-msgstr ""
+msgstr "İzlenen bir hizmet artık aktif olmadığında tetiklenir"
+
+#: src/lib/alerts.ts
+msgid "Triggers when any libvirt/KVM VM enters blocked state"
+msgstr "Herhangi bir libvirt/KVM VM bloke durumuna geçtiğinde tetiklenir"
 
 #: src/lib/alerts.ts
 msgid "Triggers when any sensor exceeds a threshold"
@@ -2197,8 +2272,16 @@ msgid "Triggers when combined up/down exceeds a threshold"
 msgstr "Birleştirilmiş yukarı/aşağı bir eşiği aştığında tetiklenir"
 
 #: src/lib/alerts.ts
+msgid "Triggers when CPU I/O wait exceeds a threshold (hypervisor disk bottleneck signal)"
+msgstr "CPU I/O bekleme eşiği aşıldığında tetiklenir (hypervisor disk darboğazı sinyali)"
+
+#: src/lib/alerts.ts
 msgid "Triggers when CPU usage exceeds a threshold"
 msgstr "CPU kullanımı bir eşiği aştığında tetiklenir"
+
+#: src/lib/alerts.ts
+msgid "Triggers when disk read or write await exceeds a threshold"
+msgstr "Disk okuma veya yazma bekleme süresi eşiği aşıldığında tetiklenir"
 
 #: src/lib/alerts.ts
 msgid "Triggers when GPU usage exceeds a threshold"
@@ -2218,7 +2301,7 @@ msgstr "Durum yukarı ve aşağı arasında değiştiğinde tetiklenir"
 
 #: src/lib/alerts.ts
 msgid "Triggers when total TCP connections exceeds a threshold"
-msgstr ""
+msgstr "Toplam TCP bağlantı sayısı eşiği aşıldığında tetiklenir"
 
 #: src/lib/alerts.ts
 msgid "Triggers when usage of any disk exceeds a threshold"
@@ -2226,7 +2309,7 @@ msgstr "Herhangi bir diskin kullanımı bir eşiği aştığında tetiklenir"
 
 #: src/lib/alerts.ts
 msgid "Triggers when vulnerabilities with CVSS score above the threshold are detected"
-msgstr ""
+msgstr "CVSS puanı eşiğin üzerinde güvenlik açıkları tespit edildiğinde tetiklenir"
 
 #: src/components/routes/settings/quiet-hours.tsx
 #: src/components/routes/settings/quiet-hours.tsx
@@ -2288,6 +2371,7 @@ msgstr "Yükle"
 
 #: src/components/routes/system/info-bar.tsx
 #: src/components/systems-table/systems-table-columns.tsx
+#: src/components/vms-table/vms-table-columns.tsx
 msgid "Uptime"
 msgstr "Çalışma Süresi"
 
@@ -2324,12 +2408,12 @@ msgstr "Değer"
 
 #: src/components/vms-table/vms-table-columns.tsx
 msgid "vCPUs"
-msgstr ""
+msgstr "vCPU"
 
 #: src/components/systemd-table/systemd-table-columns.tsx
 #: src/components/systemd-table/systemd-table.tsx
 msgid "Version"
-msgstr ""
+msgstr "Sürüm"
 
 #: src/components/systems-table/systems-table.tsx
 msgid "View"
@@ -2347,7 +2431,7 @@ msgstr "En son 200 uyarınızı görüntüleyin."
 
 #: src/components/vms-table/vms-table.tsx
 msgid "Virtual Machines"
-msgstr ""
+msgstr "Sanal Makineler"
 
 #: src/components/systems-table/systems-table.tsx
 msgid "Visible Fields"
@@ -2355,46 +2439,50 @@ msgstr "Görünür Alanlar"
 
 #: src/components/routes/system/charts/libvirt-charts.tsx
 msgid "VM CPU Usage"
-msgstr ""
+msgstr "VM CPU kullanımı"
+
+#: src/components/routes/system/charts/libvirt-charts.tsx
+msgid "VM Disk I/O"
+msgstr "VM disk G/Ç"
 
 #: src/components/routes/system/charts/libvirt-charts.tsx
 msgid "VM Memory Usage"
-msgstr ""
+msgstr "VM bellek kullanımı"
 
 #: src/components/routes/system/charts/libvirt-charts.tsx
 msgid "VM Network"
-msgstr ""
+msgstr "VM ağı"
 
 #: src/components/routes/system.tsx
 msgid "VMs"
-msgstr ""
+msgstr "VM'ler"
 
 #: src/components/routes/system/info-bar.tsx
 #: src/components/systemd-table/systemd-table.tsx
 msgid "Vulnerabilities found"
-msgstr ""
+msgstr "Güvenlik açığı bulundu"
 
 #: src/lib/alerts.ts
 msgid "Vulnerability"
-msgstr ""
+msgstr "Güvenlik açığı"
 
 #: src/components/systemd-table/systemd-table.tsx
 msgid "Vulnerability Scan"
-msgstr ""
+msgstr "Güvenlik açığı taraması"
 
 #: src/components/routes/settings/layout.tsx
 #: src/components/vuln-scan/vuln-scan-panel.tsx
 msgid "Vulnerability Scans"
-msgstr ""
+msgstr "Güvenlik açığı taramaları"
 
 #: src/components/vuln-scan/vuln-scan-panel.tsx
 msgid "Vulns"
-msgstr ""
+msgstr "Açıklar"
 
 #. Web server connections
 #: src/components/routes/system/charts/webserver-charts.tsx
 msgid "Waiting"
-msgstr ""
+msgstr "Bekliyor"
 
 #: src/components/routes/system/chart-card.tsx
 msgid "Waiting for enough records to display"
@@ -2436,7 +2524,7 @@ msgstr "Windows komutu"
 
 #: src/components/vuln-scan/vuln-scan-panel.tsx
 msgid "With vulnerabilities"
-msgstr ""
+msgstr "Güvenlik açığı olan"
 
 #. Disk write
 #: src/components/routes/system/charts/disk-charts.tsx
@@ -2446,10 +2534,15 @@ msgstr ""
 msgid "Write"
 msgstr "Yaz"
 
+#: src/components/routes/system/charts/kvm-host-io-card.tsx
+#: src/components/routes/system/charts/kvm-host-io-card.tsx
+msgid "Write await"
+msgstr "Yazma bekleme"
+
 #. Web server connections
 #: src/components/routes/system/charts/webserver-charts.tsx
 msgid "Writing"
-msgstr ""
+msgstr "Yazma"
 
 #: src/components/routes/settings/layout.tsx
 msgid "YAML Config"

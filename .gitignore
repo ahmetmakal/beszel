@@ -23,3 +23,6 @@ agent/lhm/bin
 dockerfile_agent_dev
 .DS_Store
 internal/site/.DS_Store
+.deploy.env
+.deploy-hub.env
+.deploy-agent.env

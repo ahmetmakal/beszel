@@ -1,0 +1,9 @@
+# Optional override for local dev deploys (used by supplemental/scripts/deploy-hub.sh).
+# Copy to your server next to docker-compose.yml:
+#   cp docker-compose.override.example.yml /root/beszel/docker-compose.override.yml
+#
+# Production pulls :latest; deploy script builds and tags :dev, then restarts with this override.
+
+services:
+  beszel:
+    image: ${BESZEL_HUB_IMAGE:-ghcr.io/ahmetmakal/beszel/beszel:dev}

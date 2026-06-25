@@ -229,21 +229,23 @@ func (sys *System) createRecords(data *system.CombinedData) (*core.Record, error
 
 		// add libvirt VM records
 		if len(data.LibvirtVMs) > 0 {
+			hub.Logger().Info("libvirt VM stats received", "system", sys.Id, "count", len(data.LibvirtVMs))
 			if data.LibvirtVMs[0].Id != "" {
 				if err := createLibvirtVMRecords(txApp, data.LibvirtVMs, sys.Id); err != nil {
-					return err
+					sys.manager.hub.Logger().Error("failed to save libvirt VM records", "system", sys.Id, "err", err)
 				}
 			}
 			libvirtStatsCollection, err := txApp.FindCachedCollectionByNameOrId("libvirt_vm_stats")
 			if err != nil {
-				return err
-			}
-			libvirtStatsRecord := core.NewRecord(libvirtStatsCollection)
-			libvirtStatsRecord.Set("system", systemRecord.Id)
-			libvirtStatsRecord.Set("stats", data.LibvirtVMs)
-			libvirtStatsRecord.Set("type", "1m")
-			if err := txApp.SaveNoValidate(libvirtStatsRecord); err != nil {
-				return err
+				sys.manager.hub.Logger().Error("libvirt_vm_stats collection missing — run hub migration", "system", sys.Id, "err", err)
+			} else {
+				libvirtStatsRecord := core.NewRecord(libvirtStatsCollection)
+				libvirtStatsRecord.Set("system", systemRecord.Id)
+				libvirtStatsRecord.Set("stats", data.LibvirtVMs)
+				libvirtStatsRecord.Set("type", "1m")
+				if err := txApp.SaveNoValidate(libvirtStatsRecord); err != nil {
+					sys.manager.hub.Logger().Error("failed to save libvirt VM stats", "system", sys.Id, "err", err)
+				}
 			}
 		}
 
@@ -403,6 +405,17 @@ func createContainerRecords(app core.App, data []*container.Stats, systemId stri
 	return err
 }
 
+func libvirtMemPct(memMB float64, memMaxBytes uint64) float64 {
+	if memMaxBytes == 0 || memMB <= 0 {
+		return 0
+	}
+	maxMB := float64(memMaxBytes) / 1024 / 1024
+	if maxMB <= 0 {
+		return 0
+	}
+	return float64(int(memMB/maxMB*10000+0.5)) / 100
+}
+
 func createLibvirtVMRecords(app core.App, data []*libvirt.Stats, systemId string) error {
 	if len(data) == 0 {
 		return nil
@@ -414,25 +427,38 @@ func createLibvirtVMRecords(app core.App, data []*libvirt.Stats, systemId string
 	valueStrings := make([]string, 0, len(data))
 	for i, vm := range data {
 		suffix := fmt.Sprintf("%d", i)
-		valueStrings = append(valueStrings, fmt.Sprintf("({:id%[1]s}, {:system}, {:name%[1]s}, {:status%[1]s}, {:health%[1]s}, {:cpu%[1]s}, {:memory%[1]s}, {:net%[1]s}, {:disk%[1]s}, {:vcpus%[1]s}, {:mem_max%[1]s}, {:updated})", suffix))
+		valueStrings = append(valueStrings, fmt.Sprintf("({:id%[1]s}, {:system}, {:name%[1]s}, {:status%[1]s}, {:health%[1]s}, {:cpu%[1]s}, {:memory%[1]s}, {:net%[1]s}, {:disk%[1]s}, {:vcpus%[1]s}, {:mem_max%[1]s}, {:memory_pct%[1]s}, {:net_rx%[1]s}, {:net_wx%[1]s}, {:disk_read%[1]s}, {:disk_write%[1]s}, {:disk_iops%[1]s}, {:ip%[1]s}, {:bridge%[1]s}, {:uptime%[1]s}, {:disk_cap%[1]s}, {:updated})", suffix))
 		params["id"+suffix] = vm.Id
 		params["name"+suffix] = vm.Name
 		params["status"+suffix] = vm.Status
 		params["health"+suffix] = vm.Health
 		params["cpu"+suffix] = vm.Cpu
 		params["memory"+suffix] = vm.Mem
-		netBytes := vm.Bandwidth[0] + vm.Bandwidth[1]
-		params["net"+suffix] = netBytes
-		params["disk"+suffix] = vm.DiskSum
 		params["vcpus"+suffix] = vm.Vcpus
 		memMaxMB := float64(0)
 		if vm.MemMax > 0 {
 			memMaxMB = float64(vm.MemMax) / 1024 / 1024
 		}
 		params["mem_max"+suffix] = memMaxMB
+		params["memory_pct"+suffix] = libvirtMemPct(vm.Mem, vm.MemMax)
+		params["net"+suffix] = vm.Bandwidth[0] + vm.Bandwidth[1]
+		params["net_rx"+suffix] = vm.Bandwidth[1]
+		params["net_wx"+suffix] = vm.Bandwidth[0]
+		params["disk"+suffix] = vm.Disk[0] + vm.Disk[1]
+		params["disk_read"+suffix] = vm.Disk[0]
+		params["disk_write"+suffix] = vm.Disk[1]
+		params["disk_iops"+suffix] = vm.DiskIops[0] + vm.DiskIops[1]
+		params["ip"+suffix] = vm.Ip
+		params["bridge"+suffix] = vm.Bridge
+		params["uptime"+suffix] = vm.UptimeSec
+		diskCapGB := float64(0)
+		if vm.DiskCap > 0 {
+			diskCapGB = float64(vm.DiskCap) / 1024 / 1024 / 1024
+		}
+		params["disk_cap"+suffix] = diskCapGB
 	}
 	queryString := fmt.Sprintf(
-		"INSERT INTO libvirt_vms (id, system, name, status, health, cpu, memory, net, disk, vcpus, mem_max, updated) VALUES %s ON CONFLICT(id) DO UPDATE SET system = excluded.system, name = excluded.name, status = excluded.status, health = excluded.health, cpu = excluded.cpu, memory = excluded.memory, net = excluded.net, disk = excluded.disk, vcpus = excluded.vcpus, mem_max = excluded.mem_max, updated = excluded.updated",
+		"INSERT INTO libvirt_vms (id, system, name, status, health, cpu, memory, net, disk, vcpus, mem_max, memory_pct, net_rx, net_wx, disk_read, disk_write, disk_iops, ip, bridge, uptime, disk_cap, updated) VALUES %s ON CONFLICT(id) DO UPDATE SET system = excluded.system, name = excluded.name, status = excluded.status, health = excluded.health, cpu = excluded.cpu, memory = excluded.memory, net = excluded.net, disk = excluded.disk, vcpus = excluded.vcpus, mem_max = excluded.mem_max, memory_pct = excluded.memory_pct, net_rx = excluded.net_rx, net_wx = excluded.net_wx, disk_read = excluded.disk_read, disk_write = excluded.disk_write, disk_iops = excluded.disk_iops, ip = excluded.ip, bridge = excluded.bridge, uptime = excluded.uptime, disk_cap = excluded.disk_cap, updated = excluded.updated",
 		strings.Join(valueStrings, ","),
 	)
 	_, err := app.DB().NewQuery(queryString).Bind(params).Execute()
@@ -590,6 +616,11 @@ func (sys *System) fetchDataViaWebSocket(options common.DataRequestOptions) (*sy
 		return nil, errors.New("no websocket connection")
 	}
 	wsTransport := transport.NewWebSocketTransport(sys.WsConn)
+	if sys.data == nil {
+		sys.data = &system.CombinedData{}
+	}
+	sys.data.LibvirtVMs = nil
+	sys.data.Containers = nil
 	err := wsTransport.Request(context.Background(), common.GetData, options, sys.data)
 	if err != nil {
 		return nil, err

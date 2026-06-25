@@ -6,8 +6,32 @@ import { cn, decimalString, formatBytes } from "@/lib/utils"
 import type { LibvirtVMRecord } from "@/types"
 import { ContainerHealth, ContainerHealthLabels } from "@/lib/enums"
 import { Badge } from "../ui/badge"
-import { CpuIcon, HardDriveIcon, MemoryStickIcon, ServerIcon, ShieldCheckIcon } from "lucide-react"
+import {
+	CpuIcon,
+	GaugeIcon,
+	HardDriveIcon,
+	MemoryStickIcon,
+	ServerIcon,
+	ShieldCheckIcon,
+	ClockIcon,
+	GlobeIcon,
+} from "lucide-react"
 import { EthernetIcon } from "../ui/icons"
+
+function formatRateBytes(val: number) {
+	const f = formatBytes(val, true, undefined, false)
+	return `${decimalString(f.value, f.value >= 10 ? 1 : 2)} ${f.unit}`
+}
+
+function formatUptime(seconds: number) {
+	if (!seconds || seconds <= 0) return "—"
+	const d = Math.floor(seconds / 86400)
+	const h = Math.floor((seconds % 86400) / 3600)
+	const m = Math.floor((seconds % 3600) / 60)
+	if (d > 0) return `${d}d ${h}h`
+	if (h > 0) return `${h}h ${m}m`
+	return `${m}m`
+}
 
 export const vmTableCols: ColumnDef<LibvirtVMRecord>[] = [
 	{
@@ -15,71 +39,26 @@ export const vmTableCols: ColumnDef<LibvirtVMRecord>[] = [
 		sortingFn: (a, b) => a.original.name.localeCompare(b.original.name),
 		accessorFn: (record) => record.name,
 		header: ({ column }) => <HeaderButton column={column} name={t`Name`} Icon={ServerIcon} />,
-		cell: ({ getValue }) => <span className="ms-1.5 xl:w-48 block truncate">{getValue() as string}</span>,
+		cell: ({ getValue }) => <span className="ms-1.5 xl:w-40 block truncate">{getValue() as string}</span>,
 	},
 	{
-		id: "cpu",
-		accessorFn: (record) => record.cpu,
-		invertSorting: true,
-		header: ({ column }) => <HeaderButton column={column} name={t`CPU`} Icon={CpuIcon} />,
+		id: "status",
+		accessorFn: (record) => record.status,
+		header: ({ column }) => <HeaderButton column={column} name={t`Status`} Icon={ServerIcon} />,
 		cell: ({ getValue }) => {
-			const val = getValue() as number
-			return <span className="ms-1 tabular-nums">{`${decimalString(val, val >= 10 ? 1 : 2)}%`}</span>
-		},
-	},
-	{
-		id: "memory",
-		accessorFn: (record) => record.memory,
-		invertSorting: true,
-		header: ({ column }) => <HeaderButton column={column} name={t`Memory`} Icon={MemoryStickIcon} />,
-		cell: ({ getValue, row }) => {
-			const val = getValue() as number
-			const formatted = formatBytes(val, false, undefined, true)
-			const max = row.original.mem_max
-			if (max > 0) {
-				const maxFmt = formatBytes(max, false, undefined, true)
-				return (
-					<span className="ms-1 tabular-nums">
-						{`${decimalString(formatted.value, formatted.value >= 10 ? 1 : 2)} ${formatted.unit}`}
-						<span className="text-muted-foreground">{` / ${decimalString(maxFmt.value, 1)} ${maxFmt.unit}`}</span>
-					</span>
-				)
-			}
+			const status = getValue() as string
+			const blocked = status === "blocked"
 			return (
-				<span className="ms-1 tabular-nums">{`${decimalString(formatted.value, formatted.value >= 10 ? 1 : 2)} ${formatted.unit}`}</span>
+				<span
+					className={cn(
+						"ms-1 capitalize",
+						blocked && "text-amber-600 dark:text-amber-400 font-medium"
+					)}
+				>
+					{status}
+				</span>
 			)
 		},
-	},
-	{
-		id: "net",
-		accessorFn: (record) => record.net,
-		invertSorting: true,
-		header: ({ column }) => <HeaderButton column={column} name={t`Net`} Icon={EthernetIcon} />,
-		cell: ({ getValue }) => {
-			const formatted = formatBytes(getValue() as number, true, undefined, false)
-			return (
-				<div className="ms-1 tabular-nums">{`${decimalString(formatted.value, formatted.value >= 10 ? 1 : 2)} ${formatted.unit}`}</div>
-			)
-		},
-	},
-	{
-		id: "disk",
-		accessorFn: (record) => record.disk,
-		invertSorting: true,
-		header: ({ column }) => <HeaderButton column={column} name={t`Disk I/O`} Icon={HardDriveIcon} />,
-		cell: ({ getValue }) => {
-			const formatted = formatBytes(getValue() as number, true, undefined, false)
-			return (
-				<div className="ms-1 tabular-nums">{`${decimalString(formatted.value, formatted.value >= 10 ? 1 : 2)} ${formatted.unit}`}</div>
-			)
-		},
-	},
-	{
-		id: "vcpus",
-		accessorFn: (record) => record.vcpus,
-		invertSorting: true,
-		header: ({ column }) => <HeaderButton column={column} name={t`vCPUs`} Icon={CpuIcon} />,
-		cell: ({ getValue }) => <span className="ms-1 tabular-nums">{getValue() as number}</span>,
 	},
 	{
 		id: "health",
@@ -105,10 +84,128 @@ export const vmTableCols: ColumnDef<LibvirtVMRecord>[] = [
 		},
 	},
 	{
-		id: "status",
-		accessorFn: (record) => record.status,
-		header: ({ column }) => <HeaderButton column={column} name={t`Status`} Icon={ServerIcon} />,
-		cell: ({ getValue }) => <span className="ms-1 capitalize">{getValue() as string}</span>,
+		id: "cpu",
+		accessorFn: (record) => record.cpu,
+		invertSorting: true,
+		header: ({ column }) => <HeaderButton column={column} name={t`CPU`} Icon={CpuIcon} />,
+		cell: ({ getValue }) => {
+			const val = getValue() as number
+			return <span className="ms-1 tabular-nums">{`${decimalString(val, val >= 10 ? 1 : 2)}%`}</span>
+		},
+	},
+	{
+		id: "vcpus",
+		accessorFn: (record) => record.vcpus,
+		invertSorting: true,
+		header: ({ column }) => <HeaderButton column={column} name={t`vCPUs`} Icon={CpuIcon} />,
+		cell: ({ getValue }) => <span className="ms-1 tabular-nums">{getValue() as number}</span>,
+	},
+	{
+		id: "memory",
+		accessorFn: (record) => record.memory,
+		invertSorting: true,
+		header: ({ column }) => <HeaderButton column={column} name={t`Memory`} Icon={MemoryStickIcon} />,
+		cell: ({ getValue, row }) => {
+			const val = getValue() as number
+			const formatted = formatBytes(val, false, undefined, true)
+			const max = row.original.mem_max
+			if (max > 0) {
+				const maxFmt = formatBytes(max, false, undefined, true)
+				return (
+					<span className="ms-1 tabular-nums">
+						{`${decimalString(formatted.value, formatted.value >= 10 ? 1 : 2)} ${formatted.unit}`}
+						<span className="text-muted-foreground">{` / ${decimalString(maxFmt.value, 1)} ${maxFmt.unit}`}</span>
+					</span>
+				)
+			}
+			return (
+				<span className="ms-1 tabular-nums">{`${decimalString(formatted.value, formatted.value >= 10 ? 1 : 2)} ${formatted.unit}`}</span>
+			)
+		},
+	},
+	{
+		id: "memory_pct",
+		accessorFn: (record) => {
+			if (record.memory_pct && record.memory_pct > 0) return record.memory_pct
+			if (record.mem_max > 0 && record.memory > 0) {
+				return (record.memory / record.mem_max) * 100
+			}
+			return 0
+		},
+		invertSorting: true,
+		header: ({ column }) => <HeaderButton column={column} name={t`Mem %`} Icon={GaugeIcon} />,
+		cell: ({ getValue }) => {
+			const val = getValue() as number
+			return <span className="ms-1 tabular-nums">{val > 0 ? `${decimalString(val, val >= 10 ? 1 : 2)}%` : "—"}</span>
+		},
+	},
+	{
+		id: "net_rx",
+		accessorFn: (record) => record.net_rx ?? 0,
+		invertSorting: true,
+		header: ({ column }) => <HeaderButton column={column} name={t`Net ↓`} Icon={EthernetIcon} />,
+		cell: ({ getValue }) => <div className="ms-1 tabular-nums">{formatRateBytes(getValue() as number)}</div>,
+	},
+	{
+		id: "net_wx",
+		accessorFn: (record) => record.net_wx ?? 0,
+		invertSorting: true,
+		header: ({ column }) => <HeaderButton column={column} name={t`Net ↑`} Icon={EthernetIcon} />,
+		cell: ({ getValue }) => <div className="ms-1 tabular-nums">{formatRateBytes(getValue() as number)}</div>,
+	},
+	{
+		id: "disk_io",
+		accessorFn: (record) => record.disk ?? (record.disk_read ?? 0) + (record.disk_write ?? 0),
+		invertSorting: true,
+		header: ({ column }) => <HeaderButton column={column} name={t`Disk I/O`} Icon={HardDriveIcon} />,
+		cell: ({ getValue }) => <div className="ms-1 tabular-nums">{formatRateBytes(getValue() as number)}</div>,
+	},
+	{
+		id: "disk_write",
+		accessorFn: (record) => record.disk_write ?? 0,
+		invertSorting: true,
+		header: ({ column }) => <HeaderButton column={column} name={t`Disk W`} Icon={HardDriveIcon} />,
+		cell: ({ getValue }) => <div className="ms-1 tabular-nums">{formatRateBytes(getValue() as number)}</div>,
+	},
+	{
+		id: "disk_iops",
+		accessorFn: (record) => record.disk_iops ?? 0,
+		invertSorting: true,
+		header: ({ column }) => <HeaderButton column={column} name={t`IOPS`} Icon={HardDriveIcon} />,
+		cell: ({ getValue }) => {
+			const val = getValue() as number
+			return <div className="ms-1 tabular-nums">{val > 0 ? decimalString(val, val >= 100 ? 0 : 1) : "—"}</div>
+		},
+	},
+	{
+		id: "ip",
+		accessorFn: (record) => record.ip ?? "",
+		header: ({ column }) => <HeaderButton column={column} name={t`IP`} Icon={GlobeIcon} />,
+		cell: ({ getValue }) => <span className="ms-1 font-mono text-xs">{getValue() as string || "—"}</span>,
+	},
+	{
+		id: "bridge",
+		accessorFn: (record) => record.bridge ?? "",
+		header: ({ column }) => <HeaderButton column={column} name={t`Bridge`} Icon={EthernetIcon} />,
+		cell: ({ getValue }) => <span className="ms-1">{getValue() as string || "—"}</span>,
+	},
+	{
+		id: "uptime",
+		accessorFn: (record) => record.uptime ?? 0,
+		invertSorting: true,
+		header: ({ column }) => <HeaderButton column={column} name={t`Uptime`} Icon={ClockIcon} />,
+		cell: ({ getValue }) => <span className="ms-1 tabular-nums">{formatUptime(getValue() as number)}</span>,
+	},
+	{
+		id: "disk_cap",
+		accessorFn: (record) => record.disk_cap ?? 0,
+		invertSorting: true,
+		header: ({ column }) => <HeaderButton column={column} name={t`Disk`} Icon={HardDriveIcon} />,
+		cell: ({ getValue }) => {
+			const gb = getValue() as number
+			if (gb <= 0) return <span className="ms-1">—</span>
+			return <span className="ms-1 tabular-nums">{`${decimalString(gb, gb >= 10 ? 1 : 2)} GB`}</span>
+		},
 	},
 ]
 

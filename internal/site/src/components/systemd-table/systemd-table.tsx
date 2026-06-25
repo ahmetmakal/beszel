@@ -15,7 +15,7 @@ import {
 import { useVirtualizer, type VirtualItem } from "@tanstack/react-virtual"
 import { ExternalLinkIcon, LoaderCircleIcon, ShieldAlertIcon, ShieldCheckIcon, ShieldQuestionIcon } from "lucide-react"
 import { listenKeys } from "nanostores"
-import { memo, type ReactNode, useEffect, useMemo, useRef, useState } from "react"
+import { memo, type ReactNode, useCallback, useEffect, useMemo, useRef, useState } from "react"
 import { getStatusColor, createSystemdTableCols } from "@/components/systemd-table/systemd-table-columns"
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert"
 import { Card, CardHeader, CardTitle } from "@/components/ui/card"
@@ -170,13 +170,13 @@ export default function SystemdTable({ systemId }: { systemId?: string }) {
 		return totals
 	}, [data])
 
-	function refreshVulnData() {
+	const refreshVulnData = useCallback(() => {
 		if (!systemId) return Promise.resolve()
 		return pb.send<SystemdPackagesResponse>("/api/beszel/systemd/packages", { query: { system: systemId } }).then((resp) => {
 			setPkgMap(resp.services ?? {})
 			setVulnData(resp.vulns ?? null)
 		})
-	}
+	}, [systemId])
 
 	if (!data.length && !globalFilter) {
 		return null

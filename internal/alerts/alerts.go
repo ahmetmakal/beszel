@@ -47,6 +47,8 @@ type SystemAlertFsStats struct {
 
 // Values pulled from system_stats.stats that are relevant to alerts.
 type SystemAlertStats struct {
+	CpuBreakdown []float64                     `json:"cpub,omitempty"`
+	DiskIoStats  [6]float64                    `json:"dios,omitempty"`
 	Cpu          float64                       `json:"cpu"`
 	Mem          float64                       `json:"mp"`
 	Disk         float64                       `json:"dp"`

@@ -20,6 +20,7 @@ ProtectHome=read-only
 ProtectHostname=yes
 ProtectKernelLogs=yes
 ProtectSystem=strict
+ReadOnlyPaths=/run/libvirt /var/run/libvirt /sys/fs/cgroup /sys/class/net
 RemoveIPC=yes
 RestrictSUIDSGID=true
 

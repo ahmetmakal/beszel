@@ -10,7 +10,7 @@ import {
 	ShieldCheckIcon,
 	ShieldQuestionIcon,
 } from "lucide-react"
-import { useCallback, useEffect, useState } from "react"
+import { useCallback, useEffect, useRef, useState } from "react"
 import { $router } from "@/components/router"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
@@ -111,40 +111,115 @@ function eventLabel(action: string) {
 	}
 }
 
+function shouldNotifyOverviewUpdate(
+	prev: VulnScanOverview | null,
+	next: VulnScanOverview,
+	systemId?: string
+): boolean {
+	if (!systemId) {
+		return false
+	}
+	const before = prev?.systems[0]
+	const after = next.systems[0]
+	if (!after) {
+		return false
+	}
+	if (!before) {
+		return true
+	}
+	return (
+		before.status !== after.status ||
+		before.scannedAt !== after.scannedAt ||
+		before.packageCount !== after.packageCount ||
+		before.vulnerableServices !== after.vulnerableServices ||
+		before.kernelVulnerable !== after.kernelVulnerable ||
+		before.running !== after.running ||
+		before.queued !== after.queued
+	)
+}
+
+function isScanActive(overview: VulnScanOverview | null, systemId?: string): boolean {
+	if (!overview) {
+		return false
+	}
+	if (overview.queue.some((q) => q.running || q.queued)) {
+		return true
+	}
+	if (systemId) {
+		const system = overview.systems[0]
+		return !!system?.running || !!system?.queued
+	}
+	return overview.systems.some((s) => s.running || s.queued)
+}
+
 export function VulnScanPanel({
 	systemId,
 	compact = false,
 	showSystemsTable = true,
 	onOverviewUpdate,
+	liveUpdates,
 }: {
 	systemId?: string
 	compact?: boolean
 	showSystemsTable?: boolean
 	onOverviewUpdate?: () => void
+	/** Poll overview API automatically (default: full panel yes, compact no unless scan running) */
+	liveUpdates?: boolean
 }) {
 	const [overview, setOverview] = useState<VulnScanOverview | null>(null)
 	const [loading, setLoading] = useState(true)
 	const [scanning, setScanning] = useState(false)
+	const onOverviewUpdateRef = useRef(onOverviewUpdate)
+	onOverviewUpdateRef.current = onOverviewUpdate
 
-	const fetchOverview = useCallback(async () => {
+	const fetchOverview = useCallback(async (isInitial = false) => {
 		try {
 			const res = await pb.send<VulnScanOverview>("/api/beszel/vulnerabilities/overview", {
 				query: systemId ? { system: systemId } : undefined,
 			})
-			setOverview(normalizeOverview(res))
-			onOverviewUpdate?.()
+			const next = normalizeOverview(res)
+			setOverview((prev) => {
+				if (shouldNotifyOverviewUpdate(prev, next, systemId)) {
+					onOverviewUpdateRef.current?.()
+				}
+				return next
+			})
 		} catch {
 			setOverview(null)
 		} finally {
-			setLoading(false)
+			if (isInitial) {
+				setLoading(false)
+			}
 		}
-	}, [systemId, onOverviewUpdate])
+	}, [systemId])
 
 	useEffect(() => {
-		fetchOverview()
-		const interval = setInterval(fetchOverview, 4000)
-		return () => clearInterval(interval)
+		setLoading(true)
+		setOverview(null)
+		fetchOverview(true)
 	}, [fetchOverview])
+
+	useEffect(() => {
+		const pollEnabled = liveUpdates ?? !compact
+		if (!pollEnabled) {
+			return
+		}
+		const intervalMs = compact ? 8000 : 4000
+		const id = setInterval(() => fetchOverview(), intervalMs)
+		return () => clearInterval(id)
+	}, [compact, fetchOverview, liveUpdates])
+
+	// Compact server view: poll only while a scan is queued or running
+	useEffect(() => {
+		if (!compact || liveUpdates === true) {
+			return
+		}
+		if (!isScanActive(overview, systemId)) {
+			return
+		}
+		const id = setInterval(() => fetchOverview(), 5000)
+		return () => clearInterval(id)
+	}, [compact, fetchOverview, liveUpdates, overview, systemId])
 
 	async function triggerScan(targetSystemId?: string) {
 		setScanning(true)
@@ -205,7 +280,7 @@ export function VulnScanPanel({
 			)}
 
 			{compact && system && (
-				<div className="rounded-lg border bg-muted/20 px-3 py-2.5 text-sm space-y-1.5">
+				<div className="rounded-lg border bg-muted/20 px-3 py-2.5 text-sm space-y-1.5 min-h-[4.25rem]">
 					<div className="flex flex-wrap items-center gap-2">
 						{statusBadge(system.status)}
 						{system.vulnerableServices > 0 && (

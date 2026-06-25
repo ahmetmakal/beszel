@@ -15,27 +15,34 @@ type Stats struct {
 	Name      string    `json:"n" cbor:"0,keyasint"`
 	Cpu       float64   `json:"c" cbor:"1,keyasint"`
 	Mem       float64   `json:"m" cbor:"2,keyasint"` // megabytes used
-	Bandwidth [2]uint64 `json:"b,omitzero" cbor:"3,keyasint,omitzero"`
-	Disk      [2]uint64 `json:"d,omitzero" cbor:"4,keyasint,omitzero"` // cumulative read/write bytes
+	Bandwidth [2]uint64 `json:"b,omitzero" cbor:"3,keyasint,omitzero"`   // tx, rx bytes per interval
+	Disk      [2]uint64 `json:"d,omitzero" cbor:"4,keyasint,omitzero"`   // read, write bytes per interval
+	DiskIops  [2]uint64 `json:"i,omitzero" cbor:"10,keyasint,omitzero"`  // read, write ops per interval
 
-	Health  VmHealth `json:"-" cbor:"5,keyasint"`
-	Status  string   `json:"-" cbor:"6,keyasint"`
-	Id      string   `json:"-" cbor:"7,keyasint"`
-	Vcpus   uint16   `json:"-" cbor:"8,keyasint,omitempty"`
-	MemMax  uint64   `json:"-" cbor:"9,keyasint,omitempty"` // bytes
-	DiskSum uint64   `json:"-" cbor:"-"`                    // read+write for table sorting
+	Health     VmHealth `json:"-" cbor:"5,keyasint"`
+	Status     string   `json:"-" cbor:"6,keyasint"`
+	Id         string   `json:"-" cbor:"7,keyasint"`
+	Vcpus      uint16   `json:"-" cbor:"8,keyasint,omitempty"`
+	MemMax     uint64   `json:"-" cbor:"9,keyasint,omitempty"` // bytes
+	MemPct     float64  `json:"-" cbor:"-"`
+	Ip         string   `json:"-" cbor:"11,keyasint,omitempty"`
+	Bridge     string   `json:"-" cbor:"12,keyasint,omitempty"`
+	UptimeSec  uint64   `json:"-" cbor:"13,keyasint,omitempty"`
+	DiskCap    uint64   `json:"-" cbor:"14,keyasint,omitempty"` // image bytes
+	DiskSum    uint64   `json:"-" cbor:"-"`
+	NetSum     uint64   `json:"-" cbor:"-"`
+	DiskIopsSum uint64  `json:"-" cbor:"-"`
 
-	// agent-only counters
 	CpuUsage uint64 `json:"-"`
 }
 
 func HealthFromState(state int) VmHealth {
 	switch state {
-	case 1: // running
+	case 1:
 		return HealthHealthy
-	case 2, 3: // blocked, paused
+	case 2, 3:
 		return HealthStarting
-	case 6, 7: // crashed, pm suspended
+	case 6, 7:
 		return HealthUnhealthy
 	default:
 		return HealthNone

@@ -664,6 +664,8 @@ func (rm *RecordManager) AverageLibvirtVMStats(db dbx.Builder, records RecordIds
 			sums[stat.Name].Bandwidth[1] += stat.Bandwidth[1]
 			sums[stat.Name].Disk[0] += stat.Disk[0]
 			sums[stat.Name].Disk[1] += stat.Disk[1]
+			sums[stat.Name].DiskIops[0] += stat.DiskIops[0]
+			sums[stat.Name].DiskIops[1] += stat.DiskIops[1]
 		}
 	}
 
@@ -680,6 +682,10 @@ func (rm *RecordManager) AverageLibvirtVMStats(db dbx.Builder, records RecordIds
 			Disk: [2]uint64{
 				uint64(float64(value.Disk[0]) / count),
 				uint64(float64(value.Disk[1]) / count),
+			},
+			DiskIops: [2]uint64{
+				uint64(float64(value.DiskIops[0]) / count),
+				uint64(float64(value.DiskIops[1]) / count),
 			},
 		})
 	}

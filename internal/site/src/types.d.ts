@@ -176,6 +176,7 @@ export interface LibvirtVMStats {
 	m: number
 	b?: [number, number]
 	d?: [number, number]
+	i?: [number, number]
 }
 
 export interface LibvirtVMStatsRecord extends RecordModel {
@@ -196,6 +197,16 @@ export interface LibvirtVMRecord extends RecordModel {
 	disk: number
 	vcpus: number
 	mem_max: number
+	memory_pct?: number
+	net_rx?: number
+	net_wx?: number
+	disk_read?: number
+	disk_write?: number
+	disk_iops?: number
+	ip?: string
+	bridge?: string
+	uptime?: number
+	disk_cap?: number
 	updated: number
 }
 

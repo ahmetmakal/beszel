@@ -213,6 +213,10 @@ msgstr "All Systems"
 msgid "All vulnerabilities"
 msgstr "All vulnerabilities"
 
+#: src/lib/alerts.ts
+msgid "Any VM blocked"
+msgstr "Any VM blocked"
+
 #: src/components/systems-table/systems-table-columns.tsx
 msgid "Are you sure you want to delete {name}?"
 msgstr "Are you sure you want to delete {name}?"
@@ -333,9 +337,17 @@ msgstr "Binary"
 msgid "Bits (Kbps, Mbps, Gbps)"
 msgstr "Bits (Kbps, Mbps, Gbps)"
 
+#: src/lib/alerts.ts
+msgid "Blocked VM"
+msgstr "Blocked VM"
+
 #: src/components/systemd-table/systemd-table.tsx
 msgid "Boot state"
 msgstr "Boot state"
+
+#: src/components/vms-table/vms-table-columns.tsx
+msgid "Bridge"
+msgstr "Bridge"
 
 #: src/components/routes/system/charts/mysql-charts.tsx
 msgid "Buffer pool and key cache hit rates"
@@ -581,6 +593,10 @@ msgstr "CPU"
 msgid "CPU Cores"
 msgstr "CPU Cores"
 
+#: src/components/routes/system/charts/kvm-host-io-card.tsx
+msgid "CPU I/O wait and disk latency on the hypervisor — common KVM bottleneck signals"
+msgstr "CPU I/O wait and disk latency on the hypervisor — common KVM bottleneck signals"
+
 #: src/components/systemd-table/systemd-table-columns.tsx
 msgid "CPU Peak"
 msgstr "CPU Peak"
@@ -684,13 +700,26 @@ msgstr "Discharging"
 
 #: src/components/routes/system.tsx
 #: src/components/systems-table/systems-table-columns.tsx
+#: src/components/vms-table/vms-table-columns.tsx
 msgid "Disk"
 msgstr "Disk"
+
+#: src/lib/alerts.ts
+msgid "Disk Await"
+msgstr "Disk Await"
 
 #: src/components/routes/system/charts/disk-charts.tsx
 #: src/components/vms-table/vms-table-columns.tsx
 msgid "Disk I/O"
 msgstr "Disk I/O"
+
+#: src/components/vms-table/vms-table-columns.tsx
+#~ msgid "Disk R"
+#~ msgstr "Disk R"
+
+#: src/components/routes/system/charts/libvirt-charts.tsx
+msgid "Disk read and write throughput of virtual machines"
+msgstr "Disk read and write throughput of virtual machines"
 
 #: src/components/routes/settings/general.tsx
 msgid "Disk unit"
@@ -705,6 +734,10 @@ msgstr "Disk Usage"
 #: src/components/routes/system/charts/disk-charts.tsx
 msgid "Disk usage of {extraFsName}"
 msgstr "Disk usage of {extraFsName}"
+
+#: src/components/vms-table/vms-table-columns.tsx
+msgid "Disk W"
+msgstr "Disk W"
 
 #: src/components/routes/system/info-bar.tsx
 msgctxt "Layout display options"
@@ -1006,6 +1039,10 @@ msgstr "Heartbeat sent successfully"
 msgid "HIGH and CRITICAL vulnerabilities"
 msgstr "HIGH and CRITICAL vulnerabilities"
 
+#: src/components/routes/system/charts/kvm-host-io-card.tsx
+msgid "High I/O wait or disk await often points to storage pressure affecting VMs on this host."
+msgstr "High I/O wait or disk await often points to storage pressure affecting VMs on this host."
+
 #: src/components/add-system.tsx
 #: src/components/routes/settings/tokens-fingerprints.tsx
 msgctxt "Button to copy install command"
@@ -1015,6 +1052,10 @@ msgstr "Homebrew command"
 #: src/components/add-system.tsx
 msgid "Host / IP"
 msgstr "Host / IP"
+
+#: src/components/routes/system/charts/kvm-host-io-card.tsx
+msgid "Host I/O Stall Indicators"
+msgstr "Host I/O Stall Indicators"
 
 #: src/components/routes/settings/heartbeat.tsx
 msgid "HTTP Method"
@@ -1038,6 +1079,12 @@ msgstr "I/O Time"
 msgctxt "Percent of time the disk is busy with I/O"
 msgid "I/O Utilization"
 msgstr "I/O Utilization"
+
+#: src/components/routes/system/charts/kvm-host-io-card.tsx
+#: src/components/routes/system/charts/kvm-host-io-card.tsx
+#: src/lib/alerts.ts
+msgid "I/O Wait"
+msgstr "I/O Wait"
 
 #: src/components/routes/system/info-bar.tsx
 #: src/components/systemd-table/systemd-table.tsx
@@ -1075,6 +1122,14 @@ msgstr "Interval"
 #: src/components/login/auth-form.tsx
 msgid "Invalid email address."
 msgstr "Invalid email address."
+
+#: src/components/vms-table/vms-table-columns.tsx
+msgid "IOPS"
+msgstr "IOPS"
+
+#: src/components/vms-table/vms-table-columns.tsx
+msgid "IP"
+msgstr "IP"
 
 #: src/components/routes/system/info-bar.tsx
 msgid "Kernel"
@@ -1235,6 +1290,10 @@ msgstr "Max 1 min"
 msgid "MEDIUM, HIGH and CRITICAL vulnerabilities"
 msgstr "MEDIUM, HIGH and CRITICAL vulnerabilities"
 
+#: src/components/vms-table/vms-table-columns.tsx
+msgid "Mem %"
+msgstr "Mem %"
+
 #: src/components/containers-table/containers-table-columns.tsx
 #: src/components/routes/system/info-bar.tsx
 #: src/components/systemd-table/systemd-table-columns.tsx
@@ -1294,9 +1353,16 @@ msgstr "Name"
 
 #: src/components/containers-table/containers-table-columns.tsx
 #: src/components/systems-table/systems-table-columns.tsx
-#: src/components/vms-table/vms-table-columns.tsx
 msgid "Net"
 msgstr "Net"
+
+#: src/components/vms-table/vms-table-columns.tsx
+msgid "Net ↑"
+msgstr "Net ↑"
+
+#: src/components/vms-table/vms-table-columns.tsx
+msgid "Net ↓"
+msgstr "Net ↓"
 
 #: src/components/routes/system/charts/network-charts.tsx
 msgid "Network traffic of docker containers"
@@ -1621,6 +1687,11 @@ msgstr "Quiet Hours"
 #: src/components/routes/system/disk-io-sheet.tsx
 msgid "Read"
 msgstr "Read"
+
+#: src/components/routes/system/charts/kvm-host-io-card.tsx
+#: src/components/routes/system/charts/kvm-host-io-card.tsx
+msgid "Read await"
+msgstr "Read await"
 
 #. Web server connections
 #: src/components/routes/system/charts/webserver-charts.tsx
@@ -2180,6 +2251,10 @@ msgid "Triggers when a monitored service is no longer active"
 msgstr "Triggers when a monitored service is no longer active"
 
 #: src/lib/alerts.ts
+msgid "Triggers when any libvirt/KVM VM enters blocked state"
+msgstr "Triggers when any libvirt/KVM VM enters blocked state"
+
+#: src/lib/alerts.ts
 msgid "Triggers when any sensor exceeds a threshold"
 msgstr "Triggers when any sensor exceeds a threshold"
 
@@ -2192,8 +2267,16 @@ msgid "Triggers when combined up/down exceeds a threshold"
 msgstr "Triggers when combined up/down exceeds a threshold"
 
 #: src/lib/alerts.ts
+msgid "Triggers when CPU I/O wait exceeds a threshold (hypervisor disk bottleneck signal)"
+msgstr "Triggers when CPU I/O wait exceeds a threshold (hypervisor disk bottleneck signal)"
+
+#: src/lib/alerts.ts
 msgid "Triggers when CPU usage exceeds a threshold"
 msgstr "Triggers when CPU usage exceeds a threshold"
+
+#: src/lib/alerts.ts
+msgid "Triggers when disk read or write await exceeds a threshold"
+msgstr "Triggers when disk read or write await exceeds a threshold"
 
 #: src/lib/alerts.ts
 msgid "Triggers when GPU usage exceeds a threshold"
@@ -2283,6 +2366,7 @@ msgstr "Upload"
 
 #: src/components/routes/system/info-bar.tsx
 #: src/components/systems-table/systems-table-columns.tsx
+#: src/components/vms-table/vms-table-columns.tsx
 msgid "Uptime"
 msgstr "Uptime"
 
@@ -2351,6 +2435,10 @@ msgstr "Visible Fields"
 #: src/components/routes/system/charts/libvirt-charts.tsx
 msgid "VM CPU Usage"
 msgstr "VM CPU Usage"
+
+#: src/components/routes/system/charts/libvirt-charts.tsx
+msgid "VM Disk I/O"
+msgstr "VM Disk I/O"
 
 #: src/components/routes/system/charts/libvirt-charts.tsx
 msgid "VM Memory Usage"
@@ -2440,6 +2528,11 @@ msgstr "With vulnerabilities"
 #: src/components/routes/system/disk-io-sheet.tsx
 msgid "Write"
 msgstr "Write"
+
+#: src/components/routes/system/charts/kvm-host-io-card.tsx
+#: src/components/routes/system/charts/kvm-host-io-card.tsx
+msgid "Write await"
+msgstr "Write await"
 
 #. Web server connections
 #: src/components/routes/system/charts/webserver-charts.tsx

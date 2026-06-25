@@ -55,6 +55,7 @@ type hubLike interface {
 	HandleSystemAlerts(systemRecord *core.Record, data *system.CombinedData) error
 	HandleStatusAlerts(status string, systemRecord *core.Record) error
 	HandleServiceAlerts(systemRecord *core.Record) error
+	HandleLibvirtAlerts(systemRecord *core.Record) error
 	CancelPendingStatusAlerts(systemID string)
 	ScheduleVulnScanForSystem(systemID string)
 }
@@ -220,6 +221,9 @@ func (sm *SystemManager) onRecordAfterUpdateSuccess(e *core.RecordEvent) error {
 		}
 		if err := sm.hub.HandleServiceAlerts(e.Record); err != nil {
 			e.App.Logger().Error("Error handling service alerts", "err", err)
+		}
+		if err := sm.hub.HandleLibvirtAlerts(e.Record); err != nil {
+			e.App.Logger().Error("Error handling libvirt alerts", "err", err)
 		}
 	}
 

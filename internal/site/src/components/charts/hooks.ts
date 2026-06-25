@@ -12,7 +12,9 @@ export interface ContainerChartConfigs {
 	network: ChartConfig
 }
 
-export type VMChartConfigs = ContainerChartConfigs
+export type VMChartConfigs = ContainerChartConfigs & {
+	disk: ChartConfig
+}
 
 function buildMetricChartConfigs(
 	dataSeries: ChartData["containerData"] | ChartData["vmData"],
@@ -73,8 +75,28 @@ export function useContainerChartConfigs(containerData: ChartData["containerData
 	)
 }
 
+function buildDiskChartConfig(vmData: ChartData["vmData"]): ChartConfig {
+	const usage = new Map<string, number>()
+	for (const stats of vmData) {
+		for (const name of Object.keys(stats)) {
+			if (name === "created") continue
+			const vm = stats[name]
+			if (!vm) continue
+			usage.set(name, (usage.get(name) ?? 0) + (vm.d?.[0] ?? 0) + (vm.d?.[1] ?? 0))
+		}
+	}
+	const sorted = Array.from(usage.entries()).sort(([, a], [, b]) => b - a)
+	const chartConfig = {} as ChartConfig
+	for (let i = 0; i < sorted.length; i++) {
+		const [name] = sorted[i]
+		const hue = ((i * 360) / Math.max(sorted.length, 1)) % 360
+		chartConfig[name] = { label: name, color: `hsl(${hue}, var(--chart-saturation), var(--chart-lightness))` }
+	}
+	return chartConfig
+}
+
 export function useVMChartConfigs(vmData: ChartData["vmData"]): VMChartConfigs {
-	return useMemo(
+	const base = useMemo(
 		() =>
 			buildMetricChartConfigs(vmData, {
 				cpu: (s) => s.c ?? 0,
@@ -83,6 +105,8 @@ export function useVMChartConfigs(vmData: ChartData["vmData"]): VMChartConfigs {
 			}),
 		[vmData]
 	)
+	const disk = useMemo(() => buildDiskChartConfig(vmData), [vmData])
+	return useMemo(() => ({ ...base, disk }), [base, disk])
 }
 
 /** Sets the correct width of the y axis in recharts based on the longest label */

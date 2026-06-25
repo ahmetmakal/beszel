@@ -1,6 +1,6 @@
 import { useStore } from "@nanostores/react"
 import { getPagePath } from "@nanostores/router"
-import { subscribeKeys } from "nanostores"
+import { listenKeys, subscribeKeys } from "nanostores"
 import { useEffect, useMemo, useRef, useState } from "react"
 import { useContainerChartConfigs, useVMChartConfigs } from "@/components/charts/hooks"
 import { pb } from "@/lib/api"
@@ -50,6 +50,7 @@ export function useSystemData(id: string) {
 	const [systemStats, setSystemStats] = useState([] as SystemStatsRecord[])
 	const [containerData, setContainerData] = useState([] as ChartData["containerData"])
 	const [vmData, setVmData] = useState([] as ChartData["vmData"])
+	const [vmRecordCount, setVmRecordCount] = useState(0)
 	const persistChartTime = useRef(false)
 	const statsRequestId = useRef(0)
 	const [chartLoading, setChartLoading] = useState(true)
@@ -106,6 +107,30 @@ export function useSystemData(id: string) {
 				},
 			})
 			.then(setDetails)
+	}, [system.id])
+
+	// show VM tab/table when libvirt_vms has rows even if chart history is still empty
+	useEffect(() => {
+		if (!system.id) {
+			setVmRecordCount(0)
+			return
+		}
+		let cancelled = false
+		const fetchVmCount = () => {
+			pb.collection("libvirt_vms")
+				.getList(1, 1, {
+					filter: pb.filter("system={:id}", { id: system.id }),
+					fields: "id",
+				})
+				.then(({ totalItems }) => {
+					if (!cancelled) {
+						setVmRecordCount(totalItems)
+					}
+				})
+				.catch(() => {})
+		}
+		fetchVmCount()
+		return listenKeys($allSystemsById, [system.id], fetchVmCount)
 	}, [system.id])
 
 	// subscribe to realtime metrics if chart time is 1m
@@ -365,5 +390,7 @@ export function useSystemData(id: string) {
 		hasGpuData,
 		hasGpuEnginesData,
 		hasGpuPowerData,
+		hasVMCharts: chartData.vmData.length > 0,
+		hasVMs: chartData.vmData.length > 0 || vmRecordCount > 0,
 	}
 }

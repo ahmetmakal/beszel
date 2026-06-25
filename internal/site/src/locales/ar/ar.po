@@ -218,6 +218,10 @@ msgstr "جميع الأنظمة"
 msgid "All vulnerabilities"
 msgstr ""
 
+#: src/lib/alerts.ts
+msgid "Any VM blocked"
+msgstr ""
+
 #: src/components/systems-table/systems-table-columns.tsx
 msgid "Are you sure you want to delete {name}?"
 msgstr "هل أنت متأكد أنك تريد حذف {name}؟"
@@ -338,9 +342,17 @@ msgstr "ثنائي"
 msgid "Bits (Kbps, Mbps, Gbps)"
 msgstr "بت (كيلوبت/ثانية، ميجابت/ثانية، جيجابت/ثانية)"
 
+#: src/lib/alerts.ts
+msgid "Blocked VM"
+msgstr ""
+
 #: src/components/systemd-table/systemd-table.tsx
 msgid "Boot state"
 msgstr "حالة التمهيد"
+
+#: src/components/vms-table/vms-table-columns.tsx
+msgid "Bridge"
+msgstr ""
 
 #: src/components/routes/system/charts/mysql-charts.tsx
 msgid "Buffer pool and key cache hit rates"
@@ -586,6 +598,10 @@ msgstr "المعالج"
 msgid "CPU Cores"
 msgstr "نوى المعالج"
 
+#: src/components/routes/system/charts/kvm-host-io-card.tsx
+msgid "CPU I/O wait and disk latency on the hypervisor — common KVM bottleneck signals"
+msgstr ""
+
 #: src/components/systemd-table/systemd-table-columns.tsx
 msgid "CPU Peak"
 msgstr "ذروة المعالج"
@@ -689,13 +705,26 @@ msgstr "قيد التفريغ"
 
 #: src/components/routes/system.tsx
 #: src/components/systems-table/systems-table-columns.tsx
+#: src/components/vms-table/vms-table-columns.tsx
 msgid "Disk"
 msgstr "القرص"
+
+#: src/lib/alerts.ts
+msgid "Disk Await"
+msgstr ""
 
 #: src/components/routes/system/charts/disk-charts.tsx
 #: src/components/vms-table/vms-table-columns.tsx
 msgid "Disk I/O"
 msgstr "إدخال/إخراج القرص"
+
+#: src/components/vms-table/vms-table-columns.tsx
+#~ msgid "Disk R"
+#~ msgstr ""
+
+#: src/components/routes/system/charts/libvirt-charts.tsx
+msgid "Disk read and write throughput of virtual machines"
+msgstr ""
 
 #: src/components/routes/settings/general.tsx
 msgid "Disk unit"
@@ -710,6 +739,10 @@ msgstr "استخدام القرص"
 #: src/components/routes/system/charts/disk-charts.tsx
 msgid "Disk usage of {extraFsName}"
 msgstr "استخدام القرص لـ {extraFsName}"
+
+#: src/components/vms-table/vms-table-columns.tsx
+msgid "Disk W"
+msgstr ""
 
 #: src/components/routes/system/info-bar.tsx
 msgctxt "Layout display options"
@@ -1011,6 +1044,10 @@ msgstr "تم إرسال نبضة القلب بنجاح"
 msgid "HIGH and CRITICAL vulnerabilities"
 msgstr ""
 
+#: src/components/routes/system/charts/kvm-host-io-card.tsx
+msgid "High I/O wait or disk await often points to storage pressure affecting VMs on this host."
+msgstr ""
+
 #: src/components/add-system.tsx
 #: src/components/routes/settings/tokens-fingerprints.tsx
 msgctxt "Button to copy install command"
@@ -1020,6 +1057,10 @@ msgstr "أمر Homebrew"
 #: src/components/add-system.tsx
 msgid "Host / IP"
 msgstr "مضيف / IP"
+
+#: src/components/routes/system/charts/kvm-host-io-card.tsx
+msgid "Host I/O Stall Indicators"
+msgstr ""
 
 #: src/components/routes/settings/heartbeat.tsx
 msgid "HTTP Method"
@@ -1043,6 +1084,12 @@ msgstr "وقت الإدخال والإخراج"
 msgctxt "Percent of time the disk is busy with I/O"
 msgid "I/O Utilization"
 msgstr "استخدام الإدخال والإخراج"
+
+#: src/components/routes/system/charts/kvm-host-io-card.tsx
+#: src/components/routes/system/charts/kvm-host-io-card.tsx
+#: src/lib/alerts.ts
+msgid "I/O Wait"
+msgstr ""
 
 #: src/components/routes/system/info-bar.tsx
 #: src/components/systemd-table/systemd-table.tsx
@@ -1080,6 +1127,14 @@ msgstr "الفاصل الزمني"
 #: src/components/login/auth-form.tsx
 msgid "Invalid email address."
 msgstr "عنوان البريد الإشباكي غير صالح."
+
+#: src/components/vms-table/vms-table-columns.tsx
+msgid "IOPS"
+msgstr ""
+
+#: src/components/vms-table/vms-table-columns.tsx
+msgid "IP"
+msgstr ""
 
 #: src/components/routes/system/info-bar.tsx
 msgid "Kernel"
@@ -1240,6 +1295,10 @@ msgstr "الحد الأقصى دقيقة"
 msgid "MEDIUM, HIGH and CRITICAL vulnerabilities"
 msgstr ""
 
+#: src/components/vms-table/vms-table-columns.tsx
+msgid "Mem %"
+msgstr ""
+
 #: src/components/containers-table/containers-table-columns.tsx
 #: src/components/routes/system/info-bar.tsx
 #: src/components/systemd-table/systemd-table-columns.tsx
@@ -1299,9 +1358,16 @@ msgstr "الاسم"
 
 #: src/components/containers-table/containers-table-columns.tsx
 #: src/components/systems-table/systems-table-columns.tsx
-#: src/components/vms-table/vms-table-columns.tsx
 msgid "Net"
 msgstr "الشبكة"
+
+#: src/components/vms-table/vms-table-columns.tsx
+msgid "Net ↑"
+msgstr ""
+
+#: src/components/vms-table/vms-table-columns.tsx
+msgid "Net ↓"
+msgstr ""
 
 #: src/components/routes/system/charts/network-charts.tsx
 msgid "Network traffic of docker containers"
@@ -1626,6 +1692,11 @@ msgstr "ساعات الهدوء"
 #: src/components/routes/system/disk-io-sheet.tsx
 msgid "Read"
 msgstr "قراءة"
+
+#: src/components/routes/system/charts/kvm-host-io-card.tsx
+#: src/components/routes/system/charts/kvm-host-io-card.tsx
+msgid "Read await"
+msgstr ""
 
 #. Web server connections
 #: src/components/routes/system/charts/webserver-charts.tsx
@@ -2185,6 +2256,10 @@ msgid "Triggers when a monitored service is no longer active"
 msgstr ""
 
 #: src/lib/alerts.ts
+msgid "Triggers when any libvirt/KVM VM enters blocked state"
+msgstr ""
+
+#: src/lib/alerts.ts
 msgid "Triggers when any sensor exceeds a threshold"
 msgstr "يتم التفعيل عندما يتجاوز أي مستشعر عتبة معينة"
 
@@ -2197,8 +2272,16 @@ msgid "Triggers when combined up/down exceeds a threshold"
 msgstr "يتم التفعيل عندما يتجاوز الجمع بين الصعود/الهبوط عتبة معينة"
 
 #: src/lib/alerts.ts
+msgid "Triggers when CPU I/O wait exceeds a threshold (hypervisor disk bottleneck signal)"
+msgstr ""
+
+#: src/lib/alerts.ts
 msgid "Triggers when CPU usage exceeds a threshold"
 msgstr "يتم التفعيل عندما يتجاوز استخدام وحدة المعالجة المركزية عتبة معينة"
+
+#: src/lib/alerts.ts
+msgid "Triggers when disk read or write await exceeds a threshold"
+msgstr ""
 
 #: src/lib/alerts.ts
 msgid "Triggers when GPU usage exceeds a threshold"
@@ -2288,6 +2371,7 @@ msgstr "رفع"
 
 #: src/components/routes/system/info-bar.tsx
 #: src/components/systems-table/systems-table-columns.tsx
+#: src/components/vms-table/vms-table-columns.tsx
 msgid "Uptime"
 msgstr "مدة التشغيل"
 
@@ -2355,6 +2439,10 @@ msgstr "الأعمدة الظاهرة"
 
 #: src/components/routes/system/charts/libvirt-charts.tsx
 msgid "VM CPU Usage"
+msgstr ""
+
+#: src/components/routes/system/charts/libvirt-charts.tsx
+msgid "VM Disk I/O"
 msgstr ""
 
 #: src/components/routes/system/charts/libvirt-charts.tsx
@@ -2445,6 +2533,11 @@ msgstr ""
 #: src/components/routes/system/disk-io-sheet.tsx
 msgid "Write"
 msgstr "كتابة"
+
+#: src/components/routes/system/charts/kvm-host-io-card.tsx
+#: src/components/routes/system/charts/kvm-host-io-card.tsx
+msgid "Write await"
+msgstr ""
 
 #. Web server connections
 #: src/components/routes/system/charts/webserver-charts.tsx
