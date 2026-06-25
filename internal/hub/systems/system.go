@@ -241,7 +241,7 @@ func (sys *System) createRecords(data *system.CombinedData) (*core.Record, error
 			} else {
 				libvirtStatsRecord := core.NewRecord(libvirtStatsCollection)
 				libvirtStatsRecord.Set("system", systemRecord.Id)
-				libvirtStatsRecord.Set("stats", data.LibvirtVMs)
+				libvirtStatsRecord.Set("stats", libvirtStatsJSON(data.LibvirtVMs))
 				libvirtStatsRecord.Set("type", "1m")
 				if err := txApp.SaveNoValidate(libvirtStatsRecord); err != nil {
 					sys.manager.hub.Logger().Error("failed to save libvirt VM stats", "system", sys.Id, "err", err)
@@ -414,6 +414,17 @@ func libvirtMemPct(memMB float64, memMaxBytes uint64) float64 {
 		return 0
 	}
 	return float64(int(memMB/maxMB*10000+0.5)) / 100
+}
+
+func libvirtStatsJSON(vms []*libvirt.Stats) any {
+	if len(vms) == 0 {
+		return []any{}
+	}
+	b, err := json.Marshal(vms)
+	if err != nil {
+		return vms
+	}
+	return json.RawMessage(b)
 }
 
 func createLibvirtVMRecords(app core.App, data []*libvirt.Stats, systemId string) error {

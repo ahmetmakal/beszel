@@ -1,7 +1,7 @@
 import { t } from "@lingui/core/macro"
 import type { ChartConfig } from "@/components/ui/chart"
 import AreaChartDefault from "@/components/charts/area-chart"
-import { useContainerDataPoints, type VMChartConfigs } from "@/components/charts/hooks"
+import { useVMDataPoints, type VMChartConfigs } from "@/components/charts/hooks"
 import { decimalString, formatBytes, toFixedFloat } from "@/lib/utils"
 import { pinnedAxisDomain } from "@/components/ui/chart"
 import type { ChartData } from "@/types"
@@ -18,7 +18,7 @@ function VmCpuChart({
 	dataEmpty: boolean
 	cpuConfig: ChartConfig
 }) {
-	const { dataPoints } = useContainerDataPoints(cpuConfig, (key, data) => data[key]?.c ?? null)
+	const { dataPoints } = useVMDataPoints(cpuConfig, (key, data) => data[key]?.c ?? null)
 	if (!dataPoints.length) return null
 	return (
 		<ChartCard empty={dataEmpty} grid={grid} title={t`VM CPU Usage`} description={t`Average CPU utilization of virtual machines`} legend={true}>
@@ -48,7 +48,7 @@ function VmMemoryChart({
 	dataEmpty: boolean
 	memoryConfig: ChartConfig
 }) {
-	const { dataPoints } = useContainerDataPoints(memoryConfig, (key, data) => data[key]?.m ?? null)
+	const { dataPoints } = useVMDataPoints(memoryConfig, (key, data) => data[key]?.m ?? null)
 	if (!dataPoints.length) return null
 	return (
 		<ChartCard empty={dataEmpty} grid={grid} title={t`VM Memory Usage`} description={t`Memory usage of virtual machines`} legend={true}>
@@ -84,7 +84,7 @@ function VmNetworkChart({
 	dataEmpty: boolean
 	networkConfig: ChartConfig
 }) {
-	const { dataPoints } = useContainerDataPoints(networkConfig, (key, data) => {
+	const { dataPoints } = useVMDataPoints(networkConfig, (key, data) => {
 		const vm = data[key]
 		if (!vm) return null
 		return (vm.b?.[0] ?? 0) + (vm.b?.[1] ?? 0)
@@ -124,7 +124,7 @@ function VmDiskChart({
 	dataEmpty: boolean
 	diskConfig: ChartConfig
 }) {
-	const { dataPoints } = useContainerDataPoints(diskConfig, (key, data) => {
+	const { dataPoints } = useVMDataPoints(diskConfig, (key, data) => {
 		const vm = data[key]
 		if (!vm) return null
 		return (vm.d?.[0] ?? 0) + (vm.d?.[1] ?? 0)

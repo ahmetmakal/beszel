@@ -16,9 +16,12 @@ export type VMChartConfigs = ContainerChartConfigs & {
 	disk: ChartConfig
 }
 
+const VM_CHART_MAX_SERIES = 12
+
 function buildMetricChartConfigs(
 	dataSeries: ChartData["containerData"] | ChartData["vmData"],
-	metrics: { cpu: (s: { c?: number }) => number; memory: (s: { m?: number }) => number; network: (s: { b?: [number, number]; ns?: number; nr?: number }) => number }
+	metrics: { cpu: (s: { c?: number }) => number; memory: (s: { m?: number }) => number; network: (s: { b?: [number, number]; ns?: number; nr?: number }) => number },
+	maxSeries = Number.POSITIVE_INFINITY
 ): ContainerChartConfigs {
 	const configs = {
 		cpu: {} as ChartConfig,
@@ -42,7 +45,9 @@ function buildMetricChartConfigs(
 		}
 	}
 	Object.entries(totalUsage).forEach(([chartType, usageMap]) => {
-		const sorted = Array.from(usageMap.entries()).sort(([, a], [, b]) => b - a)
+		const sorted = Array.from(usageMap.entries())
+			.sort(([, a], [, b]) => b - a)
+			.slice(0, maxSeries)
 		const chartConfig = {} as Record<string, { label: string; color: string }>
 		for (let i = 0; i < sorted.length; i++) {
 			const [name] = sorted[i]
@@ -75,7 +80,7 @@ export function useContainerChartConfigs(containerData: ChartData["containerData
 	)
 }
 
-function buildDiskChartConfig(vmData: ChartData["vmData"]): ChartConfig {
+function buildDiskChartConfig(vmData: ChartData["vmData"], maxSeries = VM_CHART_MAX_SERIES): ChartConfig {
 	const usage = new Map<string, number>()
 	for (const stats of vmData) {
 		for (const name of Object.keys(stats)) {
@@ -85,7 +90,9 @@ function buildDiskChartConfig(vmData: ChartData["vmData"]): ChartConfig {
 			usage.set(name, (usage.get(name) ?? 0) + (vm.d?.[0] ?? 0) + (vm.d?.[1] ?? 0))
 		}
 	}
-	const sorted = Array.from(usage.entries()).sort(([, a], [, b]) => b - a)
+	const sorted = Array.from(usage.entries())
+		.sort(([, a], [, b]) => b - a)
+		.slice(0, maxSeries)
 	const chartConfig = {} as ChartConfig
 	for (let i = 0; i < sorted.length; i++) {
 		const [name] = sorted[i]
@@ -98,11 +105,15 @@ function buildDiskChartConfig(vmData: ChartData["vmData"]): ChartConfig {
 export function useVMChartConfigs(vmData: ChartData["vmData"]): VMChartConfigs {
 	const base = useMemo(
 		() =>
-			buildMetricChartConfigs(vmData, {
-				cpu: (s) => s.c ?? 0,
-				memory: (s) => s.m ?? 0,
-				network: (s) => (s.b?.[0] ?? 0) + (s.b?.[1] ?? 0),
-			}),
+			buildMetricChartConfigs(
+				vmData,
+				{
+					cpu: (s) => s.c ?? 0,
+					memory: (s) => s.m ?? 0,
+					network: (s) => (s.b?.[0] ?? 0) + (s.b?.[1] ?? 0),
+				},
+				VM_CHART_MAX_SERIES
+			),
 		[vmData]
 	)
 	const disk = useMemo(() => buildDiskChartConfig(vmData), [vmData])
@@ -139,7 +150,8 @@ export function useYAxisWidth() {
 export function useContainerDataPoints(
 	chartConfig: ChartConfig,
 	// biome-ignore lint/suspicious/noExplicitAny: container data records have dynamic keys
-	dataFn: (key: string, data: Record<string, any>) => number | null
+	dataFn: (key: string, data: Record<string, any>) => number | null,
+	stacked = true
 ) {
 	const filter = useStore($containerFilter)
 	const { dataPoints, filteredKeys } = useMemo(() => {
@@ -161,7 +173,7 @@ export function useContainerDataPoints(
 				opacity: isFiltered ? 0.05 : 0.4,
 				strokeOpacity: isFiltered ? 0.1 : 1,
 				activeDot: !isFiltered,
-				stackId: "a",
+				stackId: stacked ? "a" : undefined,
 			}
 		})
 		return {
@@ -169,8 +181,17 @@ export function useContainerDataPoints(
 			dataPoints: points as DataPoint<Record<string, any>>[],
 			filteredKeys: filtered,
 		}
-	}, [chartConfig, filter])
+	}, [chartConfig, filter, stacked])
 	return { filter, dataPoints, filteredKeys }
+}
+
+/** VM charts use overlapping areas (not stacked) to stay readable with many guests. */
+export function useVMDataPoints(
+	chartConfig: ChartConfig,
+	// biome-ignore lint/suspicious/noExplicitAny: VM data records have dynamic keys
+	dataFn: (key: string, data: Record<string, any>) => number | null
+) {
+	return useContainerDataPoints(chartConfig, dataFn, false)
 }
 
 // Assures consistent colors for network interfaces

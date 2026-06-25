@@ -436,6 +436,9 @@ export function pinnedAxisDomain(): AxisDomain {
 	return [
 		0,
 		(dataMax: number) => {
+			if (dataMax <= 0) {
+				return 1
+			}
 			if (dataMax > 10) {
 				return Math.round(dataMax)
 			}

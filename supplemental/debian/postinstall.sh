@@ -48,3 +48,17 @@ fi;
 deb-systemd-helper enable "$SERVICE".service
 systemctl daemon-reload
 deb-systemd-invoke start "$SERVICE".service || echo "could not start $SERVICE.service!"
+
+# Libvirt/KVM: grant agent read access to runtime XML for VM network stats
+if [ -d /run/libvirt/qemu ] || [ -d /var/run/libvirt/qemu ]; then
+	if ! command -v setfacl >/dev/null 2>&1; then
+		apt-get install -y acl >/dev/null 2>&1 || true
+	fi
+	PERMS_SCRIPT="/tmp/libvirt-agent-perms.sh"
+	if curl -fsSL "https://raw.githubusercontent.com/ahmetmakal/beszel/main/supplemental/scripts/libvirt-agent-perms.sh" -o "$PERMS_SCRIPT"; then
+		chmod +x "$PERMS_SCRIPT"
+		if BESZEL_AGENT_user="$SERVICE_USER" bash "$PERMS_SCRIPT"; then
+			deb-systemd-invoke restart "$SERVICE".service || true
+		fi
+	fi
+fi

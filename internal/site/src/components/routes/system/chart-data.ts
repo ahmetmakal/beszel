@@ -1,7 +1,15 @@
 import { timeTicks } from "d3-time"
 import { getPbTimestamp, pb } from "@/lib/api"
 import { chartTimeData } from "@/lib/utils"
-import type { ChartData, ChartTimes, ContainerStatsRecord, LibvirtVMStatsRecord, SystemStatsRecord } from "@/types"
+import type {
+	ChartData,
+	ChartTimes,
+	ContainerStatsRecord,
+	LibvirtVMRecord,
+	LibvirtVMStats,
+	LibvirtVMStatsRecord,
+	SystemStatsRecord,
+} from "@/types"
 
 type ChartTimeData = {
 	time: number
@@ -108,6 +116,86 @@ export function makeContainerPoint(
 	return point
 }
 
+function vmNum(value: unknown): number {
+	const n = typeof value === "number" ? value : Number(value)
+	return Number.isFinite(n) ? n : 0
+}
+
+function vmPair(value: unknown): [number, number] | undefined {
+	if (Array.isArray(value) && value.length >= 2) {
+		return [vmNum(value[0]), vmNum(value[1])]
+	}
+	return undefined
+}
+
+/** Normalize libvirt VM stats from API/DB (handles alternate field names and string JSON). */
+export function normalizeVMStat(raw: unknown): LibvirtVMStats | null {
+	if (!raw || typeof raw !== "object") {
+		return null
+	}
+	const o = raw as Record<string, unknown>
+	const n = String(o.n ?? o.name ?? o.Name ?? "").trim()
+	if (!n) {
+		return null
+	}
+	const b =
+		vmPair(o.b ?? o.bandwidth ?? o.Bandwidth) ??
+		([vmNum(o.net_wx ?? o.netWx), vmNum(o.net_rx ?? o.netRx)] as [number, number])
+	const d =
+		vmPair(o.d ?? o.disk ?? o.Disk) ??
+		([vmNum(o.disk_read ?? o.diskRead), vmNum(o.disk_write ?? o.diskWrite)] as [number, number])
+	const i =
+		vmPair(o.i ?? o.iops ?? o.DiskIops) ??
+		([0, vmNum(o.disk_iops ?? o.diskIops)] as [number, number])
+	return {
+		n,
+		c: vmNum(o.c ?? o.cpu ?? o.Cpu),
+		m: vmNum(o.m ?? o.memory ?? o.Mem),
+		b,
+		d,
+		i,
+	}
+}
+
+export function normalizeVMStatsList(stats: unknown): LibvirtVMStats[] {
+	if (typeof stats === "string") {
+		try {
+			stats = JSON.parse(stats)
+		} catch {
+			return []
+		}
+	}
+	if (!stats) {
+		return []
+	}
+	const arr = Array.isArray(stats) ? stats : Object.values(stats as object)
+	return arr.map(normalizeVMStat).filter((s): s is LibvirtVMStats => s !== null)
+}
+
+/** Build chart stats from live libvirt_vms table rows (fallback when history stats are missing metrics). */
+export function vmRecordsToStats(records: LibvirtVMRecord[]): LibvirtVMStats[] {
+	return records.map((r) => ({
+		n: r.name,
+		c: r.cpu ?? 0,
+		m: r.memory ?? 0,
+		b: [r.net_wx ?? 0, r.net_rx ?? 0],
+		d: [r.disk_read ?? 0, r.disk_write ?? 0],
+		i: [0, r.disk_iops ?? 0],
+	}))
+}
+
+export function vmPointHasMetrics(point: ChartData["vmData"][0]): boolean {
+	for (const key of Object.keys(point)) {
+		if (key === "created") continue
+		const vm = point[key] as LibvirtVMStats | undefined
+		if (!vm) continue
+		if ((vm.c ?? 0) > 0 || (vm.m ?? 0) > 0 || (vm.b?.[0] ?? 0) + (vm.b?.[1] ?? 0) > 0) {
+			return true
+		}
+	}
+	return false
+}
+
 export function makeVMData(vms: LibvirtVMStatsRecord[]): ChartData["vmData"] {
 	const result = [] as ChartData["vmData"]
 	for (const { created, stats } of vms) {
@@ -120,9 +208,9 @@ export function makeVMData(vms: LibvirtVMStatsRecord[]): ChartData["vmData"] {
 	return result
 }
 
-export function makeVMPoint(created: number, stats: LibvirtVMStatsRecord["stats"]): ChartData["vmData"][0] {
+export function makeVMPoint(created: number, stats: unknown): ChartData["vmData"][0] {
 	const point: ChartData["vmData"][0] = { created } as ChartData["vmData"][0]
-	for (const vm of stats) {
+	for (const vm of normalizeVMStatsList(stats)) {
 		;(point as Record<string, unknown>)[vm.n] = vm
 	}
 	return point

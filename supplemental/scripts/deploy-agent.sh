@@ -192,7 +192,7 @@ deploy_agent() {
 	echo "==> Starting $DEPLOY_AGENT_SERVICE"
 	run_ssh "$SSH_TARGET" "systemctl start '$DEPLOY_AGENT_SERVICE' && systemctl is-active '$DEPLOY_AGENT_SERVICE'"
 
-	if run_ssh "$SSH_TARGET" "[ -d /run/libvirt/qemu ]"; then
+	if run_ssh "$SSH_TARGET" "[ -d /run/libvirt/qemu ] || [ -d /var/run/libvirt/qemu ]"; then
 		echo "==> Libvirt: grant agent read access to runtime XML"
 		run_scp "$ROOT_DIR/supplemental/scripts/libvirt-agent-perms.sh" "${SSH_TARGET}:/tmp/libvirt-agent-perms.sh"
 		run_ssh "$SSH_TARGET" "chmod +x /tmp/libvirt-agent-perms.sh && /tmp/libvirt-agent-perms.sh && systemctl restart '$DEPLOY_AGENT_SERVICE'"

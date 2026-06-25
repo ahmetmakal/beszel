@@ -12,6 +12,10 @@ AGENT_user="${BESZEL_AGENT_user:-beszel}"
 QEMU_DIR="/run/libvirt/qemu"
 DEFINED_DIR="/etc/libvirt/qemu"
 
+if [ ! -d "$QEMU_DIR" ] && [ -d "/var/run/libvirt/qemu" ]; then
+	QEMU_DIR="/var/run/libvirt/qemu"
+fi
+
 if ! id "$AGENT_user" >/dev/null 2>&1; then
 	echo "User not found: $AGENT_user" >&2
 	exit 1

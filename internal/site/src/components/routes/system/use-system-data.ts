@@ -19,6 +19,7 @@ import { chartTimeData, listen, parseSemVer, useBrowserStorage } from "@/lib/uti
 import type {
 	ChartData,
 	ContainerStatsRecord,
+	LibvirtVMRecord,
 	LibvirtVMStatsRecord,
 	SystemDetailsRecord,
 	SystemInfo,
@@ -27,7 +28,18 @@ import type {
 	SystemStatsRecord,
 } from "@/types"
 import { $router, navigate } from "../../router"
-import { appendData, cache, getStats, getTimeData, makeContainerData, makeContainerPoint, makeVMData, makeVMPoint } from "./chart-data"
+import {
+	appendData,
+	cache,
+	getStats,
+	getTimeData,
+	makeContainerData,
+	makeContainerPoint,
+	makeVMData,
+	makeVMPoint,
+	vmPointHasMetrics,
+	vmRecordsToStats,
+} from "./chart-data"
 
 export type SystemData = ReturnType<typeof useSystemData>
 
@@ -133,6 +145,64 @@ export function useSystemData(id: string) {
 		return listenKeys($allSystemsById, [system.id], fetchVmCount)
 	}, [system.id])
 
+	// Keep VM charts in sync with libvirt_vms when history stats lack metric fields.
+	useEffect(() => {
+		if (!system.id) {
+			return
+		}
+		let cancelled = false
+		const { expectedInterval } = chartTimeData[chartTime]
+		const vsCacheKey = `${system.id}_${chartTime}_libvirt_vm_stats`
+
+		const syncVmChartsFromTable = async () => {
+			try {
+				const { items } = await pb.collection<LibvirtVMRecord>("libvirt_vms").getList(1, 500, {
+					filter: pb.filter("system={:id}", { id: system.id }),
+					fields: "name,cpu,memory,net_rx,net_wx,disk_read,disk_write,disk_iops,updated",
+				})
+				if (cancelled || !items.length) {
+					return
+				}
+				const latestUpdated = Math.max(...items.map((vm) => vm.updated ?? 0))
+				const point = makeVMPoint(latestUpdated || Date.now(), vmRecordsToStats(items))
+				if (!vmPointHasMetrics(point)) {
+					return
+				}
+
+				setVmData((prev) => {
+					const last = prev.at(-1)
+					if (last && !vmPointHasMetrics(last)) {
+						return appendData(prev.slice(0, -1), [point], expectedInterval, 100)
+					}
+					if (last && vmPointHasMetrics(last)) {
+						const lastUpdated = (last.created as number) ?? 0
+						if (Math.abs(lastUpdated - (latestUpdated || 0)) < expectedInterval * 0.5) {
+							return prev
+						}
+					}
+					return appendData(prev, [point], expectedInterval, 100)
+				})
+
+				if (chartTime !== "1m") {
+					const cached = (cache.get(vsCacheKey) || []) as ChartData["vmData"]
+					const last = cached.at(-1)
+					if (
+						!last ||
+						!vmPointHasMetrics(last) ||
+						Math.abs(((last.created as number) ?? 0) - (latestUpdated || 0)) >= expectedInterval * 0.5
+					) {
+						cache.set(vsCacheKey, appendData(cached, [point], expectedInterval, 100))
+					}
+				}
+			} catch {
+				// ignore transient fetch errors
+			}
+		}
+
+		syncVmChartsFromTable()
+		return listenKeys($allSystemsById, [system.id], syncVmChartsFromTable)
+	}, [system.id, chartTime])
+
 	// subscribe to realtime metrics if chart time is 1m
 	useEffect(() => {
 		let unsub = () => {}
@@ -155,9 +225,7 @@ export function useSystemData(id: string) {
 							? makeContainerPoint(now, data.container as unknown as ContainerStatsRecord["stats"])
 							: null
 					const vmPoint =
-						data.libvirt?.length > 0
-							? makeVMPoint(now, data.libvirt as unknown as LibvirtVMStatsRecord["stats"])
-							: null
+						data.libvirt?.length > 0 ? makeVMPoint(now, data.libvirt) : null
 					if (isFirst) {
 						isFirst = false
 						setSystemStats([statsPoint])

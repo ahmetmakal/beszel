@@ -719,6 +719,7 @@ chmod 755 "$BIN_PATH"
 set_selinux_context
 
 # Cleanup
+cd / || cd /tmp || true
 rm -rf "$TEMP_DIR"
 
 # Make sure /etc/machine-id exists for persistent fingerprint
@@ -738,14 +739,55 @@ detect_nvidia_devices() {
 }
 
 # Grant beszel-agent read access to libvirt QEMU runtime XML (VM network stats).
+libvirt_qemu_dir() {
+  if [ -d /run/libvirt/qemu ]; then
+    echo /run/libvirt/qemu
+  elif [ -d /var/run/libvirt/qemu ]; then
+    echo /var/run/libvirt/qemu
+  fi
+}
+
+ensure_acl_package() {
+  if command -v setfacl >/dev/null 2>&1; then
+    return 0
+  fi
+  echo "Installing acl package for libvirt XML permissions..."
+  if command -v apt-get >/dev/null 2>&1; then
+    apt-get install -y acl
+  elif command -v dnf >/dev/null 2>&1; then
+    dnf install -y acl
+  elif command -v yum >/dev/null 2>&1; then
+    yum install -y acl
+  elif command -v pacman >/dev/null 2>&1; then
+    pacman -Sy --noconfirm acl
+  elif command -v apk >/dev/null 2>&1; then
+    apk add acl
+  fi
+}
+
+patch_systemd_libvirt_unit() {
+  UNIT="/etc/systemd/system/beszel-agent.service"
+  REQUIRED="ReadOnlyPaths=/run/libvirt /var/run/libvirt /sys/fs/cgroup /sys/class/net"
+  if [ ! -f "$UNIT" ]; then
+    return 0
+  fi
+  if grep -q "^ReadOnlyPaths=.*/run/libvirt" "$UNIT" && grep -q "/sys/class/net" "$UNIT"; then
+    return 0
+  fi
+  echo "Updating beszel-agent.service ReadOnlyPaths for libvirt/KVM monitoring..."
+  if grep -q "^ReadOnlyPaths=" "$UNIT"; then
+    sed -i "s|^ReadOnlyPaths=.*|$REQUIRED|" "$UNIT"
+  else
+    sed -i "/^ProtectSystem=strict/a $REQUIRED" "$UNIT"
+  fi
+  systemctl daemon-reload
+}
+
 configure_libvirt_agent_perms() {
   local agent_user="${1:-beszel}"
-  local qemu_dir="/run/libvirt/qemu"
-
-  if [ ! -d "$qemu_dir" ] && [ -d "/var/run/libvirt/qemu" ]; then
-    qemu_dir="/var/run/libvirt/qemu"
-  fi
-  if [ ! -d "$qemu_dir" ]; then
+  local qemu_dir
+  qemu_dir="$(libvirt_qemu_dir || true)"
+  if [ -z "$qemu_dir" ]; then
     return 0
   fi
 
@@ -753,6 +795,8 @@ configure_libvirt_agent_perms() {
     echo "WARNING: libvirt permissions skipped; user not found: $agent_user" >&2
     return 1
   fi
+
+  ensure_acl_package || true
 
   echo "==> Libvirt host detected; configuring XML permissions for $agent_user"
 
@@ -1037,7 +1081,7 @@ Environment="TOKEN=$TOKEN"
 Environment="HUB_URL=$HUB_URL"
 # Environment="EXTRA_FILESYSTEMS=sdb"
 ExecStart=$BIN_PATH
-User=beszel
+User=$AGENT_USER
 Restart=on-failure
 RestartSec=5
 StateDirectory=beszel-agent
@@ -1061,6 +1105,9 @@ WantedBy=multi-user.target
 EOF
   else
     echo "Systemd service file already exists. Skipping creation."
+    if [ -n "$(libvirt_qemu_dir || true)" ]; then
+      patch_systemd_libvirt_unit
+    fi
   fi
 
   # Load and start the service
@@ -1126,8 +1173,8 @@ EOF
   fi
 fi
 
-if [ -d /run/libvirt/qemu ] || [ -d /var/run/libvirt/qemu ]; then
-  if configure_libvirt_agent_perms beszel; then
+if [ -n "$(libvirt_qemu_dir || true)" ]; then
+  if configure_libvirt_agent_perms "$AGENT_USER"; then
     restart_beszel_agent_if_running
   fi
 fi
