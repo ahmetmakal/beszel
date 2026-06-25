@@ -1,4 +1,6 @@
-## 0.2.0
+## 0.20.0
+
+- Fork sürüm hattı `0.2.0` yerine `0.20.0` (semver: `0.20.0 >= 0.13.0`, protokol uyumu)
 
 - Align hub/agent version with Git release tags (ldflags from GoReleaser/Makefile)
 - Libvirt/KVM VM monitoring (CPU, memory, network, disk, tablo, grafikler)
