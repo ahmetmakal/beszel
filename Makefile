@@ -41,6 +41,10 @@ endif
 # Set executable extension based on target OS
 EXE_EXT := $(if $(filter windows,$(OS)),.exe,)
 
+# Version from latest v* tag, or dev fallback for local builds.
+VERSION ?= $(shell git describe --tags --match 'v*' --abbrev=0 2>/dev/null | sed 's/^v//' || echo "0.0.0-dev")
+LDFLAGS := -w -s -X github.com/henrygd/beszel.Version=$(VERSION)
+
 .PHONY: tidy build-agent build-hub build-hub-dev build clean lint dev-server dev-agent dev-hub dev generate-locales fetch-smartctl-conditional
 .DEFAULT_GOAL := build
 
@@ -87,14 +91,14 @@ fetch-smartctl-conditional:
 
 # Update build-agent to include conditional .NET build
 build-agent: tidy build-dotnet-conditional fetch-smartctl-conditional
-	GOOS=$(OS) GOARCH=$(ARCH) go build $(AGENT_GO_TAGS) -o ./build/beszel-agent_$(OS)_$(ARCH)$(EXE_EXT) -ldflags "-w -s" ./internal/cmd/agent
+	GOOS=$(OS) GOARCH=$(ARCH) go build $(AGENT_GO_TAGS) -o ./build/beszel-agent_$(OS)_$(ARCH)$(EXE_EXT) -ldflags "$(LDFLAGS)" ./internal/cmd/agent
 
 build-hub: tidy $(if $(filter false,$(SKIP_WEB)),build-web-ui)
-	GOOS=$(OS) GOARCH=$(ARCH) go build -o ./build/beszel_$(OS)_$(ARCH)$(EXE_EXT) -ldflags "-w -s" ./internal/cmd/hub
+	GOOS=$(OS) GOARCH=$(ARCH) go build -o ./build/beszel_$(OS)_$(ARCH)$(EXE_EXT) -ldflags "$(LDFLAGS)" ./internal/cmd/hub
 
 build-hub-dev: tidy
 	mkdir -p ./internal/site/dist && touch ./internal/site/dist/index.html
-	GOOS=$(OS) GOARCH=$(ARCH) go build -tags development -o ./build/beszel-dev_$(OS)_$(ARCH)$(EXE_EXT) -ldflags "-w -s" ./internal/cmd/hub
+	GOOS=$(OS) GOARCH=$(ARCH) go build -tags development -o ./build/beszel-dev_$(OS)_$(ARCH)$(EXE_EXT) -ldflags "$(LDFLAGS)" ./internal/cmd/hub
 
 build: build-agent build-hub
 

@@ -158,6 +158,7 @@ build_agent() {
 		exit 1
 	fi
 	echo "Built: $bin ($(wc -c <"$bin" | tr -d ' ') bytes)"
+	"$bin" --version 2>/dev/null || true
 }
 
 deploy_agent() {

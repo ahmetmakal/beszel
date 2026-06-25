@@ -11,6 +11,9 @@ builds:
   - id: beszel
     binary: beszel
     main: internal/cmd/hub/hub.go
+    ldflags:
+      - -s -w
+      - -X github.com/henrygd/beszel.Version={{.Version}}
     env:
       - CGO_ENABLED=0
     goos:
@@ -35,6 +38,9 @@ builds:
   - id: beszel-agent
     binary: beszel-agent
     main: internal/cmd/agent/agent.go
+    ldflags:
+      - -s -w
+      - -X github.com/henrygd/beszel.Version={{.Version}}
     env:
       - CGO_ENABLED=0
     goos:
@@ -79,6 +85,9 @@ builds:
   - id: beszel-agent-linux-amd64-glibc
     binary: beszel-agent
     main: internal/cmd/agent/agent.go
+    ldflags:
+      - -s -w
+      - -X github.com/henrygd/beszel.Version={{.Version}}
     env:
       - CGO_ENABLED=0
     flags:
@@ -260,7 +269,7 @@ winget:
       #     branch: master
 
 release:
-  draft: true
+  draft: false
 
 changelog:
   disable: true

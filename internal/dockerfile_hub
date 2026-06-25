@@ -17,7 +17,8 @@ RUN update-ca-certificates
 
 # Build
 ARG TARGETOS TARGETARCH
-RUN CGO_ENABLED=0 GOGC=75 GOOS=$TARGETOS GOARCH=$TARGETARCH go build -ldflags "-w -s" -o /beszel ./internal/cmd/hub
+ARG APP_VERSION=0.0.0-dev
+RUN CGO_ENABLED=0 GOGC=75 GOOS=$TARGETOS GOARCH=$TARGETARCH go build -ldflags "-w -s -X github.com/henrygd/beszel.Version=${APP_VERSION}" -o /beszel ./internal/cmd/hub
 
 # ? -------------------------
 FROM scratch

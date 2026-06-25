@@ -5,11 +5,13 @@ package beszel
 import "github.com/blang/semver"
 
 const (
-	// Version is the current version of the application.
-	Version = "0.18.7"
 	// AppName is the name of the application.
 	AppName = "beszel"
 )
+
+// Version is set at link time via -ldflags (Makefile / GoReleaser).
+// Fallback is used for local go run / tests without ldflags.
+var Version = "0.0.0-dev"
 
 // MinVersionCbor is the minimum supported version for CBOR compatibility.
 var MinVersionCbor = semver.MustParse("0.12.0")

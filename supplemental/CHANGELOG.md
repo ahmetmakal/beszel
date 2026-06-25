@@ -1,3 +1,10 @@
+## 0.2.0
+
+- Align hub/agent version with Git release tags (ldflags from GoReleaser/Makefile)
+- Libvirt/KVM VM monitoring (CPU, memory, network, disk, tablo, grafikler)
+- Libvirt kurulum izinleri (`libvirt-agent-perms.sh`) install/deploy akışına eklendi
+- Fork release'leri artık draft olmadan yayınlanıyor (`releases/latest` güncel kalır)
+
 ## 0.18.7
 
 - Add more disk I/O metrics (utilization, read/write time, await, queue depth) (#1866)
