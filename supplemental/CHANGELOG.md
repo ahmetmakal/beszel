@@ -1,3 +1,9 @@
+## 0.20.1
+
+- Libvirt VM bellek: per-VM memory cgroup olmayan hostlarda QEMU VmRSS fallback
+- Şişkin/yanlış cgroup okumalarında memMax ile filtre (ör. server16027)
+- Libvirt PID dosyaları (`407_server16027.pid` formatı) desteği
+
 ## 0.20.0
 
 - Fork sürüm hattı `0.2.0` yerine `0.20.0` (semver: `0.20.0 >= 0.13.0`, protokol uyumu)
