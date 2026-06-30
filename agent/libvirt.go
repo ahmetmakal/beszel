@@ -108,29 +108,35 @@ func (m *libvirtManager) getVMStats() []*libvirt.Stats {
 			Ip:        domain.ip,
 			Bridge:    domain.bridge,
 			DiskCap:   domain.diskCapBytes,
-			UptimeSec: vmUptimeSec(domain.qemuPid),
 		}
 
 		memPath := domain.memScopePath
 		cpuPath := domain.cpuScopePath
 		diskPath := domain.diskScopePath
-		if memPath == "" {
-			memPath = domain.cpuScopePath
-		}
 		if cpuPath == "" {
 			cpuPath = memPath
 		}
-		if diskPath == "" && memPath != "" {
-			diskPath = diskScopePathFor(filepath.Base(memPath))
+		if diskPath == "" && (memPath != "" || cpuPath != "") {
+			base := filepath.Base(memPath)
+			if base == "" || base == "." {
+				base = filepath.Base(cpuPath)
+			}
+			diskPath = diskScopePathFor(base)
 		}
 
-		if memPath != "" {
-			memBytes := readCgroupMemoryBytes(memPath)
-			if memBytes > 0 {
-				vm.Mem = utils.BytesToMegabytes(float64(memBytes))
-				if domain.memMax > 0 {
-					vm.MemPct = utils.TwoDecimals(float64(memBytes) / float64(domain.memMax) * 100)
-				}
+		qemuPid := domain.qemuPid
+		if qemuPid == 0 {
+			qemuPid = readDomainPidFile(domain.name)
+		}
+		if vm.UptimeSec == 0 {
+			vm.UptimeSec = vmUptimeSec(qemuPid)
+		}
+
+		memBytes := resolveVMMemoryBytes(memPath, qemuPid, domain.memMax)
+		if memBytes > 0 {
+			vm.Mem = utils.BytesToMegabytes(float64(memBytes))
+			if domain.memMax > 0 {
+				vm.MemPct = utils.TwoDecimals(float64(memBytes) / float64(domain.memMax) * 100)
 			}
 		}
 

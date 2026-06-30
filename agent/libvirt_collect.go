@@ -419,6 +419,9 @@ func parseStatusFileState(content string) int {
 }
 
 func readCgroupMemoryBytes(scopePath string) uint64 {
+	if scopePath == "" || !cgroupHasMemoryMetrics(scopePath) {
+		return 0
+	}
 	for _, rel := range []string{"memory.current", "memory.usage_in_bytes"} {
 		data, err := os.ReadFile(filepath.Join(scopePath, rel))
 		if err != nil {
@@ -430,6 +433,59 @@ func readCgroupMemoryBytes(scopePath string) uint64 {
 		}
 	}
 	return 0
+}
+
+// readProcessRSSBytes returns the QEMU process resident set size from /proc.
+func readProcessRSSBytes(pid uint64) uint64 {
+	if pid == 0 {
+		return 0
+	}
+	data, err := os.ReadFile(filepath.Join("/proc", strconv.FormatUint(pid, 10), "status"))
+	if err != nil {
+		return 0
+	}
+	for line := range strings.SplitSeq(string(data), "\n") {
+		if !strings.HasPrefix(line, "VmRSS:") {
+			continue
+		}
+		fields := strings.Fields(line)
+		if len(fields) < 2 {
+			break
+		}
+		kb, err := strconv.ParseUint(fields[1], 10, 64)
+		if err == nil {
+			return kb * 1024
+		}
+		break
+	}
+	return 0
+}
+
+// selectVMMemoryBytes picks the best memory reading when cgroup and RSS disagree.
+// Some hosts only expose aggregate memory cgroups; inflated cgroup values are ignored when RSS is sane.
+func selectVMMemoryBytes(cgroupBytes, rssBytes, memMaxBytes uint64) uint64 {
+	maxAllowed := memMaxBytes
+	if maxAllowed > 0 {
+		maxAllowed += memMaxBytes / 7 // allow ~14% overhead above guest RAM for QEMU
+	}
+	if cgroupBytes > 0 {
+		if memMaxBytes == 0 || cgroupBytes <= maxAllowed {
+			return cgroupBytes
+		}
+	}
+	if rssBytes > 0 {
+		return rssBytes
+	}
+	if cgroupBytes > 0 {
+		return cgroupBytes
+	}
+	return 0
+}
+
+func resolveVMMemoryBytes(memScopePath string, qemuPid uint64, memMaxBytes uint64) uint64 {
+	cgroupBytes := readCgroupMemoryBytes(memScopePath)
+	rssBytes := readProcessRSSBytes(qemuPid)
+	return selectVMMemoryBytes(cgroupBytes, rssBytes, memMaxBytes)
 }
 
 func readCgroupCPUUsec(scopePath string) uint64 {

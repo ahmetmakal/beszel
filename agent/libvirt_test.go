@@ -89,3 +89,20 @@ func TestVmIDFromName(t *testing.T) {
 	assert.Len(t, id, 12)
 	assert.Regexp(t, `^[a-f0-9]+$`, id)
 }
+
+func TestSelectVMMemoryBytes(t *testing.T) {
+	const elevenGB = 11719680 * 1024
+	const thirtyFourGB = elevenGB * 3
+
+	// Sane per-VM cgroup
+	assert.Equal(t, uint64(elevenGB), selectVMMemoryBytes(elevenGB, 0, elevenGB))
+
+	// Inflated cgroup (aggregate/wrong scope) — prefer RSS
+	assert.Equal(t, uint64(elevenGB), selectVMMemoryBytes(thirtyFourGB, elevenGB, elevenGB))
+
+	// No cgroup, RSS only (common on cgroup v1 hosts without per-VM memory)
+	assert.Equal(t, uint64(elevenGB), selectVMMemoryBytes(0, elevenGB, elevenGB))
+
+	// No memMax: trust cgroup
+	assert.Equal(t, uint64(thirtyFourGB), selectVMMemoryBytes(thirtyFourGB, elevenGB, 0))
+}

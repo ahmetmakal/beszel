@@ -159,8 +159,26 @@ func readDomainPidFile(domainName string) uint64 {
 	if domainName == "" {
 		return 0
 	}
+	runDir := "/run/libvirt/qemu"
 	for _, base := range []string{domainName, canonicalDomainName(domainName)} {
-		data, err := os.ReadFile(filepath.Join("/run/libvirt/qemu", base+".pid"))
+		data, err := os.ReadFile(filepath.Join(runDir, base+".pid"))
+		if err != nil {
+			continue
+		}
+		pid, err := strconv.ParseUint(strings.TrimSpace(string(data)), 10, 64)
+		if err == nil {
+			return pid
+		}
+	}
+	entries, err := os.ReadDir(runDir)
+	if err != nil {
+		return 0
+	}
+	for _, entry := range entries {
+		if !strings.HasSuffix(entry.Name(), ".pid") || !pidFileMatchesDomain(entry.Name(), domainName) {
+			continue
+		}
+		data, err := os.ReadFile(filepath.Join(runDir, entry.Name()))
 		if err != nil {
 			continue
 		}
